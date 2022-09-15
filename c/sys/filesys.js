@@ -1,0 +1,189 @@
+console.log("initializing FileSystem");
+
+class FileSystemClass {
+    constructor() {
+        this.PositionalFileSystem = PositionalFileSystem;
+        this.realLocalStorage = localStorage;
+        setTimeout(this.removeLocalStorage, 1)
+
+        this.ramFiles = {}
+    }
+    async removeLocalStorage() {
+
+        Object.defineProperty(window, 'localStorage', {
+            value: undefined
+        });
+    }
+
+    /**
+     * sets the String of a file
+     * @param {string} path 
+     * @param {string} dat 
+     */
+    async setFileString(path, dat) {
+        if (Object.keys(fastFileLookup).includes(path)) {
+            this.realLocalStorage.setItem(fastFileLookup[path], dat);
+            this.ramFiles[path] = undefined;
+            return true;
+        } else {
+            console.warn("file needs to be created first: " + path)
+            return false;
+        }
+    }
+    async createFile(path) {
+        var folder = path.split("/").slice(0, -1).join("/");
+        var f = await this.getTablePos(folder, "c", FileSystemTable);
+
+        var id = this.getUnusedId();
+        usedFileSysIds.push(id);
+        f.files[path.split("/")[path.split("/").length - 1]] = id
+
+        localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
+        loadFastLookup(FileSystemTable, "c")
+        return true;
+    }
+    /**
+     * returns the content of a file
+     * @param {string} path 
+     * @returns {string}
+     */
+    async getFileString(path) {
+        var dat = ""
+        if (this.ramFiles[path] == undefined) {
+            var r = await this.localFileLoad(path);
+            this.ramFiles[path] = r; //store the file in ram for fast acces
+            return r;
+        } else {
+            return this.ramFiles[path];
+        }
+    }
+    /**
+     * returns the json parsed content of a file
+     * @param {string} path 
+     * @returns {*}
+     */
+    async getFileJson(path) {
+        var s = await this.getFileString(path)
+        try {
+            return JSON.parse(s)
+        } catch {
+            console.error("could not parse file JSON: " + path);
+            return null
+        }
+    }
+    /**
+     * 
+     * @param {string} path 
+     * @returns {FileSysFile} FileSysFile
+     */
+    async getFile(path) {
+        var out = new FileSysFile(path, await this.getFileString(path));
+        return out;
+    }
+    /**
+     * 
+     * @param {string} path 
+     * @returns {FileSysFolder} FileSysFolder
+     */
+    async getFolder(path) {
+        var d = new FileSysFolder(path);
+        return d
+    }
+
+    /**
+     * loads the file from local storage
+     * @param {string} path 
+     */
+    async localFileLoad(path) {
+        if (this.realLocalStorage.getItem(fastFileLookup[path]) == undefined) {
+            return "";
+        }
+        return this.realLocalStorage.getItem(fastFileLookup[path]).replace("\r\n", "\n")
+    }
+
+    getUnusedId() {
+        var i = 0;
+        while (usedFileSysIds.includes(i)) {
+            i++
+        }
+        return i;
+    }
+
+    /**
+     * 
+     * @param {string} path 
+     * @returns {string[]} list of files
+     */
+    async getFiles(path) {
+        var f = await this.getTablePos(path, "c", FileSystemTable);
+        return Object.keys(f["files"]);
+    }
+    /**
+     * 
+     * @param {string} path 
+     * @returns {string[]} list of folders
+     */
+    async getFolders(path) {
+        var f = await this.getTablePos(path, "c", FileSystemTable);
+        return Object.keys(f["folder"]);
+    }
+
+    /**
+     * 
+     * @param {string} path 
+     * @param {string} p 
+     * @param {*} dat 
+     * @returns {*} Part of the FileSystemTable starting at the desired path
+     */
+    async getTablePos(path, p, dat) {
+        if (path.endsWith("/")) {
+            path = path.slice(0, -1);
+        }
+        if (p == path) {
+            return dat;
+        } else {
+            for (var x of Object.keys(dat["folder"])) {
+                return this.getTablePos(path, p + "/" + x, dat["folder"][x])
+            }
+        }
+    }
+}
+class FileSysFile {
+    constructor(path, text) {
+        this.path = path;
+        this.text = text;
+    }
+    async remove() {
+        console.warn("File: remove not implemented");
+        return false
+    }
+    async rename() {
+        console.warn("File: rename not implemented");
+        return false
+    }
+    async getInformation() {
+        console.warn("File: getInformation not implemented");
+        return false
+    }
+}
+class FileSysInfo { //TODO
+    constructor() {
+        this.createdDate = "";
+    }
+}
+class FileSysFolder {
+    constructor(path) {
+        this.path = path;
+        this.files = []
+        this.folders = []
+
+        //load data from fileSysTable
+    }
+}
+
+class PositionalFileSystem { //TODO
+
+}
+
+var s = new FileSystemClass();
+SystemFileSystem = s;

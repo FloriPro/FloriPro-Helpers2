@@ -1,0 +1,19 @@
+<div onmousedown="if(event.path[0]==this){this.resize=true;}" class="window window_%%id%%"
+    style="z-index: 1;position: absolute; top: 0px; left: 0px;">
+    <div class="windowInline" style="height: inherit;">
+        <div class="title-bar">
+            <div class="title-bar-text">
+                <span class="window-name">%%name%%</span>
+            </div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize" class="minimize"></button>
+                <button aria-label="Maximize" class="maximize"></button>
+                <button aria-label="Close" class="close"></button>
+            </div>
+        </div>
+        <div style="display:flex" class="buttonData"></div>
+        <div class="content" style="height: calc(100% - 70px);">
+            <p>the program might have crashed... :(</p>
+        </div>
+    </div>
+</div>
