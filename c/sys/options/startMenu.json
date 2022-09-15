@@ -1,4 +1,4 @@
 {
-    "test":"c/programs/testScript/main.js",
+    "test":"c/programs/testScript/run.js",
     "reset":"c/sys/functions/reset.js"
 }

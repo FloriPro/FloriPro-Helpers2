@@ -10,12 +10,12 @@ class Html {
         //load body
         document.body.innerHTML = body;
 
-
-
         var _StartMenuButton = document.querySelector("#startMenuButton")
         var _StartMenu = document.querySelector("#StartMenu");
         var _taskbar = document.querySelector("#taskbar");
 
+        //load StartMenu
+        await this.loadStartMenu(_StartMenu)
 
 
         //load style
@@ -43,14 +43,13 @@ class Html {
 
             if (event.composedPath().includes(_StartMenu)) {
                 if (event.srcElement != _StartMenu) {
-                    console.log(event)
                     var val = ""
                     if (event.srcElement.className == "StartMenuSelector") {
                         val = event.composedPath()[0].attributes['key'].value;
                     } else {
                         val = event.composedPath()[1].attributes['key'].value;
                     }
-                    console.log(val);
+                    System.run(val)
                 }
                 return true;
             }
@@ -67,6 +66,33 @@ class Html {
             }
         }
 
+    }
+    async loadStartMenu(_StartMenu) {
+        _StartMenu.innerHTML = "";
+        var s = await System.options.get("startMenu");
+        for (var n of Object.keys(s)) {
+            var d = document.createElement("div")
+            d.className = "StartMenuSelector"
+            d.setAttribute("key", s[n])
+
+            var p = document.createElement("p");
+            p.innerText = n;
+            d.append(p)
+
+            var hr = document.createElement("hr")
+            d.append(hr)
+
+            _StartMenu.append(d);
+        }
+    }
+
+    elementArrayContainsClass(array, clas) {
+        for (var x of array) {
+            if (x.classList != undefined && x.classList.contains(clas)) {
+                return true;
+            }
+        }
+        return false
     }
 }
 
@@ -86,6 +112,8 @@ class WindowHandler {
         }, [this])
     }
     async removeWindow(id) {
+        this.windows[id].getHtml().remove();
+        this.windows[id] = undefined;
         remove(this.usedWindowId, id);
     }
     async createWindow(name) {
@@ -109,7 +137,7 @@ class WindowHandler {
 
 class Window {
     #id
-    
+
     constructor(id, name) {
         this.#id = id;
         this.load(id, name)
@@ -117,6 +145,20 @@ class Window {
             console.log("close action not defined!");
             return true;
         }
+        this.onResize = () => {
+            //didResize
+        }
+    }
+    /**
+     * sets the x/y size of the window, if defined
+     * @param {number | undefined} x 
+     * @param {number | undefined} y 
+     */
+    async setSize(x, y) {
+
+    }
+    async rename() { //TODO
+        console.log("rename todo");
     }
     async load(id, name) {
         var windowStr = await SystemFileSystem.getFileString("c/sys/HTML/window.html");
@@ -126,15 +168,21 @@ class Window {
         document.querySelector("#stuff").insertAdjacentHTML('beforeend', windowStr);
 
         System.eventHandler.addEventHandler("mousedown", (event, args) => {
-            if (event.srcElement.classList.contains("window")) {
-                console.log("resize")
-            }
-            if (event.srcElement.classList.contains("title-bar")) {
-                SystemHtml.WindowHandler.moving = true;
-                SystemHtml.WindowHandler.movingWindowId = args[0];
-            }
-            if (event.srcElement.classList.contains("close")) {
-                console.log("close")
+            //if this window
+            if (SystemHtml.elementArrayContainsClass(event.composedPath(), "window_" + args[0])) {
+                if (event.srcElement.classList.contains("window")) {
+                    console.log("resize")
+                }
+                if (event.srcElement.classList.contains("title-bar")) {
+                    SystemHtml.WindowHandler.moving = true;
+                    SystemHtml.WindowHandler.movingWindowId = args[0];
+                }
+                if (event.srcElement.classList.contains("close")) {
+                    if (SystemHtml.WindowHandler.getWindowById(args[0]).close()) {
+                        console.log("remove window")
+                        SystemHtml.WindowHandler.removeWindow(args[0])
+                    }
+                }
             }
         }, [id])
         System.eventHandler.addEventHandler("mouseup", (event) => {

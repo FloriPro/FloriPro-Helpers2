@@ -2,13 +2,29 @@ class sys {
     constructor() {
         this.options = new options();
         this.program = new program();
+        this.path = Path;
     }
     async createEvents() {
         this.eventHandler = new eventHandler();
         this.eventHandler.construct();
     }
     async run(path) {
-        return eval(await SystemFileSystem.getFileString(path));
+        var dec = `var PATH=new System.path('${path}');`;
+        return eval(dec + "\n" + await SystemFileSystem.getFileString(path));
+    }
+}
+class Path {
+    constructor(path) {
+        this.path = path
+    }
+    sections() {
+        return this.path.split("/");
+    }
+    file() {
+        return this.sections()[this.sections.length - 1]
+    }
+    folder() {
+        return this.sections().slice(0, -1).join("/");
     }
 }
 class program {
@@ -17,14 +33,18 @@ class program {
         this.default = standardProg;
     }
     async runProgram(path) {
-        return await this.runProgramString(await SystemFileSystem.getFileString(path))
+        return await this.runProgramString(await SystemFileSystem.getFileString(path), path)
     }
-    async runProgramString(dat) {
+    async runProgramString(dat, path) {
+        if (path == undefined) {
+            path = "c";
+        }
         var r = await eval(dat)
         var id = this.findFreeId();
 
         this.programRegister[id] = r;
         r.id = id;
+        r.PATH = path;
         r.init();
     }
     /**
@@ -134,7 +154,9 @@ class eventHandler {
      */
     event(event) {
         if (System.eventHandler.shouldPrevent[event.type]) {
-            event.preventDefault();
+            if (event.cancelable) {
+                event.preventDefault();
+            }
         }
         //console.log(event.type);
         for (var x of System.eventHandler.handlers[event.type]) {
