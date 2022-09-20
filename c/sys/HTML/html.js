@@ -109,6 +109,9 @@ class WindowHandler {
                 element.style.top = parseInt(element.style.top) + event.movementY + 'px';
                 element.style.left = parseInt(element.style.left) + event.movementX + 'px';
             }
+            else if (SystemHtml.WindowHandler.resize == true) {
+                var element = a[0].getWindowById(this.movingWindowId).addWindowSize(event.movementX, event.movementY);
+            }
         }, [this])
     }
     async removeWindow(id) {
@@ -116,10 +119,12 @@ class WindowHandler {
         this.windows[id] = undefined;
         remove(this.usedWindowId, id);
     }
-    async createWindow(name) {
+    async createWindow(name, readyCallback) {
         var id = this.getFreeId();
         this.usedWindowId.push(id);
-        var w = new Window(id, name);
+        var w = new Window(id);
+        w.onReady = readyCallback
+        w.load(id, name);
         this.windows[id] = w;
         return w;
     }
@@ -138,15 +143,21 @@ class WindowHandler {
 class Window {
     #id
 
-    constructor(id, name) {
+    constructor(id) {
+        this.sizeX = 200;
+        this.sizeY = 100;
+        this.canUserResize = true;
+
         this.#id = id;
-        this.load(id, name)
         this.close = () => {
             console.log("close action not defined!");
             return true;
         }
         this.onResize = () => {
             //didResize
+        }
+        this.onReady = () => {
+            console.warn("unused ready");
         }
     }
     /**
@@ -155,8 +166,21 @@ class Window {
      * @param {number | undefined} y 
      */
     async setSize(x, y) {
-
+        this.sizeX = x;
+        this.sizeY = y;
+        this.getHtml().style.width = this.sizeX + "px";
+        this.getHtml().style.height = this.sizeY + "px";
     }
+    async htmlSizing() {
+        this.sizeX = null;
+        this.sizeY = null;
+        this.getHtml().style.width = "fit-content";
+        this.getHtml().style.height = "fit-content";
+    }
+    userCanResize(yn) {
+        this.canUserResize = yn;
+    }
+
     async rename() { //TODO
         console.log("rename todo");
     }
@@ -170,10 +194,12 @@ class Window {
         System.eventHandler.addEventHandler("mousedown", (event, args) => {
             //if this window
             if (SystemHtml.elementArrayContainsClass(event.composedPath(), "window_" + args[0])) {
-                if (event.srcElement.classList.contains("window")) {
+                if (SystemHtml.WindowHandler.getWindowById(args[0]).canUserResize && event.srcElement.classList.contains("window") && SystemHtml.WindowHandler.moving == false) {
                     console.log("resize")
+                    SystemHtml.WindowHandler.resize = true;
+                    SystemHtml.WindowHandler.resizeWindowId = args[0];
                 }
-                if (event.srcElement.classList.contains("title-bar")) {
+                else if (event.srcElement.classList.contains("title-bar") || SystemHtml.elementArrayContainsClass(event.composedPath(), "title-bar-text")) {
                     SystemHtml.WindowHandler.moving = true;
                     SystemHtml.WindowHandler.movingWindowId = args[0];
                 }
@@ -188,17 +214,62 @@ class Window {
         System.eventHandler.addEventHandler("mouseup", (event) => {
             if (SystemHtml.WindowHandler.moving == true) {
                 SystemHtml.WindowHandler.moving = false
+            } if (SystemHtml.WindowHandler.resize == true) {
+                SystemHtml.WindowHandler.resize = false
             }
         })
+
+
+        this.setSize(this.sizeX, this.sizeY);
+        setTimeout(this.onReady, 1);
     }
+
+    /**
+     * Only used by the programm for resizing
+     * @param {number} sizeX 
+     * @param {number} sizeY 
+     */
+    addWindowSize(sizeX, sizeY) {
+        this.sizeX += sizeX;
+        this.sizeY += sizeY;
+        if (sizeX != "automatic") {
+            this.getHtml().style.width = this.sizeX + "px";
+            this.getHtml().style.height = this.sizeY + "px";
+        }
+        this.onResize();
+    }
+
     async addHtmlEventListener(type, handler) {
         console.warn("todo: window HtmlEventListener");
     }
     getHtml() {
         return document.querySelector(".window_" + this.#id);
     }
-    setContent(html) {
-        console.warn("window.setContent TODO");
+    async setContent(htmlstr) {
+        var html = this.getHtml();
+        var cont = html.querySelector(".content")
+        cont.innerHTML = htmlstr;
+
+
+        /*
+        var defaultContent = await SystemFileSystem.getFileString("c/sys/HTML/content.html");
+        var frame = document.createElement("iframe")
+        frame.width = "300px"
+        frame.height = "120px"
+        frame.style.border = "none";
+        frame.srcdoc = defaultContent.replace("<!--InjectHere-->", htmlstr
+        
+        var d = document.createElement("div");
+        d.style.position = "absolute";
+        d.style.width = "300px";
+        d.style.height = "120px";
+        d.style.background = "black";
+        d.style.position = "absolute";
+        d.style.pointerEvents = "none"
+        
+        cont.append(d);
+        cont.append(frame);*/
+        //console.warn("window.setContent TODO");
     }
 }
 
