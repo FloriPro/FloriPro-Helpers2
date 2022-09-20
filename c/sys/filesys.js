@@ -1,6 +1,10 @@
 console.log("initializing FileSystem");
 
 class FileSystemClass {
+    reset(){
+        this.realLocalStorage.clear();
+    }
+        
     constructor() {
         this.PositionalFileSystem = PositionalFileSystem;
         this.realLocalStorage = localStorage;

@@ -1,1 +1,2 @@
-console.warn("reset: TODO");
+SystemFileSystem.reset();
+location.reload();
