@@ -124,9 +124,13 @@ class options {
 
 class eventHandler {
     constructor() {
+        this.lifeMakerVars = {}
         this.handlers = {}
     }
     async construct() {
+        this.replacementEvents = await System.options.get("eventReplacements");
+        this.replacementEventsK = Object.keys(this.replacementEvents);
+
         this.shouldPrevent = await System.options.get("events");
         this.events = Object.keys(await System.options.get("events"));
         for (var x of this.events) {
@@ -152,19 +156,43 @@ class eventHandler {
      * handles every event that exists3
      * @param {Event} event 
      */
-    event(event) {
-        if (System.eventHandler.shouldPrevent[event.type]) {
+    event(event, type, replacement) {
+        //special fonctions to make life easyer for mobile
+        if (event.type == "touchmove" && event.movementX == undefined) {
+            if (System.eventHandler.lifeMakerVars["mox"] == null) {
+                System.eventHandler.lifeMakerVars["mox"] = event.touches[0].pageX;
+                System.eventHandler.lifeMakerVars["moy"] = event.touches[0].pageY;
+                event.movementX = 0;
+                event.movementY = 0;
+            } else {
+                event.movementX = event.touches[0].pageX - System.eventHandler.lifeMakerVars["mox"];
+                event.movementY = event.touches[0].pageY - System.eventHandler.lifeMakerVars["moy"];
+                System.eventHandler.lifeMakerVars["mox"] = event.touches[0].pageX;
+                System.eventHandler.lifeMakerVars["moy"] = event.touches[0].pageY;
+            }
+        }
+        if (event.type == "touchend") {
+            System.eventHandler.lifeMakerVars["mox"] = null;
+        }
+
+        if (replacement == undefined) { replacement = false; }
+        if (type == undefined) { type = event.type }
+        if (System.eventHandler.shouldPrevent[type]) {
             if (event.cancelable) {
                 event.preventDefault();
             }
         }
-        //console.log(event.type);
-        for (var x of System.eventHandler.handlers[event.type]) {
+        //console.log(type);
+        for (var x of System.eventHandler.handlers[type]) {
             var r = x[0](event, x[1]);
             if (r == true) {
                 console.log("canceld");
                 return;
             }
+        }
+
+        if (System.eventHandler.replacementEventsK.includes(event.type) && replacement == false) {
+            System.eventHandler.event(event, System.eventHandler.replacementEvents[event.type], true);
         }
     }
 }
