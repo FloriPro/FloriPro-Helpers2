@@ -1,0 +1,14 @@
+<p element="fileName" style="zoom: 0.5;color: gray;">No file opened</p>
+<div>
+    <textarea id="editing" style="-webkit-overflow-scrolling: touch" oninput="
+        var result_element = this.parentNode.querySelector('.highlighting-content');
+        result_element.textContent  = this.value;
+        Prism.highlightElement(result_element);" onscroll="
+        var result_element = this.parentNode.querySelector('#highlighting');
+        result_element.scrollTop = this.scrollTop;
+        result_element.scrollLeft = this.scrollLeft;"></textarea>
+    <pre id="highlighting" aria-hidden="true" style="pointer-events: none;">
+        <code class="language-javascript highlighting-content" style="top: 10px; left: 10px; position: absolute;">
+        </code>
+    </pre>
+</div>

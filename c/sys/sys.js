@@ -22,6 +22,18 @@ class sys {
         }
         return result;
     }
+    async open(path) {
+        var o = await System.options.get("fileExtensionOpener")
+        var p = path.split("/")
+        var ap = p[p.length - 1].split(".");
+        var fileEnding = ap[ap.length - 1]
+
+        var programToOpen = o["_default"]
+        if (Object.keys(o).includes(fileEnding)) {
+            programToOpen = o[fileEnding];
+        }
+        System.program.runProgram(programToOpen, path);
+    }
 }
 class Path {
     constructor(path) {
@@ -42,10 +54,10 @@ class program {
         this.programRegister = {};
         this.default = standardProg;
     }
-    async runProgram(path) {
-        return await this.runProgramString(await SystemFileSystem.getFileString(path), path)
+    async runProgram(path, args) {
+        return await this.runProgramString(await SystemFileSystem.getFileString(path), path, args)
     }
-    async runProgramString(dat, path) {
+    async runProgramString(dat, path, args) {
         if (path == undefined) {
             path = "c";
         }
@@ -55,7 +67,7 @@ class program {
         this.programRegister[id] = r;
         r.id = id;
         r.PATH = new System.path(path);
-        r.init();
+        r.init(args);
     }
     /**
      * 

@@ -179,9 +179,8 @@ class FileSystemClass {
         if (p == path) {
             return dat;
         } else {
-            for (var x of Object.keys(dat["folder"])) {
-                return this.getTablePos(path, p + "/" + x, dat["folder"][x])
-            }
+            var n = path.replace(p + "/", "").split("/")[0]
+            return this.getTablePos(path, p + "/" + n, dat["folder"][n])
         }
     }
 }

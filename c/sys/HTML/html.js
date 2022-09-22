@@ -113,8 +113,8 @@ class Html {
         eventType = eventType.replace("on", "");
 
         for (var x of this.htmlEventList[name][eventType]) {
-            this.htmlEventListThis[name].x = x;
-            this.htmlEventListThis[name].x(element, id);
+            this.htmlEventListThis[name].x = x[0];
+            this.htmlEventListThis[name].x(element, id, x[1]);
         }
     }
     removeAllEvents(id) {
@@ -127,7 +127,7 @@ class Html {
 
     }
 
-    addHtmlEvent(elementTag, id, callback, eventType, t) {
+    addHtmlEvent(elementTag, id, callback, eventType, t, variables) {
         eventType = eventType.replace("on", "");
 
         var name = elementTag + "__" + id;
@@ -137,7 +137,7 @@ class Html {
             this.htmlEventList[name][eventType] = []
 
         this.htmlEventListThis[name] = t;
-        this.htmlEventList[name][eventType].push(callback)
+        this.htmlEventList[name][eventType].push([callback, variables])
     }
 }
 
@@ -408,15 +408,18 @@ class Window {
         return this.getHtml().querySelector('*[windowElement="' + tag + '"]')
     }
 
-    async addHtmlEventListener(event, htmlElementTag, callback, t) {
+    async addHtmlEventListener(event, htmlElementTag, callback, t, variables) {
         if (event == "click") {
-            await this.addHtmlEventListener("onclick", htmlElementTag, callback, t);
+            await this.addHtmlEventListener("onclick", htmlElementTag, callback, t, variables);
             //await this.addHtmlEventListener("ontouchstart", htmlElementTag, callback);
         } else {
             var e = await this.getHtmlElement(htmlElementTag)
             e[event] = SystemHtml.htmlEventHandler;
-            SystemHtml.addHtmlEvent(htmlElementTag, this.#id, callback, event, t)
+            SystemHtml.addHtmlEvent(htmlElementTag, this.#id, callback, event, t, variables)
         }
+    }
+    async removeAllEventListeners() {
+        SystemHtml.removeAllEvents(this.#id);
     }
 
     async parseNewHtml() {

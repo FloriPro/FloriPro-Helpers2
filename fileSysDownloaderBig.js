@@ -3,7 +3,7 @@ var useId = 0;
 var FileSystemTable;
 var fastFileLookup = {};
 
-var overwriteNotRedownload = false;
+var overwriteNotRedownload = true;
 
 async function loader() {
     if (localStorage.getItem("fileSystemTable") == null || overwriteNotRedownload) {
