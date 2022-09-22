@@ -1,10 +1,10 @@
 console.log("initializing FileSystem");
 
 class FileSystemClass {
-    reset(){
+    reset() {
         this.realLocalStorage.clear();
     }
-        
+
     constructor() {
         this.PositionalFileSystem = PositionalFileSystem;
         this.realLocalStorage = localStorage;
@@ -55,11 +55,44 @@ class FileSystemClass {
         var dat = ""
         if (this.ramFiles[path] == undefined) {
             var r = await this.localFileLoad(path);
+            if (r.startsWith(".od__")) {
+                var l = await SystemHtml.WindowHandler.presets.createLoading();
+                l.setNum(0);
+
+                var d = r.slice(5)
+                var f = await (await fetch(d));
+                var array = await f.arrayBuffer();
+                var dat = await this.bufferToString(array, l);
+
+                l.stop();
+                r = dat;
+            }
+
             this.ramFiles[path] = r; //store the file in ram for fast acces
             return r;
         } else {
             return this.ramFiles[path];
         }
+    }
+    async bufferToString(buf, l) {
+        var view = new Uint8Array(buf);
+        var out = ""
+        var timeForEveryPercent = view.length / 10;
+        var i = 0;
+        var p = 0;
+        for (var x of view) {
+            out += String.fromCharCode(x);
+            if (i >= timeForEveryPercent) {
+                i = 0;
+                if (l != null && timeForEveryPercent > 1000) {
+                    p += 10;
+                    l.setNum(p)
+                    await delay(10);
+                }
+            }
+            i++;
+        }
+        return out;
     }
     /**
      * returns the json parsed content of a file

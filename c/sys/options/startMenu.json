@@ -1,4 +1,5 @@
 {
     "test":"c/programs/testScript/run.js",
+    "img":"c/programs/imageViewer/run.js",
     "reset":"c/sys/functions/reset.js"
 }

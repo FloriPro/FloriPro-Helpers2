@@ -12,6 +12,16 @@ class sys {
         var dec = `var PATH=new System.path('${path}');`;
         return eval(dec + "\n" + await SystemFileSystem.getFileString(path));
     }
+    makeid(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() *
+                charactersLength));
+        }
+        return result;
+    }
 }
 class Path {
     constructor(path) {
@@ -44,7 +54,7 @@ class program {
 
         this.programRegister[id] = r;
         r.id = id;
-        r.PATH = path;
+        r.PATH = new System.path(path);
         r.init();
     }
     /**
@@ -68,7 +78,6 @@ class program {
 class standardProg {
     constructor() {
         this.id = -1;
-        this.path = "c/programs/"
     }
     /**
      * gets called, when the system has initialized the program
@@ -111,7 +120,6 @@ class options {
      */
     async addValue(option, name, data, overwrite) {
         var d = await SystemFileSystem.getFileJson("c/sys/options/" + option + ".json");
-        console.log(d)
         if (d[name] == undefined || overwrite == true) {
             d[name] = data;
             await SystemFileSystem.setFileString("c/sys/options/" + option + ".json", JSON.stringify(d))
@@ -153,7 +161,7 @@ class eventHandler {
         }
     }
     /**
-     * handles every event that exists3
+     * handles every event that exists
      * @param {Event} event 
      */
     event(event, type, replacement) {
@@ -177,16 +185,16 @@ class eventHandler {
 
         if (replacement == undefined) { replacement = false; }
         if (type == undefined) { type = event.type }
-        if (System.eventHandler.shouldPrevent[type]) {
+        if (System.eventHandler.shouldPrevent[event.type]) {
             if (event.cancelable) {
                 event.preventDefault();
             }
         }
-        //console.log(type);
+
         for (var x of System.eventHandler.handlers[type]) {
             var r = x[0](event, x[1]);
             if (r == true) {
-                console.log("canceld");
+                console.log("cancel");
                 return;
             }
         }

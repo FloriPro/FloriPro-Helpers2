@@ -9,6 +9,9 @@ remove = function (arr, what) {
         found = arr.indexOf(what);
     }
 }
+delay = function (time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+}
 
 SystemFileSystem = undefined;
 System = undefined
