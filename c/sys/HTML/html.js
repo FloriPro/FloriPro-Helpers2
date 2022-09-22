@@ -445,8 +445,8 @@ class presets {
         return await f.load(title, text);
     }
     async createLoading(title, text) {
-        if (title == undefined) { title = "Select" }
-        if (text == undefined) { text = "Please select" }
+        if (title == undefined) { title = "Loading" }
+        if (text == undefined) { text = "Loading" }
         var f = new loadingPreset();
         await await f.load(title, text);
         return f;

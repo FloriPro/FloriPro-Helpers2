@@ -56,7 +56,7 @@ class FileSystemClass {
         if (this.ramFiles[path] == undefined) {
             var r = await this.localFileLoad(path);
             if (r.startsWith(".od__")) {
-                var l = await SystemHtml.WindowHandler.presets.createLoading();
+                var l = await SystemHtml.WindowHandler.presets.createLoading("Loading", "Loading file from the internet");
                 l.setNum(0);
 
                 var d = r.slice(5)
