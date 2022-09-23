@@ -4,6 +4,7 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
+        this.permalink = ""
         this.allreadyRead = await SystemFileSystem.getFileJson(this.PATH.folder() + "/old.json")
 
         this.allreadyLoading = false;
@@ -51,7 +52,10 @@ class program extends System.program.default {
                     this.settings.style.display = "";
                 }, this);
 
-
+                await this.window.addHtmlEventListener("click", "openReddit", () => {
+                    var link = "https://js4.red" + this.permalink
+                    new redjsWindow(link);
+                }, this);
             });
         this.window.close = () => {
             this.stop()
@@ -71,6 +75,7 @@ class program extends System.program.default {
             n = await this.redditApi.next();
         }
 
+        this.permalink = n.data.permalink;
         this.allreadyRead.push(n.data.permalink)
         this.updateAllreadyRead();
 
@@ -94,6 +99,25 @@ class program extends System.program.default {
     }
     async updateAllreadyRead() {
         await SystemFileSystem.setFileString(this.PATH.folder() + "/old.json", JSON.stringify(this.allreadyRead));
+    }
+}
+
+class redjsWindow {
+    constructor(link) {
+        this.load(link);
+    }
+    async load(link) {
+        this.window = await SystemHtml.WindowHandler.createWindow("Full (redditjs)",
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent(`<iframe src="` + link + `" style="width: calc(100% - 4px); height: calc(100% - 10px);">Could not load</iframe>`);
+                await this.window.size.setSize(500, 500);
+                await this.window.size.userCanResize(false)
+            });
+        this.window.close = () => {
+            return true
+        }
     }
 }
 new program();

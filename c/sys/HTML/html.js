@@ -498,6 +498,7 @@ class fileSelectPreset {
                 <div element="fileList">
                     <p>pls remove</p>
                 </div>
+                <hr>
                 <button element="cancel">cancel</button>`);
                 /*
                 var buttonArray = await this.window.getHtmlElement("buttonArray")
