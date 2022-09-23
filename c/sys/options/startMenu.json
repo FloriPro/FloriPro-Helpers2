@@ -1,6 +1,8 @@
 {
     "test": "c/programs/testScript/run.js",
     "explorer": "c/programs/explorer/run.js",
+    "Settings": "c/programs/settings/run.js",
     "img": "c/programs/imageViewer/run.js",
+    "reddit": "c/programs/reddit/run.js",
     "reset": "c/sys/functions/reset.js"
 }

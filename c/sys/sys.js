@@ -3,6 +3,7 @@ class sys {
         this.options = new options();
         this.program = new program();
         this.path = Path;
+        this.settings = new settingsHandler()
     }
     async createEvents() {
         this.eventHandler = new eventHandler();
@@ -68,6 +69,7 @@ class program {
         r.id = id;
         r.PATH = new System.path(path);
         r.init(args);
+        return r;
     }
     /**
      * 
@@ -213,6 +215,26 @@ class eventHandler {
 
         if (System.eventHandler.replacementEventsK.includes(event.type) && replacement == false) {
             System.eventHandler.event(event, System.eventHandler.replacementEvents[event.type], true);
+        }
+    }
+}
+class settingsHandler {
+    constructor() {
+        this.settingsUpdater = {}
+    }
+    addSettingsUpdater(name, callback) {
+        if (this.settingsUpdater[name] == undefined) {
+            this.settingsUpdater[name] = [];
+        }
+        this.settingsUpdater[name].push(callback);
+    }
+    settingUpdated(name) {
+        if (this.settingsUpdater[name] == undefined) {
+            console.log("no listener on setting " + name);
+            return;
+        }
+        for (var x of this.settingsUpdater[name]) {
+            x(name);
         }
     }
 }

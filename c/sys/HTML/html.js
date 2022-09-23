@@ -68,6 +68,16 @@ class Html {
             }
         }
 
+        //background image
+        System.settings.addSettingsUpdater("backgroundImage", () => {
+            console.log("update")
+            backgroundImgLoader();
+        })
+
+        async function backgroundImgLoader() {
+            document.querySelector("#all").style.background = 'url("' + SystemFileSystem.toImg(await SystemFileSystem.getFileString((await System.options.get("settings"))["backgroundImage"][0])) + '") center center / cover no-repeat';
+        }
+        backgroundImgLoader();
     }
     async loadStartMenu(_StartMenu) {
         _StartMenu.innerHTML = "";
@@ -437,9 +447,12 @@ class Window {
 class presets {
     constructor() {
     }
-    async createFileSelect() {
+    async createFileSelect(title) {
         var f = new fileSelectPreset()
-        return await f.load();
+        if (title == undefined) {
+            title = "Select"
+        }
+        return await f.load(title);
     }
     async createNumSelect(title, text) {
         if (title == undefined) { title = "Select" }
@@ -454,22 +467,39 @@ class presets {
         await await f.load(title, text);
         return f;
     }
+    async createStringSelect(title, text) {
+        if (title == undefined) { title = "Select" }
+        if (text == undefined) { text = "Please select" }
+        var f = new stringSelectPreset()
+        return await f.load(title, text);
+    }
 }
 
 class fileSelectPreset {
     constructor() {
     }
-    async load() {
+    async load(title) {
+        this.path = "c";
         var promise = new Promise((res, rej) => {
             this.returnFunction = res;
         });
 
         //make window
-        this.window = await SystemHtml.WindowHandler.createWindow("select",
+        this.window = await SystemHtml.WindowHandler.createWindow(title,
             //onready:
             async () => {
                 //set html
-                await this.window.setContent('<div element="buttonArray"></div><button element="cancel">cancel</button>');
+                await this.window.setContent(`
+                <button element="back">...</button>
+                <hr>
+                <div element="folderList">
+                    <p>pls remove</p>
+                </div>
+                <div element="fileList">
+                    <p>pls remove</p>
+                </div>
+                <button element="cancel">cancel</button>`);
+                /*
                 var buttonArray = await this.window.getHtmlElement("buttonArray")
 
                 for (var x of Object.keys(fastFileLookup)) {
@@ -487,7 +517,8 @@ class fileSelectPreset {
                         //close and return
                         this.window.remove()
                     }, this);
-                }
+                }*/
+                await this.create();
 
                 await this.window.size.setSize(500, 300);
                 await this.window.size.userCanResize(true)
@@ -508,6 +539,56 @@ class fileSelectPreset {
 
         return promise
     }
+    async create() {
+        await this.window.removeAllEventListeners();
+        await this.window.addHtmlEventListener("click", "back", this.back, this)
+
+
+
+        var folderStuff = await this.window.getHtmlElement("folderList")
+        folderStuff.innerHTML = "";
+        var fileStuff = await this.window.getHtmlElement("fileList")
+        fileStuff.innerHTML = "";
+
+        var i = 0
+        for (var x of await SystemFileSystem.getFolders(this.path)) {
+            var b = document.createElement("button")
+            b.innerText = x + "/";
+            b.setAttribute("element", i + "_el")
+            folderStuff.append(b)
+
+            await this.window.parseNewHtml();
+            await this.window.addHtmlEventListener("click", i + "_el", this.button1, this, [x, i])
+            i++;
+        }
+        for (var x of await SystemFileSystem.getFiles(this.path)) {
+            var b = document.createElement("button")
+            b.innerText = x;
+            b.setAttribute("element", i + "_el")
+            fileStuff.append(b)
+
+            await this.window.parseNewHtml();
+            await this.window.addHtmlEventListener("click", i + "_el", this.button2, this, [x, i])
+            i++;
+        }
+    }
+    async button1(_, __, vars) {
+        this.path += "/" + vars[0];
+        this.create()
+    }
+    async button2(_, __, vars) {
+        this.returnFunction(this.path + "/" + vars[0]);
+        this.window.remove()
+    }
+    async back() {
+        var p = this.path.split("/")
+        var p = p.slice(0, -1);
+        if (p.length == 0) {
+            p = ["c"];
+        }
+        this.path = p.join("/");
+        this.create()
+    }
 }
 class numSelectPreset {
     constructor() {
@@ -523,6 +604,50 @@ class numSelectPreset {
             async () => {
                 //set html
                 await this.window.setContent('<p element="text"></p><input element="input" type="number"><button element="ok">ok</button><button element="cancel">cancel</button>');
+
+                (await this.window.getHtmlElement("text")).innerText = text;
+
+                await this.window.size.setSize(400, 200);
+                await this.window.size.userCanResize(true)
+
+                //add event listeners
+                await this.window.addHtmlEventListener("onclick", "cancel", () => {
+                    //read data
+                    this.returnFunction(undefined)
+
+                    //close and return
+                    this.window.remove()
+                }, this);
+                await this.window.addHtmlEventListener("onclick", "ok", async () => {
+                    //read data
+                    this.returnFunction((await this.window.getHtmlElement("input")).value)
+
+                    //close and return
+                    this.window.remove()
+                }, this);
+            });
+        this.window.close = () => {
+            this.returnFunction(null)
+            return true
+        }
+
+        return promise
+    }
+}
+class stringSelectPreset {
+    constructor() {
+    }
+    async load(title, text) {
+        var promise = new Promise((res, rej) => {
+            this.returnFunction = res;
+        });
+
+        //make window
+        this.window = await SystemHtml.WindowHandler.createWindow(title,
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent('<p element="text"></p><input element="input" type="text"><button element="ok">ok</button><button element="cancel">cancel</button>');
 
                 (await this.window.getHtmlElement("text")).innerText = text;
 

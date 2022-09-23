@@ -19,6 +19,10 @@ class FileSystemClass {
         });
     }
 
+    toImg(str) {
+        return "data:image/png;base64," + btoa(str)
+    }
+
     /**
      * sets the String of a file
      * @param {string} path 

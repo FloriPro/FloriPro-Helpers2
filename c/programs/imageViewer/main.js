@@ -30,7 +30,7 @@ class program extends System.program.default {
     async button1() {
         var img = await SystemHtml.WindowHandler.presets.createFileSelect();
         var ig = await this.window.getHtmlElement("img");
-        var str = "data:image/png;base64," + btoa(await SystemFileSystem.getFileString(img))
+        var str = SystemFileSystem.toImg(await SystemFileSystem.getFileString(img));
         ig.src = str;
     }
 }

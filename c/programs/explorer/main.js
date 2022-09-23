@@ -5,7 +5,6 @@ class program extends System.program.default {
     }
     async init() {
         this.path = "c";
-        this.button1Clicks = 0;
         this.windowUserCanResize = true;
         this.windowShowTitle = false;
 
