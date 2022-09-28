@@ -414,8 +414,16 @@ class Window {
      * @param {string} tag only alphanumeric string
      * @returns {HTMLElement}
      */
-    async getHtmlElement(tag) {
+     async getHtmlElement(tag) {
         return this.getHtml().querySelector('*[windowElement="' + tag + '"]')
+    }
+    /**
+     * returns this element
+     * @param {string} tag only alphanumeric string
+     * @returns {NodeListOf<HTMLElement>}
+     */
+    async getHtmlElements(tag) {
+        return this.getHtml().querySelectorAll('*[windowElement="' + tag + '"]')
     }
 
     async addHtmlEventListener(event, htmlElementTag, callback, t, variables) {

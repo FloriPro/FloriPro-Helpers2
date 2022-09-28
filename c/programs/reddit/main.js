@@ -4,6 +4,9 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
+        this.past = []
+        this.pastId = -1;
+
         this.permalink = ""
         this.allreadyRead = await SystemFileSystem.getFileJson(this.PATH.folder() + "/old.json")
 
@@ -40,13 +43,9 @@ class program extends System.program.default {
 
                 this.post.style.display = "none";
 
-                await this.window.addHtmlEventListener("click", "selectSubreddits", async () => {
-                    this.redditApi.setSubreddits((await this.window.getHtmlElement("subredditSelect")).value.split(","));
-                    this.post.style.display = "";
-                    this.settings.style.display = "none";
-                    this.next();
-                }, this);
+                await this.window.addHtmlEventListener("click", "selectSubreddits", this.loadSettings, this);
                 await this.window.addHtmlEventListener("click", "next", this.next, this);
+                await this.window.addHtmlEventListener("click", "back", this.back, this);
                 await this.window.addHtmlEventListener("click", "openSettings", () => {
                     this.post.style.display = "none";
                     this.settings.style.display = "";
@@ -62,7 +61,41 @@ class program extends System.program.default {
             return true
         }
     }
+    async loadSettings() {
+        this.redditApi.setSubreddits((await this.window.getHtmlElement("subredditSelect")).value.split(","));
+
+        for (var x of await this.window.getHtmlElements("variable")) {
+            var optionValue = "";
+            var optionName = x.name;
+
+            if (x.type == 'checkbox') {
+                optionValue = "" + x.checked;
+            } else {
+                optionValue = x.value;
+            }
+
+            if (this.redditApi.boolVars.includes(optionName)) {
+                if (optionValue == "true")
+                    this.redditApi.vars[optionName] = true;
+                else
+                    this.redditApi.vars[optionName] = false;
+            } else {
+                this.redditApi.vars[optionName] = optionValue;
+            }
+        }
+
+
+        this.post.style.display = "";
+        this.settings.style.display = "none";
+        this.next();
+    }
     async next() {
+        if (this.pastId < this.past.length - 1) {
+            this.pastId++;
+            this.load(this.past[this.pastId]);
+            return;
+        }
+
         this.allreadyLoading = true;
 
         this.title.innerText = "...";
@@ -74,6 +107,28 @@ class program extends System.program.default {
         while (this.allreadyRead.includes(n.data.permalink)) {
             n = await this.redditApi.next();
         }
+
+        this.pastId++;
+        if (this.pastId >= 15) {
+            this.pastId = 14;
+            this.past.shift();
+        }
+        this.past.push(n);
+
+        this.load(n);
+    }
+    back() {
+        if (this.pastId > 0) {
+            this.pastId--;
+            this.load(this.past[this.pastId]);
+        }
+    }
+
+    load(n) {
+        this.title.innerText = "...";
+        this.text.innerText = "";
+        this.link.innerText = "";
+        this.img.innerHTML = "";
 
         this.permalink = n.data.permalink;
         this.allreadyRead.push(n.data.permalink)
@@ -92,9 +147,6 @@ class program extends System.program.default {
             i.style.width = "100%";
             this.img.append(i)
         }
-
-
-
         this.allreadyLoading = false;
     }
     async updateAllreadyRead() {
@@ -112,8 +164,8 @@ class redjsWindow {
             async () => {
                 //set html
                 await this.window.setContent(`<iframe src="` + link + `" style="width: calc(100% - 4px); height: calc(100% - 10px);">Could not load</iframe>`);
-                await this.window.size.setSize(500, 500);
-                await this.window.size.userCanResize(false)
+                await this.window.size.setSize(300, 500);
+                await this.window.size.userCanResize(true)
             });
         this.window.close = () => {
             return true

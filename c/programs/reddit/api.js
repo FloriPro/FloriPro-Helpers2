@@ -97,6 +97,11 @@ class reddit {
     genUrl(subreddit, after, limit, sort_time, sort_by) {
         return 'https://www.reddit.com/r/' + subreddit + '/' + sort_by + '/.json?raw_json=1&t=' + sort_time + '&limit=' + limit + "&after=" + after;
     }
+    getPostFromData(data) {
+        var p = new post(data);
+        p.saveData = this.vars["save_data"];
+        return p
+    }
 }
 class post {
     constructor(data) {
