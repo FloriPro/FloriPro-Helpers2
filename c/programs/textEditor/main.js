@@ -19,9 +19,14 @@ class program extends System.program.default {
                 await this.window.size.userCanResize(false)
                 await this.loadPrism()
 
+                await this.window.addHtmlEventListener("click", "save", this.save, this)
+                await this.window.addHtmlEventListener("click", "open", this.open, this)
+
                 if (file != undefined) {
+                    this.file = file;
+
                     (await this.window.getHtmlElement("fileName")).innerText = file;
-                    this.window.getHtml().querySelector("#editing").value = (await SystemFileSystem.getFileString(file)).replace("\r\n","\n");
+                    this.window.getHtml().querySelector("#editing").value = (await SystemFileSystem.getFileString(file)).replace("\r\n", "\n");
                     this.window.getHtml().querySelector("#editing").oninput()
                 }
 
@@ -46,6 +51,17 @@ class program extends System.program.default {
             console.error(e);
         }
         Prism.highlightElement(this.window.getHtml().querySelector('.highlighting-content'));
+    }
+    async save() {
+        SystemFileSystem.setFileString(this.file, this.window.getHtml().querySelector("#editing").value)
+    }
+    async open() {
+        var file = await SystemHtml.WindowHandler.presets.createFileSelect();
+        this.file = file;
+
+        (await this.window.getHtmlElement("fileName")).innerText = file;
+        this.window.getHtml().querySelector("#editing").value = (await SystemFileSystem.getFileString(file)).replace("\r\n", "\n");
+        this.window.getHtml().querySelector("#editing").oninput()
     }
 }
 new program();

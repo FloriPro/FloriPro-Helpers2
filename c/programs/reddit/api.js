@@ -168,8 +168,28 @@ class post {
         return this.data["selftext_html"];
     }
     async comments() {
-        console.warn("todo comments")
-        commntLink = "https://www.reddit.com" + this.data.permalink + ".json?raw_json=1";
+        var commentLink = "https://www.reddit.com" + this.data.permalink + ".json?raw_json=1";
+        var text = await (await fetch(commentLink)).text()
+        var json = JSON.parse(text);
+        var dat = json["1"]["data"]["children"];
+        return this.loadCommentEasy(dat);
+    }
+    loadCommentEasy(dat) {
+        var out = [];
+        for (var x of dat) {
+            var comment = { "author": "-", "body_html": "<p>-</p>", "body": "", "replies": [] }
+            var data = x["data"]
+            var replies = []
+            if (data["replies"] != "" && data["replies"] != undefined) {
+                replies = this.loadCommentEasy(data["replies"]["data"]["children"]);
+            }
+            comment["author"] = data["author"]
+            comment["body_html"] = data["body_html"]
+            comment["body"] = data["body"]
+            comment["replies"] = replies;
+            out.push(comment)
+        }
+        return out;
     }
 
 }

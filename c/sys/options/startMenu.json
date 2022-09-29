@@ -4,5 +4,6 @@
     "Settings": "c/programs/settings/run.js",
     "img": "c/programs/imageViewer/run.js",
     "reddit": "c/programs/reddit/run.js",
+    "Text Editor": "c/programs/textEditor/run.js",
     "reset": "c/sys/functions/reset.js"
 }

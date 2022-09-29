@@ -1,14 +1,38 @@
 console.log("initializing FileSystem");
 
 class FileSystemClass {
-    reset() {
-        this.realLocalStorage.clear();
+    async reset() {
+        var toRemove = []
+        for (var x of Object.keys(this.realLocalStorage)) {
+            if (x != "save") {
+                toRemove.push(x);
+            }
+        }
+
+        //load old localstorage "save"
+        var save = {};
+        if (this.realLocalStorage["save"] != undefined) {
+            save = JSON.parse(this.realLocalStorage["save"]);
+        }
+
+        //save persistand files in localstorage "save"
+        var persistandFileJson = await this.getFileJson("c/persistandFiles.json");
+        for (var x of persistandFileJson) {
+            var dat = await this.getFileString(x);
+            save[x] = dat;
+        }
+        console.log(save);
+        this.realLocalStorage["save"] = JSON.stringify(save);
+
+        for (var x of toRemove) {
+            this.realLocalStorage.removeItem(x);
+        }
     }
 
     constructor() {
         this.PositionalFileSystem = PositionalFileSystem;
         this.realLocalStorage = localStorage;
-        setTimeout(this.removeLocalStorage, 1)
+        //setTimeout(this.removeLocalStorage, 1)
 
         this.ramFiles = {}
     }
@@ -49,6 +73,12 @@ class FileSystemClass {
         localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
         loadFastLookup(FileSystemTable, "c")
         return true;
+    }
+    async createFolder(path, name) {
+        var f = await this.getTablePos(path, "c", FileSystemTable);
+        f.folder[name] = { "files": {}, "folder": {} };
+        localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
+        loadFastLookup(FileSystemTable, "c")
     }
     /**
      * returns the content of a file

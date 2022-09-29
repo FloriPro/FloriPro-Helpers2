@@ -4,6 +4,8 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
+
+        this.currentPost = undefined;
         this.past = []
         this.pastId = -1;
 
@@ -54,6 +56,9 @@ class program extends System.program.default {
                 await this.window.addHtmlEventListener("click", "openReddit", () => {
                     var link = "https://js4.red" + this.permalink
                     new redjsWindow(link);
+                }, this);
+                await this.window.addHtmlEventListener("click", "comments", () => {
+                    new commentWindow(this.currentPost);
                 }, this);
             });
         this.window.close = () => {
@@ -125,6 +130,8 @@ class program extends System.program.default {
     }
 
     load(n) {
+        this.currentPost = n;
+
         this.title.innerText = "...";
         this.text.innerText = "";
         this.link.innerText = "";
@@ -170,6 +177,70 @@ class redjsWindow {
         this.window.close = () => {
             return true
         }
+    }
+}
+class commentWindow {
+    constructor(post) {
+        this.post = post;
+        this.load();
+    }
+    async load() {
+        this.window = await SystemHtml.WindowHandler.createWindow("Comments",
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent(`<div element="comment"><p>Loading</p></div>`);
+                await this.window.size.setSize(300, 500);
+                await this.window.size.userCanResize(true)
+                var comments = await this.post.comments();
+                console.log(comments);
+
+                var c = await this.window.getHtmlElement("comment");
+                c.innerHTML = "";
+                for (var x of comments) {
+                    c.append(this.loadComment(x));
+                }
+            });
+        this.window.close = () => {
+            return true
+        }
+    }
+
+    loadComment(dat) {
+        if (dat["body_html"] == undefined && dat["author"] == undefined) {
+            return
+        }
+        var mainDiv = document.createElement("div");
+
+        var textDiv = document.createElement("div")
+
+        var author = document.createElement("p");
+        var body = document.createElement("p");
+        author.innerText = dat["author"]
+        author.style.fontWeight = "700";
+        body.innerHTML = dat["body_html"]
+
+        textDiv.append(author);
+        textDiv.append(body);
+
+        mainDiv.append(textDiv)
+
+        if (dat["replies"].length != 0) {
+            var repliesDiv = document.createElement("div");
+            repliesDiv.className = "redditComment";
+            repliesDiv.style.marginLeft = "5px";
+
+            for (var x of dat["replies"]) {
+                var v = this.loadComment(x)
+                if (v != undefined)
+                    repliesDiv.append(v);
+            }
+
+            mainDiv.append(repliesDiv)
+        }
+        mainDiv.append(document.createElement("hr"))
+
+        return mainDiv;
     }
 }
 new program();

@@ -1,7 +1,7 @@
 var usedFileSysIds = []
 var useId = 0;
 var FileSystemTable;
-var fastFileLookup = {};
+fastFileLookup = {};
 
 var overwriteNotRedownload = false;
 
@@ -11,10 +11,21 @@ async function loader() {
         var d = JSON.parse(await r.text());
         FileSystemTable = load(d, "c");
         localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
+
+        //load save files
+        if (localStorage["save"] != undefined) {
+            var save = JSON.parse(localStorage["save"]);
+            for (var x of Object.keys(save)) {
+                localStorage[fastFileLookup[x]] = save[x];
+            }
+        }
+
+        //localStorage.removeItem("save");
     } else {
         FileSystemTable = JSON.parse(localStorage.getItem("fileSystemTable"));
         loadFastLookup(FileSystemTable, "c")
     }
+
     //load boot.dat
     for (var x of localStorage.getItem(FileSystemTable["files"]["boot.dat"]).split("\r\n")) {
         if (localStorage.getItem(fastFileLookup[x]) == undefined) {
@@ -22,6 +33,7 @@ async function loader() {
         }
         await eval(localStorage.getItem(fastFileLookup[x]))
     }
+
 }
 
 function loadFastLookup(data, path) {
@@ -61,7 +73,7 @@ function load(data, path) {
         usedFileSysIds.push(useId);
         useId++;
     }
-    
+
     //load folders
     for (var x of folders) {
         out["folder"][x] = load(data[x], path + "/" + x)

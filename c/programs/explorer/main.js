@@ -25,10 +25,15 @@ class program extends System.program.default {
             return true
         }
     }
+    async events() {
+        await this.window.addHtmlEventListener("click", "back", this.back, this)
+        await this.window.addHtmlEventListener("click", "newFile", this.newFile, this)
+        await this.window.addHtmlEventListener("click", "newFolder", this.newFolder, this)
+
+    }
     async create() {
         await this.window.removeAllEventListeners();
-        await this.window.addHtmlEventListener("click", "back", this.back, this)
-
+        await this.events();
 
 
         var folderStuff = await this.window.getHtmlElement("folderList")
@@ -74,6 +79,18 @@ class program extends System.program.default {
         }
         this.path = p.join("/");
         this.create()
+    }
+    async newFile() {
+        var fileName = await SystemHtml.WindowHandler.presets.createStringSelect("File Name", "Please put in the new File name");
+        if (fileName == undefined) { return }
+        SystemFileSystem.createFile(this.path + "/" + fileName)
+        await this.create();
+    }
+    async newFolder() {
+        var folderName = await SystemHtml.WindowHandler.presets.createStringSelect("Folder Name", "Please put in the new Folder name");
+        if (folderName == undefined) { return }
+        SystemFileSystem.createFolder(this.path, folderName)
+        await this.create();
     }
 }
 new program();
