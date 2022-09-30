@@ -155,15 +155,23 @@ class WindowHandler {
     constructor() {
         this.moving = false;
         this.usedWindowId = [];
-        this.windows = {}
+        this.windows = {};
+
+        this.windowLayering = [];
 
         this.presets = new presets();
 
         System.eventHandler.addEventHandler("mousemove", (event, a) => {
             if (SystemHtml.WindowHandler.moving == true) {
                 var element = a[0].getWindowById(this.movingWindowId).getHtml()
-                element.style.top = parseInt(element.style.top) + event.movementY + 'px';
-                element.style.left = parseInt(element.style.left) + event.movementX + 'px';
+                //var [x, y] = a[0].getWindowById(this.movingWindowId).getPosition()
+                //a[0].getWindowById(this.movingWindowId).setPosition(x + event.movementX, y + event.movementY);
+                var y = parseInt(element.style.top) + event.movementY
+                var x = parseInt(element.style.left) + event.movementX
+                if (x < 0) { x = 0; }
+                if (y < 0) { y = 0; }
+                element.style.top = y + 'px';
+                element.style.left = x + 'px';
             }
             else if (SystemHtml.WindowHandler.resize == true) {
                 var element = a[0].getWindowById(this.resizeWindowId).addWindowSize(event.movementX, event.movementY);
@@ -171,10 +179,7 @@ class WindowHandler {
         }, [this])
 
         System.eventHandler.addEventHandler("mousedown", (event, args) => {
-            //var id = args[0]
-            ////if this window
-            //if (SystemHtml.elementArrayContainsClass(event.composedPath(), "window_" + id)) {
-
+            //if window
             if (SystemHtml.elementArrayContainsClass(event.composedPath(), "window")) {
                 //get id
                 var el = null;
@@ -183,20 +188,23 @@ class WindowHandler {
                 for (var x of el.classList) { if (x.startsWith("window_")) { el = x.replace("window_", "") } }
                 var id = el;
 
-
+                //resize
                 if (SystemHtml.WindowHandler.getWindowById(id).canUserResize && event.target.classList.contains("window") && SystemHtml.WindowHandler.moving == false) {
+                    SystemHtml.WindowHandler.putWindowOnTop(id);
                     SystemHtml.WindowHandler.resize = true;
                     SystemHtml.WindowHandler.resizeWindowId = id;
                 }
+                //move
                 else if (event.target.classList.contains("title-bar") || SystemHtml.elementArrayContainsClass(event.composedPath(), "title-bar-text")) {
+                    SystemHtml.WindowHandler.putWindowOnTop(id);
                     SystemHtml.WindowHandler.moving = true;
                     SystemHtml.WindowHandler.movingWindowId = id;
                 }
+                //close
                 if (event.target.classList.contains("close")) {
                     SystemHtml.WindowHandler.getWindowById(id).makeClose()
                 }
             }
-            //}
         });
         System.eventHandler.addEventHandler("mouseup", (event) => {
             if (SystemHtml.WindowHandler.moving == true) {
@@ -222,12 +230,15 @@ class WindowHandler {
     async createWindow(name, readyCallback) {
         var id = this.getFreeId();
         this.usedWindowId.push(id);
+        this.windowLayering.push(id);
         var w = new Window(id);
         w.onReady = readyCallback
         await w.load(id, name);
         w.setPosition(20, 20)
 
         this.windows[id] = w;
+
+        this.updateWindowLayering();
         return w;
     }
     getFreeId() {
@@ -239,6 +250,21 @@ class WindowHandler {
     }
     getWindowById(id) {
         return this.windows[id];
+    }
+    putWindowOnTop(id) {
+        id = parseInt(id);
+
+        remove(this.windowLayering, id);
+        this.windowLayering.push(id);
+
+        this.updateWindowLayering();
+    }
+    updateWindowLayering() {
+        var i = 1;
+        for (var x of this.windowLayering) {
+            this.getWindowById(x).setLayer(i);
+            i++;
+        }
     }
 }
 
@@ -332,8 +358,10 @@ class Window {
      */
     setPosition(x, y) {
         var element = this.getHtml()
-        element.style.top = x + 'px';
-        element.style.left = y + 'px';
+        if (x < 0) { x = 0; }
+        if (y < 0) { y = 0; }
+        element.style.left = x + 'px';
+        element.style.top = y + 'px';
     }
     /**
      * returns position
@@ -414,7 +442,7 @@ class Window {
      * @param {string} tag only alphanumeric string
      * @returns {HTMLElement}
      */
-     async getHtmlElement(tag) {
+    async getHtmlElement(tag) {
         return this.getHtml().querySelector('*[windowElement="' + tag + '"]')
     }
     /**
@@ -450,6 +478,10 @@ class Window {
             x.setAttribute("windowId", this.#id);
         }
     }
+
+    async setLayer(id) {
+        (await this.getHtml()).style.zIndex = id;
+    }
 }
 
 class presets {
@@ -457,6 +489,13 @@ class presets {
     }
     async createFileSelect(title) {
         var f = new fileSelectPreset()
+        if (title == undefined) {
+            title = "Select"
+        }
+        return await f.load(title);
+    }
+    async createFileCreate(title) {
+        var f = new fileCreatePreset()
         if (title == undefined) {
             title = "Select"
         }
@@ -479,6 +518,12 @@ class presets {
         if (title == undefined) { title = "Select" }
         if (text == undefined) { text = "Please select" }
         var f = new stringSelectPreset()
+        return await f.load(title, text);
+    }
+    async createConfirm(title, text) {
+        if (title == undefined) { title = "Select" }
+        if (text == undefined) { text = "Please select" }
+        var f = new confirmPreset()
         return await f.load(title, text);
     }
 }
@@ -508,25 +553,6 @@ class fileSelectPreset {
                 </div>
                 <hr>
                 <button element="cancel">cancel</button>`);
-                /*
-                var buttonArray = await this.window.getHtmlElement("buttonArray")
-
-                for (var x of Object.keys(fastFileLookup)) {
-                    var b = document.createElement("button")
-                    b.innerText = x;
-                    b.setAttribute("element", "f_" + x)
-                    buttonArray.append(b)
-                    await this.window.parseNewHtml();
-
-                    await this.window.addHtmlEventListener("onclick", "f_" + x, (elementName) => {
-                        //read data
-                        elementName = elementName.slice(2)
-                        this.returnFunction(elementName);
-
-                        //close and return
-                        this.window.remove()
-                    }, this);
-                }*/
                 await this.create();
 
                 await this.window.size.setSize(500, 300);
@@ -588,6 +614,123 @@ class fileSelectPreset {
     async button2(_, __, vars) {
         this.returnFunction(this.path + "/" + vars[0]);
         this.window.remove()
+    }
+    async back() {
+        var p = this.path.split("/")
+        var p = p.slice(0, -1);
+        if (p.length == 0) {
+            p = ["c"];
+        }
+        this.path = p.join("/");
+        this.create()
+    }
+}
+class fileCreatePreset {
+    constructor() {
+    }
+    async load(title) {
+        this.path = "c";
+        var promise = new Promise((res, rej) => {
+            this.returnFunction = res;
+        });
+
+        //make window
+        this.window = await SystemHtml.WindowHandler.createWindow(title,
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent(`
+                <button element="back">...</button>
+                <hr>
+                <div element="folderList">
+                    <p>pls remove</p>
+                </div>
+                <div element="fileList">
+                    <p>pls remove</p>
+                </div>
+                <hr>
+                <input type="text" element="name" placeholder="file name"></input>
+                <button element="ok">ok</button>
+                <button element="cancel">cancel</button>`);
+                await this.create();
+
+                await this.window.size.setSize(500, 300);
+                await this.window.size.userCanResize(true)
+
+                //add event listeners
+                await this.window.addHtmlEventListener("onclick", "cancel", () => {
+                    //read data
+                    this.returnFunction(undefined)
+
+                    //close and return
+                    this.window.remove()
+                }, this);
+            });
+        this.window.close = () => {
+            this.returnFunction(null)
+            return true
+        }
+
+        return promise
+    }
+    async create() {
+        await this.window.removeAllEventListeners();
+        await this.window.addHtmlEventListener("click", "back", this.back, this)
+        await this.window.addHtmlEventListener("click", "ok", this.ok, this)
+
+
+
+        var folderStuff = await this.window.getHtmlElement("folderList")
+        folderStuff.innerHTML = "";
+        var fileStuff = await this.window.getHtmlElement("fileList")
+        fileStuff.innerHTML = "";
+
+        var i = 0
+        for (var x of await SystemFileSystem.getFolders(this.path)) {
+            var b = document.createElement("button")
+            b.innerText = x + "/";
+            b.setAttribute("element", i + "_el")
+            folderStuff.append(b)
+
+            await this.window.parseNewHtml();
+            await this.window.addHtmlEventListener("click", i + "_el", this.button1, this, [x, i])
+            i++;
+        }
+        for (var x of await SystemFileSystem.getFiles(this.path)) {
+            var b = document.createElement("button")
+            b.innerText = x;
+            b.setAttribute("element", i + "_el")
+            fileStuff.append(b)
+
+            await this.window.parseNewHtml();
+            await this.window.addHtmlEventListener("click", i + "_el", this.button2, this, [x, i])
+            i++;
+        }
+    }
+    async ok() {
+        var name = (await this.window.getHtmlElement("name")).value;
+
+        //if file exists
+        if (await SystemFileSystem.fileExists(this.path + "/" + name)) {
+            if (!await SystemHtml.WindowHandler.presets.createConfirm("Overwrite", "Overwrite this file?")) {
+                //cancel
+                return;
+            }
+        }
+
+        //return
+        this.returnFunction(this.path + "/" + name);
+        this.window.remove()
+    }
+    async button1(_, __, vars) {
+        this.path += "/" + vars[0];
+        this.create()
+    }
+    async button2(_, __, vars) {
+        if (await SystemHtml.WindowHandler.presets.createConfirm("Overwrite", "Overwrite this file?")) {
+            this.returnFunction(this.path + "/" + vars[0]);
+            this.window.remove()
+        }
     }
     async back() {
         var p = this.path.split("/")
@@ -674,6 +817,50 @@ class stringSelectPreset {
                 await this.window.addHtmlEventListener("onclick", "ok", async () => {
                     //read data
                     this.returnFunction((await this.window.getHtmlElement("input")).value)
+
+                    //close and return
+                    this.window.remove()
+                }, this);
+            });
+        this.window.close = () => {
+            this.returnFunction(null)
+            return true
+        }
+
+        return promise
+    }
+}
+class confirmPreset {
+    constructor() {
+    }
+    async load(title, text) {
+        var promise = new Promise((res, rej) => {
+            this.returnFunction = res;
+        });
+
+        //make window
+        this.window = await SystemHtml.WindowHandler.createWindow(title,
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent('<p element="text"></p><button element="ok">Yes</button><button element="cancel">No</button>');
+
+                (await this.window.getHtmlElement("text")).innerText = text;
+
+                await this.window.size.setSize(400, 200);
+                await this.window.size.userCanResize(true)
+
+                //add event listeners
+                await this.window.addHtmlEventListener("onclick", "cancel", () => {
+                    //read data
+                    this.returnFunction(false);
+
+                    //close and return
+                    this.window.remove()
+                }, this);
+                await this.window.addHtmlEventListener("onclick", "ok", async () => {
+                    //read data
+                    this.returnFunction(true);
 
                     //close and return
                     this.window.remove()

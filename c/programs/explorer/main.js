@@ -14,7 +14,7 @@ class program extends System.program.default {
             async () => {
                 //set html
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
-                await this.window.size.setSize(250, 300)
+                await this.window.size.setSize(260, 300)
                 await this.window.size.userCanResize(true)
 
                 //create buttons/events
@@ -29,6 +29,7 @@ class program extends System.program.default {
         await this.window.addHtmlEventListener("click", "back", this.back, this)
         await this.window.addHtmlEventListener("click", "newFile", this.newFile, this)
         await this.window.addHtmlEventListener("click", "newFolder", this.newFolder, this)
+        await this.window.addHtmlEventListener("click", "reload", this.create, this)
 
     }
     async create() {

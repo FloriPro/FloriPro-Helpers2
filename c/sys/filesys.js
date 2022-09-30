@@ -53,14 +53,12 @@ class FileSystemClass {
      * @param {string} dat 
      */
     async setFileString(path, dat) {
-        if (Object.keys(fastFileLookup).includes(path)) {
-            this.realLocalStorage.setItem(fastFileLookup[path], dat);
-            this.ramFiles[path] = undefined;
-            return true;
-        } else {
-            console.warn("file needs to be created first: " + path)
-            return false;
+        if (!Object.keys(fastFileLookup).includes(path)) {
+            await this.createFile(path);
         }
+        this.realLocalStorage.setItem(fastFileLookup[path], dat);
+        this.ramFiles[path] = undefined;
+
     }
     async createFile(path) {
         var folder = path.split("/").slice(0, -1).join("/");
@@ -79,6 +77,9 @@ class FileSystemClass {
         f.folder[name] = { "files": {}, "folder": {} };
         localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
         loadFastLookup(FileSystemTable, "c")
+    }
+    async fileExists(path) {
+        return this.realLocalStorage.getItem(fastFileLookup[path]) != undefined;
     }
     /**
      * returns the content of a file

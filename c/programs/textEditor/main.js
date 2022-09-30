@@ -20,6 +20,7 @@ class program extends System.program.default {
                 await this.loadPrism()
 
                 await this.window.addHtmlEventListener("click", "save", this.save, this)
+                await this.window.addHtmlEventListener("click", "saveAs", this.saveAs, this)
                 await this.window.addHtmlEventListener("click", "open", this.open, this)
 
                 if (file != undefined) {
@@ -53,14 +54,33 @@ class program extends System.program.default {
         Prism.highlightElement(this.window.getHtml().querySelector('.highlighting-content'));
     }
     async save() {
+        if (this.file == undefined) {
+            this.file = await SystemHtml.WindowHandler.presets.createFileCreate("Save as");
+            if (this.file == undefined) {
+                return;
+            } else {
+                (await this.window.getHtmlElement("fileName")).innerText = this.file;
+            }
+        }
+        SystemFileSystem.setFileString(this.file, this.window.getHtml().querySelector("#editing").value)
+    }
+    async saveAs() {
+        var f = await SystemHtml.WindowHandler.presets.createFileCreate("Save as");
+        if (f == undefined) {
+            return;
+        }
+        this.file = f;
+
+        (await this.window.getHtmlElement("fileName")).innerText = this.file;
         SystemFileSystem.setFileString(this.file, this.window.getHtml().querySelector("#editing").value)
     }
     async open() {
         var file = await SystemHtml.WindowHandler.presets.createFileSelect();
+        if (file == undefined) { return; }
         this.file = file;
 
-        (await this.window.getHtmlElement("fileName")).innerText = file;
-        this.window.getHtml().querySelector("#editing").value = (await SystemFileSystem.getFileString(file)).replace("\r\n", "\n");
+        (await this.window.getHtmlElement("fileName")).innerText = this.file;
+        this.window.getHtml().querySelector("#editing").value = (await SystemFileSystem.getFileString(this.file)).replace("\r\n", "\n");
         this.window.getHtml().querySelector("#editing").oninput()
     }
 }
