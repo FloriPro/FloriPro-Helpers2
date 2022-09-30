@@ -131,6 +131,31 @@ input {
     height: 35px;
 }
 
+#taskbar-programList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+#taskbar-programList p {
+    color: white;
+}
+
+#taskbar-programList .programListElement {
+    color: white;
+    margin-right: 20px;
+    background-color: #262626;
+}
+
+#taskbar-programList .programListElement:hover {
+    background-color: #3a3a3a;
+}
+
+#taskbar-programList .programListElement.selected {
+    background-color: #585858;
+}
+
+
 p {
     margin: 0px;
 }

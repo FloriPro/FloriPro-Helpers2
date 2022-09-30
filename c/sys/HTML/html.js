@@ -29,15 +29,16 @@ class Html {
         System.eventHandler.addEventHandler("click", (event, a) => {
             var _StartMenuButton = a[0];
             var _StartMenu = a[1];
-            var _taskbar = a[2];
 
             if (!event.composedPath().includes(_StartMenu) && !event.composedPath().includes(_StartMenuButton)) {
                 _StartMenu.style.display = "none";
-            } else if (event.target == _StartMenuButton.querySelector("span")) {
+            }
+            else if (event.target == _StartMenuButton.querySelector("span")) {
                 startMenuButton_Toggle();
                 return true;
             }
-            if (event.target == _taskbar) {
+
+            if (this.elementArrayContainsClass(event.composedPath(), "taskbar-programList")) {
                 console.log("taskbar stuff");
                 console.log(event);
                 return true;
@@ -56,7 +57,7 @@ class Html {
                 }
                 return true;
             }
-        }, [_StartMenuButton, _StartMenu, _taskbar]);
+        }, [_StartMenuButton, _StartMenu]);
 
         this.WindowHandler = new WindowHandler();
 
@@ -99,6 +100,7 @@ class Html {
     }
 
     elementArrayContainsClass(array, clas) {
+
         for (var x of array) {
             if (x.classList != undefined && x.classList.contains(clas)) {
                 return true;
@@ -224,8 +226,9 @@ class WindowHandler {
     async removeWindow(id) {
         SystemHtml.removeAllEvents(id);
         this.windows[id].getHtml().remove();
-        this.windows[id] = undefined;
+        delete this.windows[id]
         remove(this.usedWindowId, id);
+        this.updateTaskBar();
     }
     async createWindow(name, readyCallback) {
         var id = this.getFreeId();
@@ -239,6 +242,7 @@ class WindowHandler {
         this.windows[id] = w;
 
         this.updateWindowLayering();
+        this.updateTaskBar();
         return w;
     }
     getFreeId() {
@@ -263,8 +267,42 @@ class WindowHandler {
         var i = 1;
         for (var x of this.windowLayering) {
             this.getWindowById(x).setLayer(i);
+            if (i == this.windowLayering.length) {
+                var b = this.getWindowById(x).ontop;
+                this.getWindowById(x).ontop = true;
+                if (b != true) {
+                    this.updateTaskBar();
+                }
+            } else {
+                this.getWindowById(x).ontop = false;
+            }
             i++;
         }
+    }
+    updateTaskBar() {
+        var programList = document.querySelector("#taskbar-programList");
+        programList.innerHTML = "";
+        for (var x of Object.keys(this.windows)) {
+            var p = this.createTaskBarProgram(this.windows[x].getTitle(), this.windows[x].ontop, this.windows[x].getId());
+            programList.append(p);
+        }
+    }
+    createTaskBarProgram(name, ontop, id) {
+        var programDiv = document.createElement("div");
+        programDiv.className = "programListElement";
+        if (ontop) { programDiv.className += " selected" }
+        programDiv.onclick = () => {
+            SystemHtml.WindowHandler.focus(id);
+        }
+
+        var titleElement = document.createElement("p");
+        titleElement.innerText = name;
+
+        programDiv.append(titleElement);
+        return programDiv
+    }
+    focus(id) {
+        console.log("focus: " + id);
     }
 }
 
@@ -283,6 +321,7 @@ class Window {
     }
 
     constructor(id) {
+        this.ontop = true;
         this.size = new class {
             constructor(parent) {
                 this.parent = parent;
@@ -372,8 +411,8 @@ class Window {
         return [parseInt(element.style.top), parseInt(element.style.left)]
     }
 
-    async rename() { //TODO
-        console.log("rename todo");
+    async rename(name) { //TODO
+        this.getHtml().querySelector(".window-name").innerText = name;
     }
     async load(id, name) {
         var windowStr = await SystemFileSystem.getFileString("c/sys/HTML/window.html");
@@ -435,6 +474,10 @@ class Window {
         cont.append(d);
         cont.append(frame);*/
         //console.warn("window.setContent TODO");
+    }
+
+    getTitle() {
+        return this.getHtml().querySelector(".window-name").innerText;
     }
 
     /**
