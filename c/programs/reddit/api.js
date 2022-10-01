@@ -174,6 +174,23 @@ class post {
         var dat = json["1"]["data"]["children"];
         return this.loadCommentEasy(dat);
     }
+    media() {
+        if (this.data["media"] != null) {
+            if (this.data["media"]["type"] == "youtube.com") {
+                return { "type": "youtube", "dat": this.data["media"]["oembed"]["html"] };
+            }
+            else if (this.data["is_video"] == true) {
+                if (this.data["media"]["reddit_video"] == undefined) { return false; }
+                return {
+                    type: "redditVideo", "dat": [
+                        this.data["media"]["reddit_video"]["fallback_url"],
+                        this.data["media"]["reddit_video"]["fallback_url"].split("DASH_")[0] + "DASH_audio.mp4"
+                    ]
+                }
+            }
+        }
+        return null;
+    }
     loadCommentEasy(dat) {
         var out = [];
         for (var x of dat) {

@@ -36,12 +36,15 @@ class program extends System.program.default {
                 this.text = await this.window.getHtmlElement("text");
                 this.img = await this.window.getHtmlElement("img");
                 this.link = await this.window.getHtmlElement("link");
+                this.openVid = await this.window.getHtmlElement("openVid");
 
                 this.post.style.display = "none";
 
                 await this.window.addHtmlEventListener("click", "selectSubreddits", this.loadSettings, this);
                 await this.window.addHtmlEventListener("click", "next", this.next, this);
                 await this.window.addHtmlEventListener("click", "back", this.back, this);
+                //await this.window.addHtmlEventListener("click", "postDebug", this.postDebug, this);
+                await this.window.addHtmlEventListener("click", "openVid", this.openVideo, this);
                 await this.window.addHtmlEventListener("click", "openSettings", () => {
                     this.post.style.display = "none";
                     this.settings.style.display = "";
@@ -127,6 +130,7 @@ class program extends System.program.default {
         this.text.innerText = "";
         this.link.innerText = "";
         this.img.innerHTML = "";
+        this.openVid.style.display = "none";
 
         var n = { data: { permalink: "_" } };
 
@@ -143,6 +147,8 @@ class program extends System.program.default {
                     this.link.innerText = "";
                     this.img.innerHTML = "";
                     return;
+                } else {
+                    i = 0;
                 }
             }
         }
@@ -166,6 +172,7 @@ class program extends System.program.default {
     load(n) {
         this.currentPost = n;
 
+        this.openVid.style.display = "none";
         this.title.innerText = "...";
         this.text.innerText = "";
         this.link.innerText = "";
@@ -183,15 +190,44 @@ class program extends System.program.default {
 
         for (var x of n.Image()) {
             var i = document.createElement("img");
+            var iLoader = document.createElement("p");
+            iLoader.style.position = "absoulute"
+            iLoader.innerText = "loading Image:";
+            iLoader.style.color = "gray";
+
+            i.loader = iLoader;
+            i.onload = (event) => {
+                event.composedPath()[0].loader.remove();
+            }
+
             i.src = x;
             i.style.maxWidth = this.maxWidth;
             i.style.width = "100%";
-            this.img.append(i)
+            this.img.append(iLoader);
+            this.img.append(i);
+        }
+
+        var media = n.media();
+        if (media != null) {
+            if (media["type"] == "youtube") {
+                this.text.innerHTML += media["dat"]
+            } else if (media["type"] == "redditVideo") {
+                this.text.innerHTML += "<p><a href='" + media["dat"][0] + "'>Video</a></p>"
+                this.text.innerHTML += "<p><a href='" + media["dat"][1] + "'>Audio</a></p>"
+                this.openVid.style.display = "";
+            }
         }
         this.allreadyLoading = false;
     }
     async updateAllreadyRead() {
         await SystemFileSystem.setFileString(this.PATH.folder() + "/old.json", JSON.stringify(this.allreadyRead));
+    }
+    openVideo() {
+        var media = this.currentPost.media();
+        new videoWindow(media["dat"][0], media["dat"][1]);
+    }
+    postDebug() {
+        console.log(this.currentPost)
     }
 }
 
@@ -274,6 +310,82 @@ class commentWindow {
         mainDiv.append(document.createElement("hr"))
 
         return mainDiv;
+    }
+}
+class videoWindow {
+    constructor(video, audio) {
+        this.video = video;
+        this.audio = audio;
+        this.load();
+        this.loadeds = 0;
+    }
+    async load() {
+        this.window = await SystemHtml.WindowHandler.createWindow("Video",
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent(`
+                <h1 element="loading">Loading... please wait</h1>
+                <div element="vid">
+                    <video element="video" controls width="100%" height="100%" alt="loading...">
+                        <source element="video_src">
+                    </video>
+                    <audio element="video_audio" controls alt="loading...">
+                        <source element="video_audio_src">
+                    </audio>
+                </div>`);
+                await this.window.size.setSize(300, 500);
+                await this.window.size.userCanResize(true)
+
+                this.video_video = await this.window.getHtmlElement("video");
+                this.video_audio = await this.window.getHtmlElement("video_audio");
+
+                this.video_video.src = this.video;
+                this.video_audio.src = this.audio;
+
+                this.window.addHtmlEventListener("onloadeddata", "video", this.loadedVideo, this);
+                this.window.addHtmlEventListener("onloadeddata", "video_audio", this.loadedAudio, this);
+
+                var c = await this.window.getHtmlElement("video");
+
+            });
+        this.window.close = () => {
+            return true
+        }
+    }
+    loadedAudio() {
+        this.loadeds++;
+        if (this.loadeds == 2) {
+            this.addEvents();
+        }
+    }
+    loadedVideo() {
+        this.loadeds++;
+        if (this.loadeds == 2) {
+            this.addEvents();
+        }
+    }
+    async addEvents() {
+        (await this.window.getHtmlElement("loading")).style.display = "none";
+
+        console.log("loaded!");
+        this.window.addHtmlEventListener("onpause", "video", this.videoEvents, this);
+        this.window.addHtmlEventListener("onplay", "video", this.videoEvents, this);
+        this.window.addHtmlEventListener("onseeking", "video", this.videoEvents, this);
+        this.window.addHtmlEventListener("onwaiting", "video", this.videoEvents, this);
+        this.window.addHtmlEventListener("oncanplay", "video", this.videoEvents, this);
+    }
+    async videoEvents(_, __, ___, event) {
+        this.video_audio.currentTime = this.video_video.currentTime;
+        if (event.type == 'play') {
+            this.video_audio.play();
+        } else if (event.type == 'pause') {
+            this.video_audio.pause();
+        } else if (event.type == 'waiting') {
+            this.video_audio.pause();
+        } else if (event.type == 'canplay') {
+            if (!this.video_video.paused) { this.video_audio.play(); }
+        }
     }
 }
 new program();
