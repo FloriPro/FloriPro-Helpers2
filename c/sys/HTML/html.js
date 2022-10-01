@@ -134,7 +134,7 @@ class Html {
 
         for (var x of this.htmlEventList[name][eventType]) {
             this.htmlEventListThis[name].x = x[0];
-            this.htmlEventListThis[name].x(element, id, x[1]);
+            this.htmlEventListThis[name].x(element, id, x[1], event);
         }
     }
     removeAllEvents(id) {
