@@ -39,9 +39,10 @@ class Html {
             }
 
             if (this.elementArrayContainsClass(event.composedPath(), "taskbar-programList")) {
-                console.log("taskbar stuff");
-                console.log(event);
-                return true;
+                //console.log("taskbar stuff");
+                //console.log(event);
+                //return true;
+                return false;
             }
 
             if (event.composedPath().includes(_StartMenu)) {
@@ -118,6 +119,13 @@ class Html {
      */
     htmlEventParser(event) {
         var id = event.target.getAttribute("windowid")
+
+        //check if window is focused
+        if (this.WindowHandler.focusedWindow != parseInt(id)) {
+            //this.WindowHandler.focus(id);
+            return;
+        }
+
         var element = event.target.getAttribute("windowelement")
         var name = element + "__" + id;
 
@@ -215,11 +223,21 @@ class WindowHandler {
                 SystemHtml.WindowHandler.resize = false
             }
         });
-        System.eventHandler.addEventHandler("mouseup", (event) => {
-            if (SystemHtml.WindowHandler.moving == true) {
-                SystemHtml.WindowHandler.moving = false
-            } if (SystemHtml.WindowHandler.resize == true) {
-                SystemHtml.WindowHandler.resize = false
+        System.eventHandler.addEventHandler("click", (event, args) => {
+            //if window
+            if (SystemHtml.elementArrayContainsClass(event.composedPath(), "window")) {
+                //get id
+                var el = null;
+                for (var x of event.composedPath()) { if (x.classList.contains("window")) { el = x; break; } }
+                if (el == null) { console.error("windowMouseDownEvent could not be fired because no window was found!"); return; }
+                for (var x of el.classList) { if (x.startsWith("window_")) { el = x.replace("window_", "") } }
+                var id = el;
+
+
+                if (parseInt(id) != SystemHtml.WindowHandler.focusedWindow) {
+                    SystemHtml.WindowHandler.focus(id);
+                    return;
+                }
             }
         });
     }
@@ -228,6 +246,7 @@ class WindowHandler {
         this.windows[id].getHtml().remove();
         delete this.windows[id]
         remove(this.usedWindowId, id);
+        remove(this.windowLayering, id);
         this.updateTaskBar();
     }
     async createWindow(name, readyCallback) {
@@ -243,6 +262,10 @@ class WindowHandler {
 
         this.updateWindowLayering();
         this.updateTaskBar();
+
+        setTimeout(() => {
+            this.focus(id);
+        }, 1);
         return w;
     }
     getFreeId() {
@@ -255,6 +278,11 @@ class WindowHandler {
     getWindowById(id) {
         return this.windows[id];
     }
+
+    get focusedWindow() {
+        return this.windowLayering[this.windowLayering.length - 1];
+    }
+
     putWindowOnTop(id) {
         id = parseInt(id);
 
@@ -302,7 +330,7 @@ class WindowHandler {
         return programDiv
     }
     focus(id) {
-        console.log("focus: " + id);
+        this.putWindowOnTop(id);
     }
 }
 
@@ -362,10 +390,10 @@ class Window {
                 var h = this.parent.getHtml();
                 if (yn) {
                     h.querySelector(".title-bar").style.display = "";
-                    h.querySelector(".content").style.height = "calc(100% - 43px)";
+                    h.querySelector(".contentBody").style.height = "calc(100% - 43px)";
                 } else {
                     h.querySelector(".title-bar").style.display = "none";
-                    h.querySelector(".content").style.height = "calc(100% - 0px)";
+                    h.querySelector(".contentBody").style.height = "calc(100% - 0px)";
                 }
             }
         }(this)
@@ -497,14 +525,22 @@ class Window {
         return this.getHtml().querySelectorAll('*[windowElement="' + tag + '"]')
     }
 
-    async addHtmlEventListener(event, htmlElementTag, callback, t, variables) {
+    /**
+     * 
+     * @param {string} event Html element Event (e.g. onclick) 
+     * @param {string} htmlElementTag Html Element "element" tag ('<div element="tagofdoom"></div>': 'tagofdoom') 
+     * @param {(variable)} callback run when the event is triggered
+     * @param {class} t the class to run the callback function in
+     * @param {*} variable one variable passed in the callback function
+     */
+    async addHtmlEventListener(event, htmlElementTag, callback, t, variable) {
         if (event == "click") {
-            await this.addHtmlEventListener("onclick", htmlElementTag, callback, t, variables);
+            await this.addHtmlEventListener("onclick", htmlElementTag, callback, t, variable);
             //await this.addHtmlEventListener("ontouchstart", htmlElementTag, callback);
         } else {
             var e = await this.getHtmlElement(htmlElementTag)
             e[event] = SystemHtml.htmlEventHandler;
-            SystemHtml.addHtmlEvent(htmlElementTag, this.#id, callback, event, t, variables)
+            SystemHtml.addHtmlEvent(htmlElementTag, this.#id, callback, event, t, variable)
         }
     }
     async removeAllEventListeners() {
