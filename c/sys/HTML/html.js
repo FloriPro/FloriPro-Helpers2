@@ -173,15 +173,15 @@ class WindowHandler {
 
         System.eventHandler.addEventHandler("mousemove", (event, a) => {
             if (SystemHtml.WindowHandler.moving == true) {
-                var element = a[0].getWindowById(this.movingWindowId).getHtml()
+                var window = a[0].getWindowById(this.movingWindowId);
+                var element = window.getHtml();
                 //var [x, y] = a[0].getWindowById(this.movingWindowId).getPosition()
                 //a[0].getWindowById(this.movingWindowId).setPosition(x + event.movementX, y + event.movementY);
-                var y = parseInt(element.style.top) + event.movementY
-                var x = parseInt(element.style.left) + event.movementX
-                if (x < 0) { x = 0; }
-                if (y < 0) { y = 0; }
-                element.style.top = y + 'px';
-                element.style.left = x + 'px';
+                var y = parseInt(element.style.top) + event.movementY;
+                var x = parseInt(element.style.left) + event.movementX;
+                window.setPosition(x, y);
+                //element.style.top = y + 'px';
+                //element.style.left = x + 'px';
             }
             else if (SystemHtml.WindowHandler.resize == true) {
                 var element = a[0].getWindowById(this.resizeWindowId).addWindowSize(event.movementX, event.movementY);
@@ -229,14 +229,16 @@ class WindowHandler {
                 //get id
                 var el = null;
                 for (var x of event.composedPath()) { if (x.classList.contains("window")) { el = x; break; } }
-                if (el == null) { console.error("windowMouseDownEvent could not be fired because no window was found!"); return; }
+                if (el == null) { console.error("windowClickEvent could not be fired because no window was found!"); return; }
                 for (var x of el.classList) { if (x.startsWith("window_")) { el = x.replace("window_", "") } }
                 var id = el;
 
 
                 if (parseInt(id) != SystemHtml.WindowHandler.focusedWindow) {
-                    SystemHtml.WindowHandler.focus(id);
-                    return;
+                    if (SystemHtml.WindowHandler.windows[parseInt(id)] != undefined) {
+                        SystemHtml.WindowHandler.focus(id);
+                        return;
+                    }
                 }
             }
         });
@@ -427,6 +429,10 @@ class Window {
         var element = this.getHtml()
         if (x < 0) { x = 0; }
         if (y < 0) { y = 0; }
+
+        if (x > window.innerWidth - 50) { x = window.innerWidth - 50 };
+        if (y > window.innerHeight - 40 - 39) { y = window.innerHeight - 40 - 39 };
+
         element.style.left = x + 'px';
         element.style.top = y + 'px';
     }

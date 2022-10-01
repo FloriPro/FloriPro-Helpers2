@@ -16,15 +16,7 @@ class program extends System.program.default {
         this.maxWidth = "500px";
 
         this.redditApi = new (await System.run(this.PATH.folder() + "/api.js"))(["memes"])
-        this.redditApi.vars = {
-            "limit": "10",
-            "sort_time": "all",
-            "sort_by": "hot",
-            "only_images": false,
-            "save_data": false,
-            "no_nsfw": false,
-            "needs_bool_argument": ""
-        };
+        this.redditApi.vars = await SystemFileSystem.getFileJson(this.PATH.folder() + "/settings.json")
 
         console.log("started as id " + this.id);
         this.window = await SystemHtml.WindowHandler.createWindow("Reddit",
@@ -34,6 +26,8 @@ class program extends System.program.default {
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
                 await this.window.size.setSize(500, 500);
                 await this.window.size.userCanResize(true)
+
+                this.displaySettings();
 
                 this.settings = await this.window.getHtmlElement("settings");
                 this.post = await this.window.getHtmlElement("post");
@@ -89,10 +83,36 @@ class program extends System.program.default {
             }
         }
 
+        var v = this.redditApi.vars;
+        v["subreddits"] = (await this.window.getHtmlElement("subredditSelect")).value;
+        var v = JSON.stringify(v)
+        await SystemFileSystem.setFileString(this.PATH.folder() + "/settings.json", v)
 
         this.post.style.display = "";
         this.settings.style.display = "none";
         this.next();
+    }
+    async displaySettings() {
+        (await this.window.getHtmlElement("subredditSelect")).value = this.redditApi.vars["subreddits"];
+        for (var x of await this.window.getHtmlElements("variable")) {
+            var optionValue = "";
+            var optionName = x.name;
+
+            if (x.type == 'checkbox') {
+                x.checked = this.redditApi.vars[optionName]
+            } else {
+                x.value = this.redditApi.vars[optionName]
+            }
+            /*
+            if (this.redditApi.boolVars.includes(optionName)) {
+                if (optionValue == "true")
+                    this.redditApi.vars[optionName] = true;
+                else
+                    this.redditApi.vars[optionName] = false;
+            } else {
+                this.redditApi.vars[optionName] = optionValue;
+            }*/
+        }
     }
     async next() {
         if (this.pastId < this.past.length - 1) {
@@ -109,8 +129,22 @@ class program extends System.program.default {
         this.img.innerHTML = "";
 
         var n = { data: { permalink: "_" } };
+
+        var maxIt = 50;
+        var i = 0;
         while (this.allreadyRead.includes(n.data.permalink)) {
             n = await this.redditApi.next();
+            i++;
+            if (i >= maxIt) {
+                var r = await SystemHtml.WindowHandler.presets.createConfirm("Load more?", "We could not find any new Posts in the last " + maxIt + ". Do you want so search more?")
+                if (!r) {
+                    this.title.innerText = "No new posts";
+                    this.text.innerText = "";
+                    this.link.innerText = "";
+                    this.img.innerHTML = "";
+                    return;
+                }
+            }
         }
 
         this.pastId++;
@@ -193,7 +227,6 @@ class commentWindow {
                 await this.window.size.setSize(300, 500);
                 await this.window.size.userCanResize(true)
                 var comments = await this.post.comments();
-                console.log(comments);
 
                 var c = await this.window.getHtmlElement("comment");
                 c.innerHTML = "";

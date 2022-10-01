@@ -208,7 +208,6 @@ class eventHandler {
         for (var x of System.eventHandler.handlers[type]) {
             var r = x[0](event, x[1]);
             if (r == true) {
-                console.log("cancel");
                 return;
             }
         }
