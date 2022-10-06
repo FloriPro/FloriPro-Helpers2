@@ -126,15 +126,17 @@ class Html {
             return;
         }
 
-        var element = event.target.getAttribute("windowelement")
-        var name = element + "__" + id;
+        var element = event.target.getAttribute("windowelement");
+        if (element != undefined) {
+            var name = element + "__" + id;
 
-        var eventType = event.type;
-        eventType = eventType.replace("on", "");
+            var eventType = event.type;
+            eventType = eventType.replace("on", "");
 
-        for (var x of this.htmlEventList[name][eventType]) {
-            this.htmlEventListThis[name].x = x[0];
-            this.htmlEventListThis[name].x(element, id, x[1], event);
+            for (var x of this.htmlEventList[name][eventType]) {
+                this.htmlEventListThis[name].x = x[0];
+                this.htmlEventListThis[name].x(element, id, x[1], event);
+            }
         }
     }
     removeAllEvents(id) {
@@ -214,6 +216,10 @@ class WindowHandler {
                 if (event.target.classList.contains("close")) {
                     SystemHtml.WindowHandler.getWindowById(id).makeClose()
                 }
+                //close
+                if (event.target.classList.contains("maximize")) {
+                    SystemHtml.WindowHandler.getWindowById(id).size.maxToggle();
+                }
             }
         });
         System.eventHandler.addEventHandler("mouseup", (event) => {
@@ -233,7 +239,7 @@ class WindowHandler {
                 for (var x of el.classList) { if (x.startsWith("window_")) { el = x.replace("window_", "") } }
                 var id = el;
 
-
+                //focus window
                 if (parseInt(id) != SystemHtml.WindowHandler.focusedWindow) {
                     if (SystemHtml.WindowHandler.windows[parseInt(id)] != undefined) {
                         SystemHtml.WindowHandler.focus(id);
@@ -355,6 +361,9 @@ class Window {
         this.size = new class {
             constructor(parent) {
                 this.parent = parent;
+                this.max = false;
+
+                this.maxBefore = { "pos": [20, 20], "size": [100, 100], "userResize": true }
             }
             /**
              * sets the x/y size of the window, if defined
@@ -366,6 +375,9 @@ class Window {
                 this.parent.#sizeY = y;
                 this.parent.getHtml().style.width = this.parent.#sizeX + "px";
                 this.parent.getHtml().style.height = this.parent.#sizeY + "px";
+            }
+            async getSize() {
+                return [this.parent.#sizeX, this.parent.#sizeY]
             }
             async htmlSizing() {
                 this.parent.#sizeX = null;
@@ -379,6 +391,22 @@ class Window {
                     this.parent.getHtml().style.padding = "12px"
                 } else {
                     this.parent.getHtml().style.padding = "0px"
+                }
+            }
+            async maxToggle() {
+                this.max = !this.max;
+                if (this.max) {
+                    this.maxBefore["size"] = await this.getSize();
+                    this.maxBefore["pos"] = this.parent.getPosition();
+                    this.maxBefore["userResize"] = this.parent.canUserResize
+
+                    this.userCanResize(false);
+                    this.parent.setPosition(0, 0);
+                    this.setSize(window.innerWidth, window.innerHeight - 39);
+                } else {
+                    this.parent.setPosition(this.maxBefore["pos"][0], this.maxBefore["pos"][1]);
+                    this.setSize(this.maxBefore["size"][0], this.maxBefore["size"][1]);
+                    this.userCanResize(this.maxBefore["userResize"]);
                 }
             }
         }(this)
@@ -442,7 +470,7 @@ class Window {
      */
     getPosition() {
         var element = this.getHtml()
-        return [parseInt(element.style.top), parseInt(element.style.left)]
+        return [parseInt(element.style.left), parseInt(element.style.top)]
     }
 
     async rename(name) { //TODO
