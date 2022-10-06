@@ -43,6 +43,7 @@ class program extends System.program.default {
                 await this.window.addHtmlEventListener("click", "selectSubreddits", this.loadSettings, this);
                 await this.window.addHtmlEventListener("click", "next", this.next, this);
                 await this.window.addHtmlEventListener("click", "back", this.back, this);
+                await this.window.addHtmlEventListener("click", "img", this.imgFullscreen, this);
                 //await this.window.addHtmlEventListener("click", "postDebug", this.postDebug, this);
                 await this.window.addHtmlEventListener("click", "openVid", this.openVideo, this);
                 await this.window.addHtmlEventListener("click", "openSettings", () => {
@@ -203,9 +204,11 @@ class program extends System.program.default {
             i.src = x;
             i.style.maxWidth = this.maxWidth;
             i.style.width = "100%";
+            i.setAttribute("element", "img")
             this.img.append(iLoader);
             this.img.append(i);
         }
+        this.window.parseNewHtml();
 
         var media = n.media();
         if (media != null) {
@@ -229,6 +232,10 @@ class program extends System.program.default {
     postDebug() {
         console.log(this.currentPost)
     }
+    imgFullscreen() {
+        console.log("fullscreen")
+        new ImgWindow(this.currentPost.ImageFull());
+    }
 }
 
 class redjsWindow {
@@ -243,6 +250,45 @@ class redjsWindow {
                 await this.window.setContent(`<iframe src="` + link + `" style="width: calc(100% - 4px); height: calc(100% - 10px);">Could not load</iframe>`);
                 await this.window.size.setSize(300, 500);
                 await this.window.size.userCanResize(true)
+            });
+        this.window.close = () => {
+            return true
+        }
+    }
+}
+class ImgWindow {
+    constructor(imgs) {
+        this.load(imgs);
+    }
+    async load(imgs) {
+        this.window = await SystemHtml.WindowHandler.createWindow("Reddit Image",
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent(`<div element="img"></div>`);
+                await this.window.size.setSize(300, 500);
+                await this.window.size.userCanResize(true)
+
+                this.img = await this.window.getHtmlElement("img");
+
+                for (var x of imgs) {
+                    var i = document.createElement("img");
+                    var iLoader = document.createElement("p");
+                    iLoader.style.position = "absoulute"
+                    iLoader.innerText = "loading Image:";
+                    iLoader.style.color = "gray";
+
+                    i.loader = iLoader;
+                    i.onload = (event) => {
+                        event.composedPath()[0].loader.remove();
+                    }
+
+                    i.src = x;
+                    i.style.maxWidth = this.maxWidth;
+                    i.style.width = "100%";
+                    this.img.append(iLoader);
+                    this.img.append(i);
+                }
             });
         this.window.close = () => {
             return true
