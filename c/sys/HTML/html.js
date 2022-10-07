@@ -162,7 +162,6 @@ class Html {
         this.htmlEventList[name][eventType].push([callback, variables])
     }
 }
-
 class WindowHandler {
     constructor() {
         this.moving = false;
@@ -257,11 +256,17 @@ class WindowHandler {
         remove(this.windowLayering, id);
         this.updateTaskBar();
     }
+    /**
+     * 
+     * @param {string} name Name of the window
+     * @param {()=>void} readyCallback gets called, when the window is ready to be set
+     * @returns {HtmlWindow} Created window
+     */
     async createWindow(name, readyCallback) {
         var id = this.getFreeId();
         this.usedWindowId.push(id);
         this.windowLayering.push(id);
-        var w = new Window(id);
+        var w = new HtmlWindow(id);
         w.onReady = readyCallback
         await w.load(id, name);
         w.setPosition(20, 20)
@@ -283,14 +288,17 @@ class WindowHandler {
         }
         return i;
     }
+    /**
+     * Get Window by id
+     * @param {number} id id of the window
+     * @returns {HtmlWindow} requested window
+     */
     getWindowById(id) {
         return this.windows[id];
     }
-
     get focusedWindow() {
         return this.windowLayering[this.windowLayering.length - 1];
     }
-
     putWindowOnTop(id) {
         id = parseInt(id);
 
@@ -342,7 +350,7 @@ class WindowHandler {
     }
 }
 
-class Window {
+class HtmlWindow {
     #id;
     #sizeX;
     #sizeY;
@@ -444,6 +452,10 @@ class Window {
         }
     }
 
+    /**
+     * returns the window id
+     * @returns {number}
+     */
     getId() {
         return this.#id
     }
@@ -472,8 +484,11 @@ class Window {
         var element = this.getHtml()
         return [parseInt(element.style.left), parseInt(element.style.top)]
     }
-
-    async rename(name) { //TODO
+    /**
+     * renames the window
+     * @param {string} name 
+     */
+    async rename(name) {
         this.getHtml().querySelector(".window-name").innerText = name;
     }
     async load(id, name) {
@@ -510,34 +525,21 @@ class Window {
     getHtml() {
         return document.querySelector(".window_" + this.#id);
     }
+    /**
+     * sets the Dom of the Window and parses it
+     * @param {string} htmlstr 
+     */
     async setContent(htmlstr) {
         var html = this.getHtml();
         var cont = html.querySelector(".content")
         cont.innerHTML = htmlstr;
         await this.parseNewHtml();
-
-
-        /*
-        var defaultContent = await SystemFileSystem.getFileString("c/sys/HTML/content.html");
-        var frame = document.createElement("iframe")
-        frame.width = "300px"
-        frame.height = "120px"
-        frame.style.border = "none";
-        frame.srcdoc = defaultContent.replace("<!--InjectHere-->", htmlstr
-        
-        var d = document.createElement("div");
-        d.style.position = "absolute";
-        d.style.width = "300px";
-        d.style.height = "120px";
-        d.style.background = "black";
-        d.style.position = "absolute";
-        d.style.pointerEvents = "none"
-        
-        cont.append(d);
-        cont.append(frame);*/
-        //console.warn("window.setContent TODO");
     }
 
+    /**
+     * get the title of this window
+     * @returns {string} title of this window
+     */
     getTitle() {
         return this.getHtml().querySelector(".window-name").innerText;
     }
@@ -577,10 +579,15 @@ class Window {
             SystemHtml.addHtmlEvent(htmlElementTag, this.#id, callback, event, t, variable)
         }
     }
+    /**
+     * removes **ALL** event listeners on *this* window
+     */
     async removeAllEventListeners() {
         SystemHtml.removeAllEvents(this.#id);
     }
-
+    /**
+     * needs to be called, *before* adding an event to an Element added *not* by {@link setContent}
+     */
     async parseNewHtml() {
         var e = this.getHtml().querySelectorAll("*[element]")
         for (var x of e) {
@@ -591,7 +598,10 @@ class Window {
             x.setAttribute("windowId", this.#id);
         }
     }
-
+    /**
+     * sets the z-index to id ≙ layer
+     * @param {number} id 
+     */
     async setLayer(id) {
         (await this.getHtml()).style.zIndex = id;
     }
@@ -600,6 +610,10 @@ class Window {
 class presets {
     constructor() {
     }
+    /**
+     * @param {string} title Title
+     * @returns {Promise<string> | undefined} selected File / undefined
+     */
     async createFileSelect(title) {
         var f = new fileSelectPreset()
         if (title == undefined) {
@@ -607,6 +621,10 @@ class presets {
         }
         return await f.load(title);
     }
+    /**
+     * @param {string} title Title
+     * @returns {Promise<string> | undefined} selected File / undefined
+     */
     async createFileCreate(title) {
         var f = new fileCreatePreset()
         if (title == undefined) {
@@ -1021,4 +1039,5 @@ class loadingPreset {
     }
 }
 
+var SystemHtml = new Html();//for "tsc" ///--remove--
 SystemHtml = new Html();

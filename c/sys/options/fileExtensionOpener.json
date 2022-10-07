@@ -1,7 +1,5 @@
 {
     "_default": "c/programs/textEditor/main.js",
     "txt": "c/programs/textEditor/main.js",
-    "js": "c/programs/textEditor/main.js",
-    "png": "c/programs/imageViewer/main.js",
-    "jpg": "c/programs/imageViewer/main.js"
+    "js": "c/programs/textEditor/main.js"
 }

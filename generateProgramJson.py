@@ -28,29 +28,18 @@ def path_to_dict(path):
                 for x in v.split("\n"):
                     if "///--remove--" not in x:
                         v2 += x+"\n"
-                v2=v2.encode("utf-8")
+                v2 = v2.encode("utf-8")
             #v2 = jsmin(v.decode("utf-8")).encode("utf-8")
         d = base64.b64encode(v2).decode('ascii')
     return d
 
 
 oldData = {}
+ds=[x[0] for x in os.walk("programs")]
 
-
-def upadte():
-    global oldData
-    p = path_to_dict("./c/")
-    if oldData != p:
-        with open("./filesys.json", "w") as f:
-            d = json.dumps(p)
-            f.write(d)
-            f.close()
-            #json.dump(p, f)
-            oldData = p
-            print(time.time())
-# print(json.dumps(path_to_dict('./c/')))
-
-
-while True:
-    time.sleep(1)
-    upadte()
+for prog in ds[1:]:
+    with open("./"+prog+".json", "w") as f:
+        p = path_to_dict("./"+prog+"/")
+        d = json.dumps(p)
+        f.write(d)
+        f.close()

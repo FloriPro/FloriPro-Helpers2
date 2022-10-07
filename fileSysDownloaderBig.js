@@ -81,17 +81,6 @@ function load(data, path) {
 
     return out;
 }
-/*
-function fromHex(h) {
-    var s = ''
-    for (var i = 0; i < h.length; i += 3) {
-        s += String.fromCharCode(parseInt(h.substr(i, 2), 16))
-    }
-    return s
-}
-function fromBase64(s) {
-    return window.atob(s);
-}*/
 function b64_to_utf8(str) {
     try {
         str = str.replace(/\s/g, '');

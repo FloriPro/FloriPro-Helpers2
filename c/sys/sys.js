@@ -2,8 +2,9 @@ class sys {
     constructor() {
         this.options = new options();
         this.program = new program();
-        this.path = Path;
         this.settings = new settingsHandler()
+        this.network = new Network();
+        this.path = Path;
     }
     async createEvents() {
         this.eventHandler = new eventHandler();
@@ -34,6 +35,19 @@ class sys {
             programToOpen = o[fileEnding];
         }
         System.program.runProgram(programToOpen, path);
+    }
+}
+class Network {
+    constructor() {
+
+    }
+    /**
+     * @param {RequestInfo | URL} input 
+     * @param {...RequestInit} init 
+     * @returns {Promise<Response>}
+     */
+    fetch(input, ...init) {
+        return fetch(input, ...init);
     }
 }
 class Path {
@@ -161,9 +175,8 @@ class eventHandler {
         }
     }
     /**
-     * 
      * @param {string} type 
-     * @param {(event:Event)=>undefined | true} handler if return true: all further event's get canceld
+     * @param {(event: Event) => void | true} handler if return true: all further event's get canceld
      */
     addEventHandler(type, handler, vars) {
         if (this.events.includes(type)) {
@@ -237,6 +250,5 @@ class settingsHandler {
         }
     }
 }
-
-var s = new sys();
-System = s;
+var System = new sys();//for "tsc" ///--remove--
+System = new sys();

@@ -1,6 +1,14 @@
 console.log("initializing FileSystem");
 
 class FileSystemClass {
+    constructor() {
+        this.FileSystemTable = FileSystemTable;
+        this.PositionalFileSystem = PositionalFileSystem;
+        this.realLocalStorage = localStorage;
+        //setTimeout(this.removeLocalStorage, 1)
+
+        this.ramFiles = {}
+    }
     async reset() {
         var toRemove = []
         for (var x of Object.keys(this.realLocalStorage)) {
@@ -28,14 +36,6 @@ class FileSystemClass {
             this.realLocalStorage.removeItem(x);
         }
     }
-
-    constructor() {
-        this.PositionalFileSystem = PositionalFileSystem;
-        this.realLocalStorage = localStorage;
-        //setTimeout(this.removeLocalStorage, 1)
-
-        this.ramFiles = {}
-    }
     async removeLocalStorage() {
 
         Object.defineProperty(window, 'localStorage', {
@@ -43,10 +43,19 @@ class FileSystemClass {
         });
     }
 
+    /**
+     * laod and install package
+     * @param {string} data 
+     */
+    async loadPackage(data) {
+        var data = JSON.parse(data);
+        var p = new packageLoader(data);
+        await p.loader(data);
+    }
+
     toImg(str) {
         return "data:image/png;base64," + btoa(str)
     }
-
     /**
      * sets the String of a file
      * @param {string} path 
@@ -63,6 +72,17 @@ class FileSystemClass {
     async createFile(path) {
         var folder = path.split("/").slice(0, -1).join("/");
         var f = await this.getTablePos(folder, "c", FileSystemTable);
+
+        if (f == undefined) {
+            var tempPath = "";
+            for (var x of folder.split("/")) {
+                if (await this.getTablePos(tempPath + x, "c", FileSystemTable) == undefined) {
+                    await this.createFolder(tempPath, x);
+                }
+                tempPath += x + "/";
+            }
+            var f = await this.getTablePos(folder, "c", FileSystemTable);
+        }
 
         var id = this.getUnusedId();
         usedFileSysIds.push(id);
@@ -211,11 +231,86 @@ class FileSystemClass {
         if (path.endsWith("/")) {
             path = path.slice(0, -1);
         }
+        if (dat == undefined) { return undefined; }
         if (p == path) {
             return dat;
         } else {
             var n = path.replace(p + "/", "").split("/")[0]
             return this.getTablePos(path, p + "/" + n, dat["folder"][n])
+        }
+    }
+
+    /**
+     * removes a file
+     * @param {string} path 
+     */
+    async removeFile(path) {
+        if (!Object.keys(fastFileLookup).includes(path)) {
+            return
+        }
+        var folder = path.split("/").slice(0, -1).join("/");
+        var f = await this.getTablePos(folder, "c", FileSystemTable);
+
+        this.realLocalStorage.removeItem(fastFileLookup[path]);
+        this.ramFiles[path] = undefined;
+        delete f["files"][path.split("/")[path.split("/").length - 1]]
+
+        loadFastLookup(FileSystemTable, "c")
+    }
+    /**
+     * removes the folder and its contents
+     * @param {string} path 
+     */
+    async removeFolder(path) {
+        var folder = path.split("/").slice(0, -1).join("/");
+        var f = await this.getTablePos(folder, "c", FileSystemTable);
+        delete f["folder"][path.split("/")[path.split("/").length - 1]] //this also removes the files in the folder
+
+        loadFastLookup(FileSystemTable, "c");
+    }
+
+    /**
+     * move all files/folders in a folder to another folder
+     * @param {string} path 
+     * @param {string} to 
+     */
+    async moveInFolder(path, to) {
+        //move files
+        await this.moveRecursivlyIn(path, to);
+
+        await this.removeFolder(path);
+        await this.createFolder(path.split("/").slice(0, -1).join("/"), path.split("/")[path.split("/").length - 1])
+    }
+    async moveRecursivlyIn(path, to) {
+        var f = await this.getTablePos(path, "c", FileSystemTable);
+        for (var x of Object.keys(f["folder"])) {
+            await this.moveRecursivlyIn(path + "/" + x, to + "/" + x);
+        }
+        for (var x of Object.keys(f["files"])) {
+            await this.setFileString(to + "/" + x, await this.getFileString(path + "/" + x));
+        }
+    }
+}
+class packageLoader {
+    async loader(d) {
+        await this.load(d, "c/_temp");
+    }
+    async load(data, path) {
+        for (var x of Object.keys(data)) {
+            if (x.includes(".")) {
+                await SystemFileSystem.setFileString(path + "/" + x, this.b64_to_utf8(data[x]));
+            }
+            else {
+                await this.load(data[x], path + "/" + x);
+            }
+        }
+    }
+    b64_to_utf8(str) {
+        try {
+            str = str.replace(/\s/g, '');
+            return decodeURIComponent(escape(window.atob(str)));
+        } catch {
+            return window.atob(str);
         }
     }
 }
@@ -256,5 +351,5 @@ class PositionalFileSystem { //TODO
 
 }
 
-var s = new FileSystemClass();
-SystemFileSystem = s;
+var SystemFileSystem = new FileSystemClass();//for "tsc" ///--remove--
+SystemFileSystem = new FileSystemClass();
