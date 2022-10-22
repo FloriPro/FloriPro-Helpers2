@@ -196,6 +196,7 @@ class WindowHandler {
     constructor() {
         this.moving = false;
         this.usedWindowId = [];
+        /** @type {{[id:number]:HtmlWindow}} */
         this.windows = {};
 
         this.windowLayering = [];
@@ -277,6 +278,15 @@ class WindowHandler {
                 }
             }
         });
+        System.eventHandler.addEventHandler("resize", (event, args) => {
+            console.log("resize");
+            //update fullscreen windows
+            for (var id in Object.keys(SystemHtml.WindowHandler.windows)) {
+                if (SystemHtml.WindowHandler.windows[id].size.max == true) {
+                    SystemHtml.WindowHandler.windows[id].size.setMax();
+                }
+            }
+        });
     }
     async removeWindow(id) {
         SystemHtml.removeAllEvents(id);
@@ -284,6 +294,7 @@ class WindowHandler {
         delete this.windows[id]
         remove(this.usedWindowId, id);
         remove(this.windowLayering, id);
+        this.updateWindowLayering();
         this.updateTaskBar();
     }
     /**
@@ -347,8 +358,10 @@ class WindowHandler {
                 if (b != true) {
                     this.updateTaskBar();
                 }
+                this.getWindowById(x).getHtml().style.filter = "";
             } else {
                 this.getWindowById(x).ontop = false;
+                this.getWindowById(x).getHtml().style.filter = "brightness(0.9)";
             }
             i++;
         }
@@ -434,18 +447,21 @@ class HtmlWindow {
             async maxToggle() {
                 this.max = !this.max;
                 if (this.max) {
-                    this.maxBefore["size"] = await this.getSize();
-                    this.maxBefore["pos"] = this.parent.getPosition();
-                    this.maxBefore["userResize"] = this.parent.canUserResize
-
-                    this.userCanResize(false);
-                    this.parent.setPosition(0, 0);
-                    this.setSize(window.innerWidth, window.innerHeight - 39);
+                    await this.setMax();
                 } else {
                     this.parent.setPosition(this.maxBefore["pos"][0], this.maxBefore["pos"][1]);
                     this.setSize(this.maxBefore["size"][0], this.maxBefore["size"][1]);
                     this.userCanResize(this.maxBefore["userResize"]);
                 }
+            }
+            async setMax() {
+                this.maxBefore["size"] = await this.getSize();
+                this.maxBefore["pos"] = this.parent.getPosition();
+                this.maxBefore["userResize"] = this.parent.canUserResize
+
+                this.userCanResize(false);
+                this.parent.setPosition(0, 0);
+                this.setSize(window.innerWidth, window.innerHeight - 39);
             }
         }(this)
         this.appearence = new class {

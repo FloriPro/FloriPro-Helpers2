@@ -1,9 +1,6 @@
 declare class FileSystemClass {
-    FileSystemTable: any;
     PositionalFileSystem: typeof PositionalFileSystem;
     realLocalStorage: Storage;
-    loadFastLookup: any;
-    ramFiles: {};
     reset(): Promise<void>;
     removeLocalStorage(): Promise<void>;
     /**

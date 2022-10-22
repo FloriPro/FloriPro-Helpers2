@@ -199,7 +199,8 @@ class eventHandler {
         this.shouldPrevent = await System.options.get("events");
         this.events = Object.keys(await System.options.get("events"));
         for (var x of this.events) {
-            document.addEventListener(x, this.event);
+            //document.addEventListener(x, this.event);
+            window.addEventListener(x, this.event);
             this.handlers[x] = []
         }
     }
@@ -212,7 +213,7 @@ class eventHandler {
             this.handlers[type].push([handler, vars]);
             return true;
         } else {
-            console.warn("event " + type + "doesn't seem to exist!");
+            console.warn("event " + type + " doesn't seem to exist!");
             return false;
         }
     }
@@ -239,6 +240,7 @@ class eventHandler {
             System.eventHandler.lifeMakerVars["mox"] = null;
         }
 
+
         if (replacement == undefined) { replacement = false; }
         if (type == undefined) { type = event.type }
         if (System.eventHandler.shouldPrevent[event.type]) {
@@ -246,6 +248,7 @@ class eventHandler {
                 event.preventDefault();
             }
         }
+        //console.log("event: " + type);
 
         for (var x of System.eventHandler.handlers[type]) {
             var r = x[0](event, x[1]);

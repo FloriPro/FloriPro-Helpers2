@@ -18,7 +18,10 @@ declare class Html {
 declare class WindowHandler {
     moving: boolean;
     usedWindowId: any[];
-    windows: {};
+    /** @type {{[id:number]:HtmlWindow}} */
+    windows: {
+        [id: number]: HtmlWindow;
+    };
     windowLayering: any[];
     presets: presets;
     removeWindow(id: any): Promise<void>;
@@ -66,6 +69,7 @@ declare class HtmlWindow {
         htmlSizing(): Promise<void>;
         userCanResize(yn: any): void;
         maxToggle(): Promise<void>;
+        setMax(): Promise<void>;
     };
     appearence: {
         parent: any;

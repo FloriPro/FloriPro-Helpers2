@@ -10,13 +10,16 @@ class program extends System.program.default {
         this.pastId = -1;
 
         this.permalink = ""
-        this.allreadyRead = await SystemFileSystem.getFileJson(this.PATH.folder() + "/old.json")
+        this.allreadyRead = await SystemFileSystem.getFileJson("c/user/reddit/old.json")
 
         this.allreadyLoading = false;
         this.maxWidth = "500px";
 
+        /**
+         * @type reddit
+         */
         this.redditApi = new (await System.run(this.PATH.folder() + "/api.js"))(["memes"]);
-        this.redditApi.vars = await SystemFileSystem.getFileJson(this.PATH.folder() + "/settings.json")
+        this.redditApi.vars = await SystemFileSystem.getFileJson("c/user/reddit/settings.json")
 
         console.log("started as id " + this.id);
         this.window = await SystemHtml.WindowHandler.createWindow("Reddit",
@@ -90,7 +93,7 @@ class program extends System.program.default {
         var v = this.redditApi.vars;
         v["subreddits"] = (await this.window.getHtmlElement("subredditSelect")).value;
         var v = JSON.stringify(v)
-        await SystemFileSystem.setFileString(this.PATH.folder() + "/settings.json", v)
+        await SystemFileSystem.setFileString("c/user/reddit/settings.json", v)
 
         this.post.style.display = "";
         this.settings.style.display = "none";
@@ -223,7 +226,7 @@ class program extends System.program.default {
         this.allreadyLoading = false;
     }
     async updateAllreadyRead() {
-        await SystemFileSystem.setFileString(this.PATH.folder() + "/old.json", JSON.stringify(this.allreadyRead));
+        await SystemFileSystem.setFileString("c/user/reddit/old.json", JSON.stringify(this.allreadyRead));
     }
     openVideo() {
         var media = this.currentPost.media();

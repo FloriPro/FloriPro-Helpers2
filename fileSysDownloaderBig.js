@@ -13,12 +13,13 @@ async function loader() {
         localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
 
         //load save files
-        if (localStorage["save"] != undefined) {
-            var save = JSON.parse(localStorage["save"]);
-            for (var x of Object.keys(save)) {
-                localStorage[fastFileLookup[x]] = save[x];
-            }
-        }
+        //if (localStorage["save"] != undefined) {
+        //    localStorage[fastFileLookup["_saveFiles.json"]] = localStorage["save"];
+            //var save = JSON.parse(localStorage["save"]);
+            //for (var x of Object.keys(save)) {
+            //    localStorage[fastFileLookup[x]] = save[x];
+            //}
+        //}
 
         //localStorage.removeItem("save");
     } else {

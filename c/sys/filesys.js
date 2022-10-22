@@ -2,14 +2,18 @@ console.log("initializing FileSystem");
 
 class FileSystemClass {
     constructor() {
-        //this.FileSystemTable = FileSystemTable;
         this.PositionalFileSystem = PositionalFileSystem;
         this.realLocalStorage = localStorage;
-        //this.fastFileLookup = fastFileLookup;
-        //loadFastLookup = loadFastLookup;
         //setTimeout(this.removeLocalStorage, 1)
 
-        //this.ramFiles = {}
+        //load save files
+        if (localStorage["save"] != undefined) {
+            var save = JSON.parse(localStorage["save"]);
+            for (var path of Object.keys(save)) {
+                this.setFileString(path, save[path])
+                //localStorage[fastFileLookup[x]] = save[x];
+            }
+        }
     }
     async reset() {
         var toRemove = []
@@ -65,7 +69,6 @@ class FileSystemClass {
     async setFileString(path, dat) {
         if (!Object.keys(fastFileLookup).includes(path)) {
             await this.createFile(path);
-            console.log("create " + path);
         }
         if (fastFileLookup[path] == undefined || fastFileLookup[path] == "undefined") {
             console.error("could not create file")
@@ -105,7 +108,7 @@ class FileSystemClass {
         loadFastLookup(FileSystemTable, "c")
     }
     async fileExists(path) {
-        return this.realLocalStorage.getItem(fastFileLookup[path]) != undefined;
+        return fastFileLookup[path] != undefined;
     }
     /**
      * returns the content of a file
@@ -302,13 +305,11 @@ class FileSystemClass {
 }
 class packageLoader {
     async loader(d) {
-        console.log(d);
         await this.load(d, "c/_temp");
     }
     async load(data, path) {
         for (var x of Object.keys(data)) {
             if (x.includes(".")) {
-                console.log(path + "/" + x)
                 await SystemFileSystem.setFileString(path + "/" + x, this.b64_to_utf8(data[x]));
             }
             else {

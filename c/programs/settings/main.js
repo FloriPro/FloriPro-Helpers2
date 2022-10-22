@@ -58,6 +58,11 @@ class program extends System.program.default {
         if (s[setting][1] == "string")
             o = await SystemHtml.WindowHandler.presets.createStringSelect()
 
+        if (o == undefined) {
+            await this.loadSettings();
+            return;
+        }
+
         await System.options.addValue("settings", setting, [o, s[setting][1]], true);
         System.settings.settingUpdated(setting);
         await this.loadSettings();
