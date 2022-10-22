@@ -197,9 +197,15 @@ class eventHandler {
         this.replacementEventsK = Object.keys(this.replacementEvents);
 
         this.shouldPrevent = await System.options.get("events");
-        this.events = Object.keys(await System.options.get("events"));
-        for (var x of this.events) {
-            //document.addEventListener(x, this.event);
+        var e1 = Object.keys(await System.options.get("eventsDoc"));
+        var e2 = Object.keys(await System.options.get("eventsWin"));
+        this.events = e1.concat(e2);
+
+        for (var x of e1) {
+            document.addEventListener(x, this.event);
+            this.handlers[x] = []
+        }
+        for (var x of e2) {
             window.addEventListener(x, this.event);
             this.handlers[x] = []
         }
