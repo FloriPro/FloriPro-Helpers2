@@ -2,14 +2,15 @@ declare class FileSystemClass {
     FileSystemTable: any;
     PositionalFileSystem: typeof PositionalFileSystem;
     realLocalStorage: Storage;
+    loadFastLookup: any;
     ramFiles: {};
     reset(): Promise<void>;
     removeLocalStorage(): Promise<void>;
     /**
-     * laod and install package
+     * unpacks the package to "c/_temp/"
      * @param {string} data
      */
-    loadPackage(data: string): Promise<void>;
+    unpackPackage(data: string): Promise<void>;
     toImg(str: any): string;
     /**
      * sets the String of a file
@@ -48,8 +49,9 @@ declare class FileSystemClass {
     /**
      * loads the file from local storage
      * @param {string} path
+     * @return {string}
      */
-    localFileLoad(path: string): Promise<string>;
+    localFileLoad(path: string): string;
     getUnusedId(): number;
     /**
      *

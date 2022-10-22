@@ -14,10 +14,12 @@ class Html {
 
         var _StartMenuButton = document.querySelector("#startMenuButton")
         var _StartMenu = document.querySelector("#StartMenu");
+        var _StartMenuPrograms = document.querySelector("#StartMenuPrograms");
+        var _StartMenuFastButtons = document.querySelector("#startMenuFastButtons");
         var _taskbar = document.querySelector("#taskbar");
 
         //load StartMenu
-        await this.loadStartMenu(_StartMenu)
+        await this.loadStartMenu(_StartMenuPrograms);
 
 
         //load style
@@ -29,6 +31,7 @@ class Html {
         System.eventHandler.addEventHandler("click", (event, a) => {
             var _StartMenuButton = a[0];
             var _StartMenu = a[1];
+            var _StartMenuPrograms = a[1].querySelector("#StartMenuPrograms");
 
             if (!event.composedPath().includes(_StartMenu) && !event.composedPath().includes(_StartMenuButton)) {
                 _StartMenu.style.display = "none";
@@ -45,13 +48,24 @@ class Html {
                 return false;
             }
 
-            if (event.composedPath().includes(_StartMenu)) {
-                if (event.target != _StartMenu) {
+            if (event.composedPath().includes(_StartMenuPrograms)) {
+                if (event.target != _StartMenuPrograms) {
                     var val = ""
                     if (event.target.className == "StartMenuSelector") {
                         val = event.composedPath()[0].attributes['key'].value;
                     } else {
                         val = event.composedPath()[1].attributes['key'].value;
+                    }
+                    startMenuButton_Toggle();
+                    System.run(val);
+                }
+                return true;
+            }
+            if (event.composedPath().includes(_StartMenuFastButtons)) {
+                if (event.target != _StartMenuPrograms) {
+                    var val = ""
+                    if (event.target.className == "StartMenuFastButton") {
+                        val = event.composedPath()[0].attributes['key'].value;
                     }
                     startMenuButton_Toggle();
                     System.run(val);
@@ -81,22 +95,38 @@ class Html {
         }
         backgroundImgLoader();
     }
+    async updateStartmenu() {
+        SystemHtml.loadStartMenu(document.querySelector("#StartMenuPrograms"))
+    }
     async loadStartMenu(_StartMenu) {
         _StartMenu.innerHTML = "";
-        var s = await System.options.get("startMenu");
+        document.querySelector("#startMenuFastButtons").innerHTML = "";
+        //var s = await System.options.get("startMenu");
+        var s = await System.options.get("programs");
         for (var n of Object.keys(s)) {
             var d = document.createElement("div")
             d.className = "StartMenuSelector"
-            d.setAttribute("key", s[n])
+            d.setAttribute("key", s[n]["run"])
 
             var p = document.createElement("p");
-            p.innerText = n;
+            p.innerText = s[n]["name"];
             d.append(p)
 
             var hr = document.createElement("hr")
             d.append(hr)
 
             _StartMenu.append(d);
+        }
+
+        var s = await System.options.get("StartMenuButtons");
+        for (var n of Object.keys(s)) {
+            var d = document.createElement("button")
+            d.className = "StartMenuFastButton"
+            d.setAttribute("key", s[n]["click"])
+            d.setAttribute("tooltip", s[n]["tooltip"])
+            d.innerText = n;
+
+            document.querySelector("#startMenuFastButtons").append(d);
         }
     }
 
@@ -566,7 +596,7 @@ class HtmlWindow {
      * @param {string} event Html element Event (e.g. onclick) 
      * @param {string} htmlElementTag Html Element "element" tag ('<div element="tagofdoom"></div>': 'tagofdoom') 
      * @param {(variable)} callback run when the event is triggered
-     * @param {class} t the class to run the callback function in
+     * @param {ThisType} t the class to run the callback function in
      * @param {*} variable one variable passed in the callback function
      */
     async addHtmlEventListener(event, htmlElementTag, callback, t, variable) {
@@ -689,14 +719,6 @@ class fileSelectPreset {
                 await this.window.size.setSize(500, 300);
                 await this.window.size.userCanResize(true)
 
-                //add event listeners
-                await this.window.addHtmlEventListener("onclick", "cancel", () => {
-                    //read data
-                    this.returnFunction(undefined)
-
-                    //close and return
-                    this.window.remove()
-                }, this);
             });
         this.window.close = () => {
             this.returnFunction(null)
@@ -707,7 +729,15 @@ class fileSelectPreset {
     }
     async create() {
         await this.window.removeAllEventListeners();
+        //add event listeners
         await this.window.addHtmlEventListener("click", "back", this.back, this)
+        await this.window.addHtmlEventListener("onclick", "cancel", () => {
+            //read data
+            this.returnFunction(undefined)
+
+            //close and return
+            this.window.remove()
+        }, this);
 
 
 
@@ -788,14 +818,6 @@ class fileCreatePreset {
                 await this.window.size.setSize(500, 300);
                 await this.window.size.userCanResize(true)
 
-                //add event listeners
-                await this.window.addHtmlEventListener("onclick", "cancel", () => {
-                    //read data
-                    this.returnFunction(undefined)
-
-                    //close and return
-                    this.window.remove()
-                }, this);
             });
         this.window.close = () => {
             this.returnFunction(null)
@@ -806,6 +828,14 @@ class fileCreatePreset {
     }
     async create() {
         await this.window.removeAllEventListeners();
+        //add event listeners
+        await this.window.addHtmlEventListener("onclick", "cancel", () => {
+            //read data
+            this.returnFunction(undefined)
+
+            //close and return
+            this.window.remove()
+        }, this);
         await this.window.addHtmlEventListener("click", "back", this.back, this)
         await this.window.addHtmlEventListener("click", "ok", this.ok, this)
 

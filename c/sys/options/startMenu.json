@@ -1,8 +1,7 @@
 {
-    "test": "c/programs/testScript/run.js",
     "explorer": "c/programs/explorer/run.js",
-    "Settings": "c/programs/settings/run.js",
     "Text Editor": "c/programs/textEditor/run.js",
     "Store": "c/programs/store/run.js",
-    "reset": "c/sys/functions/reset.js"
+    "reset": "c/sys/functions/reset.js",
+    "_comment": "depreciated!"
 }

@@ -3,6 +3,7 @@ declare class Html {
     htmlEventListThis: {};
     loadSystem(): Promise<void>;
     WindowHandler: WindowHandler;
+    updateStartmenu(): Promise<void>;
     loadStartMenu(_StartMenu: any): Promise<void>;
     elementArrayContainsClass(array: any, clas: any): boolean;
     htmlEventHandler(event: any): void;
@@ -135,10 +136,10 @@ declare class HtmlWindow {
      * @param {string} event Html element Event (e.g. onclick)
      * @param {string} htmlElementTag Html Element "element" tag ('<div element="tagofdoom"></div>': 'tagofdoom')
      * @param {(variable)} callback run when the event is triggered
-     * @param {class} t the class to run the callback function in
+     * @param {ThisType} t the class to run the callback function in
      * @param {*} variable one variable passed in the callback function
      */
-    addHtmlEventListener(event: string, htmlElementTag: string, callback: (any), t: any, variable: any): Promise<void>;
+    addHtmlEventListener(event: string, htmlElementTag: string, callback: (any), t: ThisType<any>, variable: any): Promise<void>;
     /**
      * removes **ALL** event listeners on *this* window
      */

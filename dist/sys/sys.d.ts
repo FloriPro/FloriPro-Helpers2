@@ -32,6 +32,13 @@ declare class program {
     runProgramString(dat: any, path: any, args: any): Promise<any>;
     /**
      *
+     * @param {string} data
+     * @param {boolean} display
+     * @param {HtmlWindow} l
+     */
+    installPackage(data: string, display: boolean, l: HtmlWindow): Promise<void>;
+    /**
+     *
      * @returns {number}
      */
     findFreeId(): number;

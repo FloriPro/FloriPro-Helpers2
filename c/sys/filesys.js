@@ -5,6 +5,7 @@ class FileSystemClass {
         this.FileSystemTable = FileSystemTable;
         this.PositionalFileSystem = PositionalFileSystem;
         this.realLocalStorage = localStorage;
+        this.loadFastLookup = loadFastLookup;
         //setTimeout(this.removeLocalStorage, 1)
 
         this.ramFiles = {}
@@ -44,11 +45,10 @@ class FileSystemClass {
     }
 
     /**
-     * laod and install package
+     * unpacks the package to "c/_temp/"
      * @param {string} data 
      */
-    async loadPackage(data) {
-        var data = JSON.parse(data);
+    async unpackPackage(data) {
         var p = new packageLoader(data);
         await p.loader(data);
     }
@@ -64,6 +64,7 @@ class FileSystemClass {
     async setFileString(path, dat) {
         if (!Object.keys(fastFileLookup).includes(path)) {
             await this.createFile(path);
+            console.log("create " + path);
         }
         this.realLocalStorage.setItem(fastFileLookup[path], dat);
         this.ramFiles[path] = undefined;
@@ -110,6 +111,8 @@ class FileSystemClass {
         var dat = ""
         if (this.ramFiles[path] == undefined) {
             var r = await this.localFileLoad(path);
+            //console.log(path + ":\n" + r);
+            //await delay(200);
             if (r.startsWith(".od__")) {
                 var l = await SystemHtml.WindowHandler.presets.createLoading("Loading", "Loading file from the internet");
                 l.setNum(0);
@@ -185,6 +188,7 @@ class FileSystemClass {
     /**
      * loads the file from local storage
      * @param {string} path 
+     * @return {string}
      */
     async localFileLoad(path) {
         if (this.realLocalStorage.getItem(fastFileLookup[path]) == undefined) {
@@ -293,11 +297,13 @@ class FileSystemClass {
 }
 class packageLoader {
     async loader(d) {
+        console.log(d);
         await this.load(d, "c/_temp");
     }
     async load(data, path) {
         for (var x of Object.keys(data)) {
             if (x.includes(".")) {
+                console.log(path + "/" + x)
                 await SystemFileSystem.setFileString(path + "/" + x, this.b64_to_utf8(data[x]));
             }
             else {

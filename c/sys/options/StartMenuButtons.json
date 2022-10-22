@@ -1,0 +1,10 @@
+{
+    "R": {
+        "tooltip":"reset",
+        "click": "c/sys/functions/reset.js"
+    },
+    "S": {
+        "tooltip":"Settings",
+        "click": "c/programs/settings/run.js"
+    }
+}

@@ -7,7 +7,7 @@ var overwriteNotRedownload = false;
 
 async function loader() {
     if (localStorage.getItem("fileSystemTable") == null || overwriteNotRedownload) {
-        var r = await fetch("filesys.json");
+        var r = await fetch("filesys.json?v=" + (Math.random() * 1000000));
         var d = JSON.parse(await r.text());
         FileSystemTable = load(d, "c");
         localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
@@ -37,6 +37,7 @@ async function loader() {
 }
 
 function loadFastLookup(data, path) {
+    fastFileLookup = {};
     for (x of Object.keys(data["files"])) {
         if (!usedFileSysIds.includes(data["files"][x])) {
             usedFileSysIds.push(data["files"][x])

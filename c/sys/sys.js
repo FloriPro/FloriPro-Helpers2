@@ -87,6 +87,35 @@ class program {
     }
     /**
      * 
+     * @param {string} data 
+     * @param {boolean} display 
+     * @param {HtmlWindow} l 
+     */
+    async installPackage(data, display, l) {
+        var pdata = JSON.parse(data);
+        await SystemFileSystem.unpackPackage(pdata);
+        if (display == true) await l.setNum(50);
+        var location = await SystemFileSystem.getFileString("c/_temp/installLocation.dat");
+        await SystemFileSystem.moveInFolder("c/_temp", location);
+        console.log("100");
+        await delay(100);
+        console.log("running install...");
+        if (display == true) await l.setNum(75);
+        var ret = await System.run(location + "/install.js");
+
+        if (display == true) {
+            if (ret) {
+                SystemHtml.WindowHandler.presets.createConfirm("Installed", "Succesfully installed!");
+            } else {
+                SystemHtml.WindowHandler.presets.createConfirm("Installed", "Unexpected response!");
+            }
+            await l.setNum(100);
+
+            setTimeout(() => { l.stop(); }, 250);
+        }
+    }
+    /**
+     * 
      * @returns {number}
      */
     findFreeId() {

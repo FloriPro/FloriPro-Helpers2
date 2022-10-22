@@ -42,20 +42,27 @@ class program extends System.program.default {
         }
     }
     async installProgram(_, __, programName) {
-        var l = await SystemHtml.WindowHandler.presets.createLoading("Downloading Program", "Downloading " + programName);
+        var l = await SystemHtml.WindowHandler.presets.createLoading("Installing", "Downloading " + programName);
         var pdata = await (await System.network.fetch("programs/" + programName + ".json")).text();
         await l.setNum(25);
 
-        await SystemFileSystem.loadPackage(pdata);
-        await l.setNum(50);
-
-        var location = await SystemFileSystem.getFileString("c/_temp/installLocation.dat");
-        await SystemFileSystem.moveInFolder("c/_temp", location);
-        await l.setNum(75);
-        await System.run(location + "/install.js");
-        await l.setNum(100);
-
-        setTimeout(() => { l.stop(); }, 250);
+        System.program.installPackage(pdata, true, l);
+        //var pdata = JSON.parse(pdata);
+        //await SystemFileSystem.unpackPackage(pdata);
+        //await l.setNum(50);
+        //
+        //var location = await SystemFileSystem.getFileString("c/_temp/installLocation.dat");
+        //await SystemFileSystem.moveInFolder("c/_temp", location);
+        //await l.setNum(75);
+        //var ret = await System.run(location + "/install.js");
+        //if (ret) {
+        //    SystemHtml.WindowHandler.presets.createConfirm("Installed", "Succesfully installed!");
+        //} else {
+        //    SystemHtml.WindowHandler.presets.createConfirm("Installed", "Unexpected response!");
+        //}
+        //await l.setNum(100);
+        //
+        //setTimeout(() => { l.stop(); }, 250);
     }
 }
 new program();

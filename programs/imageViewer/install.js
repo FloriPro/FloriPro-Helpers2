@@ -2,5 +2,6 @@
 System.options.addValue("fileExtensionOpener", "png", "c/programs/imageViewer/main.js", true);
 System.options.addValue("fileExtensionOpener", "jpg", "c/programs/imageViewer/main.js", true);
 
-System.options.addValue("startMenu", "Image Viewer", "c/programs/imageViewer/run.js", true);
-SystemHtml.WindowHandler.presets.createConfirm("Installed", "Succesfully installed!");
+System.options.addValue("programs", "imageViewer", { "path": "c/programs/Image Viewer/main.js", "name": "Image Viewer", "run": "c/programs/imageViewer/run.js" }, true);
+SystemHtml.updateStartmenu()
+true;
