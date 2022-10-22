@@ -38,6 +38,9 @@ async function loader() {
 
 function loadFastLookup(data, path) {
     fastFileLookup = {};
+    loadFastLookupRunner(data, path)
+}
+function loadFastLookupRunner(data, path) {
     for (x of Object.keys(data["files"])) {
         if (!usedFileSysIds.includes(data["files"][x])) {
             usedFileSysIds.push(data["files"][x])
@@ -45,7 +48,7 @@ function loadFastLookup(data, path) {
         fastFileLookup[path + "/" + x] = data["files"][x];
     }
     for (x of Object.keys(data["folder"])) {
-        loadFastLookup(data["folder"][x], path + "/" + x);
+        loadFastLookupRunner(data["folder"][x], path + "/" + x);
     }
 }
 

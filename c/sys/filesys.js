@@ -2,13 +2,14 @@ console.log("initializing FileSystem");
 
 class FileSystemClass {
     constructor() {
-        this.FileSystemTable = FileSystemTable;
+        //this.FileSystemTable = FileSystemTable;
         this.PositionalFileSystem = PositionalFileSystem;
         this.realLocalStorage = localStorage;
-        this.loadFastLookup = loadFastLookup;
+        //this.fastFileLookup = fastFileLookup;
+        //loadFastLookup = loadFastLookup;
         //setTimeout(this.removeLocalStorage, 1)
 
-        this.ramFiles = {}
+        //this.ramFiles = {}
     }
     async reset() {
         var toRemove = []
@@ -66,8 +67,12 @@ class FileSystemClass {
             await this.createFile(path);
             console.log("create " + path);
         }
+        if (fastFileLookup[path] == undefined || fastFileLookup[path] == "undefined") {
+            console.error("could not create file")
+            console.log(fastFileLookup[path]);
+        }
         this.realLocalStorage.setItem(fastFileLookup[path], dat);
-        this.ramFiles[path] = undefined;
+        //this.ramFiles[path] = undefined;
 
     }
     async createFile(path) {
@@ -109,7 +114,7 @@ class FileSystemClass {
      */
     async getFileString(path) {
         var dat = ""
-        if (this.ramFiles[path] == undefined) {
+        if (this.ramFiles == undefined || this.ramFiles[path] == undefined) {
             var r = await this.localFileLoad(path);
             //console.log(path + ":\n" + r);
             //await delay(200);
@@ -126,7 +131,7 @@ class FileSystemClass {
                 r = dat;
             }
 
-            this.ramFiles[path] = r; //store the file in ram for fast acces
+            //this.ramFiles[path] = r; //store the file in ram for fast acces
             return r;
         } else {
             return this.ramFiles[path];
@@ -256,7 +261,7 @@ class FileSystemClass {
         var f = await this.getTablePos(folder, "c", FileSystemTable);
 
         this.realLocalStorage.removeItem(fastFileLookup[path]);
-        this.ramFiles[path] = undefined;
+        //this.ramFiles[path] = undefined;
         delete f["files"][path.split("/")[path.split("/").length - 1]]
 
         loadFastLookup(FileSystemTable, "c")
