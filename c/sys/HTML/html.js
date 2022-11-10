@@ -298,10 +298,10 @@ class WindowHandler {
         this.updateTaskBar();
     }
     /**
-     * 
+     * @async
      * @param {string} name Name of the window
      * @param {()=>void} readyCallback gets called, when the window is ready to be set
-     * @returns {HtmlWindow} Created window
+     * @returns {Promise<HtmlWindow>} Created window
      */
     async createWindow(name, readyCallback) {
         var id = this.getFreeId();
@@ -593,7 +593,7 @@ class HtmlWindow {
     /**
      * returns this element
      * @param {string} tag only alphanumeric string
-     * @returns {HTMLElement}
+     * @returns {Promise<HTMLElement>}
      */
     async getHtmlElement(tag) {
         return this.getHtml().querySelector('*[windowElement="' + tag + '"]')
@@ -601,7 +601,7 @@ class HtmlWindow {
     /**
      * returns this element
      * @param {string} tag only alphanumeric string
-     * @returns {NodeListOf<HTMLElement>}
+     * @returns {Promise<NodeListOf<HTMLElement>>}
      */
     async getHtmlElements(tag) {
         return this.getHtml().querySelectorAll('*[windowElement="' + tag + '"]')
@@ -611,7 +611,7 @@ class HtmlWindow {
      * 
      * @param {string} event Html element Event (e.g. onclick) 
      * @param {string} htmlElementTag Html Element "element" tag ('<div element="tagofdoom"></div>': 'tagofdoom') 
-     * @param {(variable)} callback run when the event is triggered
+     * @param {(variable, id, ?, event)} callback run when the event is triggered
      * @param {ThisType} t the class to run the callback function in
      * @param {*} variable one variable passed in the callback function
      */

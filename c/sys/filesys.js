@@ -113,7 +113,7 @@ class FileSystemClass {
     /**
      * returns the content of a file
      * @param {string} path 
-     * @returns {string}
+     * @returns {Promise<string>}
      */
     async getFileString(path) {
         var dat = ""
@@ -200,6 +200,7 @@ class FileSystemClass {
      */
     async localFileLoad(path) {
         if (this.realLocalStorage.getItem(fastFileLookup[path]) == undefined) {
+            console.error("file " + path + " does not exist!");
             return "";
         }
         return this.realLocalStorage.getItem(fastFileLookup[path]).replace("\r\n", "\n")

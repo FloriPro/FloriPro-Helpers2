@@ -3,12 +3,23 @@ declare class sys {
     program: any;
     settings: settingsHandler;
     network: Network;
+    console: MyConsole;
     path: typeof Path;
+    SystemFileSystem: FileSystemClass;
     createEvents(): Promise<void>;
     eventHandler: eventHandler;
     run(path: any): Promise<any>;
     makeid(length: any): string;
     open(path: any): Promise<void>;
+}
+declare class MyConsole {
+    logs: any[];
+    listeners: {};
+    add(type: any, ...dat: any[]): void;
+    addListener(callback: any, variabel: any): string;
+    removeListener(id: any): void;
+    getString(): any[];
+    get(): any[];
 }
 declare class Network {
     /**

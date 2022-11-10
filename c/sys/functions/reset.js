@@ -1,11 +1,24 @@
 async function run() {
-    var r = false;
+    let skipQuestion = false;
     try {
-        r = await SystemHtml.WindowHandler.presets.createConfirm("reset", "Do you realy want to reset this whole machine?");
+        var t = (await System.options.get("settings"))["resetQuestion"][0];
+        console.log(t);
+        if (t == true) {
+            skipQuestion = t;
+        }
+    } catch {
+        console.error("could not check for skip question!");
     }
-    catch {
-        console.log("could not ask for reset")
-        r = true;
+
+    var r = true;
+    if (!skipQuestion) {
+        try {
+            r = await SystemHtml.WindowHandler.presets.createConfirm("reset", "Do you realy want to reset this whole machine?");
+        }
+        catch {
+            console.log("could not ask for reset")
+            r = true;
+        }
     }
     if (r == true) {
         try {
@@ -14,7 +27,7 @@ async function run() {
         } catch {
             if (confirm("reset failed! Completely reset everything?")) {
                 localStorage.clear();
-            }else{
+            } else {
                 alert("complete reset aborted!");
             }
         }

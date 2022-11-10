@@ -21,9 +21,9 @@ declare class FileSystemClass {
     /**
      * returns the content of a file
      * @param {string} path
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    getFileString(path: string): string;
+    getFileString(path: string): Promise<string>;
     bufferToString(buf: any, l: any): Promise<string>;
     /**
      * returns the json parsed content of a file

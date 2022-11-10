@@ -15,9 +15,9 @@ class program extends System.program.default {
             async () => {
                 //set html
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
-                await this.window.size.setSize(450, 500)
-                await this.window.size.userCanResize(false)
-                await this.loadPrism()
+                await this.window.size.setSize(450, 500);
+                await this.window.size.userCanResize(true);
+                await this.loadPrism();
 
                 await this.window.addHtmlEventListener("click", "save", this.save, this)
                 await this.window.addHtmlEventListener("click", "saveAs", this.saveAs, this)

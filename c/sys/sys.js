@@ -4,7 +4,9 @@ class sys {
         this.program = new program();
         this.settings = new settingsHandler()
         this.network = new Network();
+        this.console = new MyConsole();
         this.path = Path;
+        this.SystemFileSystem = SystemFileSystem;
     }
     async createEvents() {
         this.eventHandler = new eventHandler();
@@ -37,6 +39,116 @@ class sys {
         System.program.runProgram(programToOpen, path);
     }
 }
+class MyConsole {
+    constructor() {
+        var OldConsoledebug = console.debug;
+        console.debug = (...dat) => {
+
+            //handle other
+            if (dat[dat.length - 1] == "no-event") {
+                dat.splice(dat.length - 1);
+                OldConsoledebug(...dat);
+                return;
+            } else {
+                OldConsoledebug(...dat);
+                System.console.add("debug", ...dat);
+            }
+        }
+        var OldConsoleerror = console.error;
+        console.error = (...dat) => {
+
+            //handle other
+            if (dat[dat.length - 1] == "no-event") {
+                dat.splice(dat.length - 1);
+                OldConsoleerror(...dat);
+                return;
+            } else {
+                OldConsoleerror(...dat);
+                System.console.add("error", ...dat);
+            }
+        }
+        var OldConsoleinfo = console.info;
+        console.info = (...dat) => {
+
+            //handle other
+            if (dat[dat.length - 1] == "no-event") {
+                dat.splice(dat.length - 1);
+                OldConsoleinfo(...dat);
+                return;
+            } else {
+                OldConsoleinfo(...dat);
+                System.console.add("info", ...dat);
+            }
+        }
+        var OldConsolelog = console.log;
+        console.log = (...dat) => {
+
+            //handle other
+            if (dat[dat.length - 1] == "no-event") {
+                dat.splice(dat.length - 1);
+                OldConsolelog(...dat);
+                return;
+            } else {
+                OldConsolelog(...dat);
+                System.console.add("log", ...dat);
+            }
+        }
+        var OldConsolewarn = console.warn;
+        console.warn = (...dat) => {
+
+            //handle other
+            if (dat[dat.length - 1] == "no-event") {
+                dat.splice(dat.length - 1);
+                OldConsolewarn(...dat);
+                return;
+            } else {
+                OldConsolewarn(...dat);
+                System.console.add("warn", ...dat);
+            }
+        }
+
+        this.logs = [];
+
+        this.listeners = {};
+    }
+    add(type, ...dat) {
+        var d = dat.join(" ");
+        this.logs.push([type, d]);
+        if (Object.keys(this.logs).length > 100) {
+            this.logs.splice(0, 1);
+        }
+
+        for (var k of Object.keys(this.listeners)) {
+            var updateListener = this.listeners[k];
+            try {
+                updateListener[0]([type, d], updateListener[1]);
+            } catch {
+                return;
+                console.error("console listener errored! removing");
+                delete this.listeners[k];
+            }
+        }
+    }
+    addListener(callback, variabel) {
+        var id = System.makeid(100);
+        this.listeners[id] = [callback, variabel];
+        return id;
+    }
+    removeListener(id) {
+        delete this.listeners[id];
+    }
+    getString() {
+        var out = []
+        for (var x of this.logs) {
+            out.push(x[1]);
+        }
+        return out;
+    }
+    get() {
+        return this.logs;
+    }
+}
+
 class Network {
     constructor() {
 
@@ -101,7 +213,7 @@ class program {
         await delay(100);
         console.log("running install...");
         if (display == true) await l.setNum(75);
-        var ret = await System.run(location + "/install.js");
+        var ret = await (await System.run(location + "/install.js"));
 
         if (display == true) {
             if (ret) {
@@ -280,7 +392,6 @@ class settingsHandler {
     }
     settingUpdated(name) {
         if (this.settingsUpdater[name] == undefined) {
-            console.log("no listener on setting " + name);
             return;
         }
         for (var x of this.settingsUpdater[name]) {

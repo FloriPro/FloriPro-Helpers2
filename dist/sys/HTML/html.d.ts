@@ -26,12 +26,12 @@ declare class WindowHandler {
     presets: presets;
     removeWindow(id: any): Promise<void>;
     /**
-     *
+     * @async
      * @param {string} name Name of the window
      * @param {()=>void} readyCallback gets called, when the window is ready to be set
-     * @returns {HtmlWindow} Created window
+     * @returns {Promise<HtmlWindow>} Created window
      */
-    createWindow(name: string, readyCallback: () => void): HtmlWindow;
+    createWindow(name: string, readyCallback: () => void): Promise<HtmlWindow>;
     getFreeId(): number;
     /**
      * Get Window by id
@@ -126,24 +126,24 @@ declare class HtmlWindow {
     /**
      * returns this element
      * @param {string} tag only alphanumeric string
-     * @returns {HTMLElement}
+     * @returns {Promise<HTMLElement>}
      */
-    getHtmlElement(tag: string): HTMLElement;
+    getHtmlElement(tag: string): Promise<HTMLElement>;
     /**
      * returns this element
      * @param {string} tag only alphanumeric string
-     * @returns {NodeListOf<HTMLElement>}
+     * @returns {Promise<NodeListOf<HTMLElement>>}
      */
-    getHtmlElements(tag: string): NodeListOf<HTMLElement>;
+    getHtmlElements(tag: string): Promise<NodeListOf<HTMLElement>>;
     /**
      *
      * @param {string} event Html element Event (e.g. onclick)
      * @param {string} htmlElementTag Html Element "element" tag ('<div element="tagofdoom"></div>': 'tagofdoom')
-     * @param {(variable)} callback run when the event is triggered
+     * @param {(variable, id, ?, event)} callback run when the event is triggered
      * @param {ThisType} t the class to run the callback function in
      * @param {*} variable one variable passed in the callback function
      */
-    addHtmlEventListener(event: string, htmlElementTag: string, callback: (any), t: ThisType<any>, variable: any): Promise<void>;
+    addHtmlEventListener(event: string, htmlElementTag: string, callback: (variable: any, id: any, ?: any, event: any) => any, t: ThisType<any>, variable: any): Promise<void>;
     /**
      * removes **ALL** event listeners on *this* window
      */

@@ -10,5 +10,9 @@
     "stringNumber": [
         "5",
         "number"
+    ],
+    "resetQuestion": [
+        true,
+        "bool"
     ]
 }
