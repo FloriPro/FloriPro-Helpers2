@@ -11,7 +11,6 @@ async function run() {
             if (!await System.program.installed(toInstall)) {
                 await delay(100);
                 var l = await SystemHtml.WindowHandler.presets.createLoading("Installing " + toInstall, "Downloading " + toInstall);
-                await l.setNum(25);
                 await System.program.installPackage(await (await System.network.fetch(`programs/${toInstall}.json`)).text(), true, l, false, toInstall);
             }
         }

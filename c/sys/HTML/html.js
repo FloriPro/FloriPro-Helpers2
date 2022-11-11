@@ -207,15 +207,15 @@ class WindowHandler {
 
         System.eventHandler.addEventHandler("mousemove", (event, a) => {
             if (SystemHtml.WindowHandler.moving == true) {
+                /**
+                 * @type {HtmlWindow}
+                 */
                 var window = a[0].getWindowById(this.movingWindowId);
                 var element = window.getHtml();
-                //var [x, y] = a[0].getWindowById(this.movingWindowId).getPosition()
-                //a[0].getWindowById(this.movingWindowId).setPosition(x + event.movementX, y + event.movementY);
+
                 var y = parseInt(element.style.top) + event.movementY;
                 var x = parseInt(element.style.left) + event.movementX;
                 window.setPosition(x, y);
-                //element.style.top = y + 'px';
-                //element.style.left = x + 'px';
             }
             else if (SystemHtml.WindowHandler.resize == true) {
                 var element = a[0].getWindowById(this.resizeWindowId).addWindowSize(event.movementX, event.movementY);
@@ -240,19 +240,35 @@ class WindowHandler {
                 }
                 //move
                 else if (event.target.classList.contains("title-bar") || SystemHtml.elementArrayContainsClass(event.composedPath(), "title-bar-text")) {
-                    SystemHtml.WindowHandler.putWindowOnTop(id);
-                    SystemHtml.WindowHandler.moving = true;
-                    SystemHtml.WindowHandler.movingWindowId = id;
+                    if (!SystemHtml.WindowHandler.getWindowById(id).size.max) {
+                        SystemHtml.WindowHandler.putWindowOnTop(id);
+                        SystemHtml.WindowHandler.moving = true;
+                        SystemHtml.WindowHandler.movingWindowId = id;
+                    }
                 }
             }
         });
-        System.eventHandler.addEventHandler("mouseup", (event) => {
+        System.eventHandler.addEventHandler("mouseup", (event, a) => {
             if (SystemHtml.WindowHandler.moving == true) {
-                SystemHtml.WindowHandler.moving = false
+                //check if out of bounds
+                var currentwindow = a[0].getWindowById(this.movingWindowId);
+                var element = currentwindow.getHtml();
+                var y = parseInt(element.style.top) + event.movementY;
+                var x = parseInt(element.style.left) + event.movementX;
+
+                if (x < 0) { x = 0; }
+                if (y < 0) { y = 0; }
+
+                if (x > window.innerWidth - 90) { x = window.innerWidth - 90 };
+                if (y > window.innerHeight - 50 - 39) { y = window.innerHeight - 50 - 39 };
+                currentwindow.setPosition(x, y);
+
+
+                SystemHtml.WindowHandler.moving = false;
             } if (SystemHtml.WindowHandler.resize == true) {
                 SystemHtml.WindowHandler.resize = false
             }
-        });
+        }, [this]);
         System.eventHandler.addEventHandler("click", (event, args) => {
             //if window
             if (SystemHtml.elementArrayContainsClass(event.composedPath(), "window")) {
@@ -529,12 +545,12 @@ class HtmlWindow {
      * @param {number} y 
      */
     setPosition(x, y) {
-        var element = this.getHtml()
+        var element = this.getHtml()/*
         if (x < 0) { x = 0; }
         if (y < 0) { y = 0; }
 
         if (x > window.innerWidth - 50) { x = window.innerWidth - 50 };
-        if (y > window.innerHeight - 40 - 39) { y = window.innerHeight - 40 - 39 };
+        if (y > window.innerHeight - 40 - 39) { y = window.innerHeight - 40 - 39 };*/
 
         element.style.left = x + 'px';
         element.style.top = y + 'px';
