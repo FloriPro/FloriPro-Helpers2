@@ -2,7 +2,10 @@ declare class program extends standardProg {
     path: any;
     windowUserCanResize: boolean;
     windowShowTitle: boolean;
-    window: any;
+    /**
+     * @type {HtmlWindow}
+     */
+    window: HtmlWindow;
     events(): Promise<void>;
     create(): Promise<void>;
     button1(_: any, __: any, vars: any): Promise<void>;

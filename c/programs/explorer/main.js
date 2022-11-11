@@ -9,6 +9,9 @@ class program extends System.program.default {
         this.windowShowTitle = false;
 
         console.log("started as id " + this.id);
+        /**
+         * @type {HtmlWindow}
+         */
         this.window = await SystemHtml.WindowHandler.createWindow("Explorer",
             //onready:
             async () => {
@@ -33,6 +36,8 @@ class program extends System.program.default {
 
     }
     async create() {
+        (await this.window.getHtmlElement("path")).innerText = this.path;
+
         await this.window.removeAllEventListeners();
         await this.events();
 

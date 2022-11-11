@@ -346,9 +346,9 @@ class systemProgramHandler {
 
         if (showInstallInfo == true) {
             if (ret) {
-                SystemHtml.WindowHandler.presets.createConfirm("Installed", "Succesfully installed!");
+                SystemHtml.WindowHandler.presets.createInformation("Installed", "Succesfully installed!");
             } else {
-                SystemHtml.WindowHandler.presets.createConfirm("Installed", "Unexpected response!");
+                SystemHtml.WindowHandler.presets.createInformation("Installed", "Unexpected response!");
             }
 
         }
@@ -478,17 +478,23 @@ class eventHandler {
      */
     event(event, type, replacement) {
         //special fonctions to make life easyer for mobile
-        if (event.type == "touchmove" && event.movementX == undefined) {
+        if ((event.type == "touchmove" || event.type == "touchend" || event.type == "touchstart") && (event.movementX == undefined || event.movementY == undefined)) {
+            var toutches = event.touches;
+            
+            if (toutches.length == 0) {
+                toutches = [{ "pageX": System.eventHandler.lifeMakerVars["mox"], "pageY": System.eventHandler.lifeMakerVars["moy"] }]
+            }
+
             if (System.eventHandler.lifeMakerVars["mox"] == null) {
-                System.eventHandler.lifeMakerVars["mox"] = event.touches[0].pageX;
-                System.eventHandler.lifeMakerVars["moy"] = event.touches[0].pageY;
+                System.eventHandler.lifeMakerVars["mox"] = toutches[0].pageX;
+                System.eventHandler.lifeMakerVars["moy"] = toutches[0].pageY;
                 event.movementX = 0;
                 event.movementY = 0;
             } else {
-                event.movementX = event.touches[0].pageX - System.eventHandler.lifeMakerVars["mox"];
-                event.movementY = event.touches[0].pageY - System.eventHandler.lifeMakerVars["moy"];
-                System.eventHandler.lifeMakerVars["mox"] = event.touches[0].pageX;
-                System.eventHandler.lifeMakerVars["moy"] = event.touches[0].pageY;
+                event.movementX = toutches[0].pageX - System.eventHandler.lifeMakerVars["mox"];
+                event.movementY = toutches[0].pageY - System.eventHandler.lifeMakerVars["moy"];
+                System.eventHandler.lifeMakerVars["mox"] = toutches[0].pageX;
+                System.eventHandler.lifeMakerVars["moy"] = toutches[0].pageY;
             }
         }
         if (event.type == "touchend") {

@@ -22,7 +22,7 @@ async function run() {
     }
     if (r == true) {
         try {
-            SystemHtml.WindowHandler.presets.createConfirm("reseting...", "this might take a while");
+            SystemHtml.WindowHandler.presets.createInformation("reseting...", "this might take a while");
             await SystemFileSystem.reset();
         } catch {
             if (confirm("reset failed! Completely reset everything?")) {

@@ -81,7 +81,7 @@ declare class HtmlWindow {
          * @param {number | undefined} y
          */
         setSize(x: number | undefined, y: number | undefined): Promise<void>;
-        getSize(): Promise<number[]>;
+        getSize(): number[];
         htmlSizing(): Promise<void>;
         userCanResize(yn: any): void;
         maxToggle(): Promise<void>;
@@ -193,6 +193,7 @@ declare class presets {
     createLoading(title: any, text: any): Promise<loadingPreset>;
     createStringSelect(title: any, text: any): Promise<any>;
     createConfirm(title: any, text: any): Promise<any>;
+    createInformation(title: any, text: any): Promise<any>;
 }
 declare class fileSelectPreset {
     load(title: any): Promise<any>;
@@ -251,6 +252,11 @@ declare class loadingPreset {
      * close window
      */
     stop(): void;
+}
+declare class informationPreset {
+    load(title: any, text: any): Promise<any>;
+    returnFunction: (value: any) => void;
+    window: any;
 }
 declare var SystemHtml: Html;
 //# sourceMappingURL=html.d.ts.map

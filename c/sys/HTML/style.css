@@ -111,6 +111,7 @@ input {
     height: 30px;
 }
 
+
 .window-layer .window .title-bar .title-bar-controls button[aria-label=Minimize] {
     background-position: bottom 4px left 4px;
 }
@@ -211,7 +212,11 @@ button {
 }
 
 button:hover {
-    background: rgb(174, 202, 255);
+    background-color: rgb(174, 202, 255);
+}
+
+button[aria-label="Close"]:hover {
+    background-color: rgb(255, 112, 112);
 }
 
 * {

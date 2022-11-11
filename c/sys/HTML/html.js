@@ -251,18 +251,23 @@ class WindowHandler {
         System.eventHandler.addEventHandler("mouseup", (event, a) => {
             if (SystemHtml.WindowHandler.moving == true) {
                 //check if out of bounds
+                /**
+                 * @type {HtmlWindow}
+                 */
                 var currentwindow = a[0].getWindowById(this.movingWindowId);
                 var element = currentwindow.getHtml();
+
                 var y = parseInt(element.style.top) + event.movementY;
                 var x = parseInt(element.style.left) + event.movementX;
 
-                if (x < 0) { x = 0; }
-                if (y < 0) { y = 0; }
 
-                if (x > window.innerWidth - 90) { x = window.innerWidth - 90 };
+
+                if (x < +175 - currentwindow.size.getSize()[0]) { x = +175 - currentwindow.size.getSize()[0]; }
+                if (y < -10) { y = -10; }
+
+                if (x > window.innerWidth - 150) { x = window.innerWidth - 150 };
                 if (y > window.innerHeight - 50 - 39) { y = window.innerHeight - 50 - 39 };
                 currentwindow.setPosition(x, y);
-
 
                 SystemHtml.WindowHandler.moving = false;
             } if (SystemHtml.WindowHandler.resize == true) {
@@ -396,7 +401,7 @@ class WindowHandler {
             }
         }
 
-        if (this.focusedWindow != undefined) {
+        if (this.focusedWindow != undefined && this.getWindowById(this.focusedWindow) != undefined) {
             if (this.getWindowById(this.focusedWindow).size.fullMax) {
                 document.querySelector("#taskbar").style.display = "none";
             } else {
@@ -472,7 +477,7 @@ class HtmlWindow {
                 this.parent.getHtml().style.width = this.parent.#sizeX + "px";
                 this.parent.getHtml().style.height = this.parent.#sizeY + "px";
             }
-            async getSize() {
+            getSize() {
                 return [this.parent.#sizeX, this.parent.#sizeY]
             }
             async htmlSizing() {
@@ -793,6 +798,12 @@ class presets {
         if (title == undefined) { title = "Select" }
         if (text == undefined) { text = "Please select" }
         var f = new confirmPreset()
+        return await f.load(title, text);
+    }
+    async createInformation(title, text) {
+        if (title == undefined) { title = "Information" }
+        if (text == undefined) { text = "Information" }
+        var f = new informationPreset()
         return await f.load(title, text);
     }
 }
@@ -1191,6 +1202,43 @@ class loadingPreset {
      */
     stop() {
         this.window.remove();
+    }
+}
+class informationPreset {
+    constructor() {
+    }
+    async load(title, text) {
+        var promise = new Promise((res, rej) => {
+            this.returnFunction = res;
+        });
+
+        //make window
+        this.window = await SystemHtml.WindowHandler.createWindow(title,
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent('<p element="text"></p><button element="ok">Ok</button>');
+
+                (await this.window.getHtmlElement("text")).innerText = text;
+
+                await this.window.size.setSize(400, 200);
+                await this.window.size.userCanResize(true)
+
+                //add event listeners
+                await this.window.addHtmlEventListener("onclick", "ok", async () => {
+                    //read data
+                    this.returnFunction(true);
+
+                    //close and return
+                    this.window.remove()
+                }, this);
+            });
+        this.window.close = () => {
+            this.returnFunction(null)
+            return true
+        }
+
+        return promise
     }
 }
 
