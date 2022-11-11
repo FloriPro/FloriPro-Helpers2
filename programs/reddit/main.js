@@ -47,6 +47,9 @@ class program extends System.program.default {
                 await this.window.addHtmlEventListener("click", "next", this.next, this);
                 await this.window.addHtmlEventListener("click", "back", this.back, this);
                 await this.window.addHtmlEventListener("click", "img", this.imgFullscreen, this);
+
+                await this.window.addHtmlEventListener("click", "setWindownormal", () => { this.window.size.notMax() }, this);
+                await this.window.addHtmlEventListener("click", "setWindowmax", () => { this.window.size.setfullMax() }, this);
                 //await this.window.addHtmlEventListener("click", "postDebug", this.postDebug, this);
                 await this.window.addHtmlEventListener("click", "openVid", this.openVideo, this);
                 await this.window.addHtmlEventListener("click", "openSettings", () => {
