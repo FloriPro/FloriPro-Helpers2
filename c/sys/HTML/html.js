@@ -490,8 +490,8 @@ class HtmlWindow {
                 }
             }
             async maxToggle() {
-                this.max = !this.max;
-                if (this.max) {
+                var m = !this.max;
+                if (m) {
                     await this.setMax();
                 } else {
                     this.notMax();
