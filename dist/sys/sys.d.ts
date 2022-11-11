@@ -1,6 +1,6 @@
 declare class sys {
     options: options;
-    program: any;
+    program: systemProgramHandler;
     settings: settingsHandler;
     network: Network;
     console: MyConsole;
@@ -8,18 +8,63 @@ declare class sys {
     SystemFileSystem: FileSystemClass;
     createEvents(): Promise<void>;
     eventHandler: eventHandler;
+    /**
+     * run a javascript file
+     */
     run(path: any): Promise<any>;
-    makeid(length: any): string;
-    open(path: any): Promise<void>;
+    /**
+     * gives a random alphanumeric string
+     * @param {number} length
+     * @returns {string} random alphanumeric string
+     */
+    makeid(length: number): string;
+    /**
+     * opens a file with the right program
+     * @param {string} path
+     */
+    open(path: string): Promise<void>;
+    /**
+     * gives you the class of the libary
+     * @param {string} name libary name
+     * @returns {Promise<typeof Class>}
+     */
+    getLib(name: string): Promise<typeof Class>;
 }
 declare class MyConsole {
-    logs: any[];
+    /**
+     * @type { [string, *][] }
+     */
+    logs: [string, any][];
     listeners: {};
-    add(type: any, ...dat: any[]): void;
-    addListener(callback: any, variabel: any): string;
-    removeListener(id: any): void;
-    getString(): any[];
-    get(): any[];
+    /**
+     * Internal method
+     * @param {string} type
+     * @param  {...any} dat
+     * @returns
+     */
+    add(type: string, ...dat: any[]): void;
+    /**
+     * add an event listener on any console log
+     * @param {([type,loggedObject]:[string, any], variable:any)} callback gets called
+     * @param {*} variable
+     * @returns
+     */
+    addListener(callback: ([type, loggedObject]: [string, any], variable: any) => any, variable: any): string;
+    /**
+     * remove an event listener
+     * @param {string} id event listener id
+     */
+    removeListener(id: string): void;
+    /**
+     * returns a list of all last 100 console logs
+     * @returns {string[]}
+     */
+    getString(): string[];
+    /**
+     * returns a list of all last 100 console logs
+     * @returns
+     */
+    get(): [string, any][];
 }
 declare class Network {
     /**
@@ -32,28 +77,68 @@ declare class Network {
 declare class Path {
     constructor(path: any);
     path: any;
-    sections(): any;
-    file(): any;
-    folder(): any;
+    /**
+     * [folder1, folder2, folder3, file]
+     * @returns {string[]}
+     */
+    sections(): string[];
+    /**
+     * name of the file
+     * @returns {string}
+     */
+    file(): string;
+    /**
+     * path to the file
+     * @returns {string}
+     */
+    folder(): string;
 }
-declare class program {
+declare class systemProgramHandler {
     programRegister: {};
     default: typeof standardProg;
-    runProgram(path: any, args: any): Promise<any>;
-    runProgramString(dat: any, path: any, args: any): Promise<any>;
     /**
-     *
-     * @param {string} data
-     * @param {boolean} display
-     * @param {HtmlWindow} l
+     * @param {string} name name of the program/libary
+     * @returns {Promise<boolean>} true if the program/libary exists, false otherwise
      */
-    installPackage(data: string, display: boolean, l: HtmlWindow): Promise<void>;
+    installed(name: string): Promise<boolean>;
     /**
-     *
+     * starts a program form a file
+     * @param {string} path the path to the program
+     * @param {*} args a argument that gets passed to the program when it is started
+     * @returns {program} the created program
+     */
+    runProgram(path: string, args: any): program;
+    /**
+     * starts a program from the string provided in "dat"
+     * @param {string} dat the program string to start
+     * @param {string} path the path to the program
+     * @param {*} args a argument that gets passed to the program when it is started
+     * @returns {program} the created program
+     */
+    runProgramString(dat: string, path: string, args: any): program;
+    /**
+     * uses installPackage to install the package from this github repository
+     * @param {string} name
+     * @param {boolean} overwrite should overwrite if allready exists
+     */
+    easyPackageInstall(name: string, overwrite: boolean): Promise<boolean>;
+    /**
+     * installs a package. Can allso display the progress in a window
+     * @param {string} data package
+     * @param {boolean} display show prograss in a window
+     * @param {loadingPreset} displayWindow the window to display the progress
+     */
+    installPackage(data: string, display: boolean, displayWindow: loadingPreset, showInstallInfo: any, name: any): Promise<void>;
+    /**
+     * finds a free id for a now program
      * @returns {number}
      */
     findFreeId(): number;
-    stop(id: any): void;
+    /**
+     * stop the with id named program
+     * @param {number} id
+     */
+    stop(id: number): void;
 }
 declare class standardProg {
     id: number;
@@ -75,11 +160,11 @@ declare class options {
     /**
      * returns the data of an option (allways a dict)
      * @param {string} option name of the option whitch contains a dict of values
-     * @returns {{string:*}} dict of the values of the option
+     * @returns {Promise<{ [any: string]: any }} dict of the values of the option
      */
-    get(option: string): {
-        string: any;
-    };
+    get(option: string): Promise<{
+        [any: string]: any;
+    }>;
     /**
      * adds something to the dict of an option
      * @param {string} option
@@ -94,11 +179,11 @@ declare class eventHandler {
     handlers: {};
     construct(): Promise<void>;
     replacementEvents: {
-        string: any;
+        [any: string]: any;
     };
     replacementEventsK: string[];
     shouldPrevent: {
-        string: any;
+        [any: string]: any;
     };
     events: string[];
     /**
@@ -114,8 +199,22 @@ declare class eventHandler {
 }
 declare class settingsHandler {
     settingsUpdater: {};
-    addSettingsUpdater(name: any, callback: any): void;
-    settingUpdated(name: any): void;
+    /**
+     * calback gets called when the specified setting changes
+     * @param {string} name the name of the setting to view
+     * @param {(settingsName)} callback
+     */
+    addSettingsUpdater(name: string, callback: any): void;
+    /**
+     * gets called this when a setting changes.
+     * Internal method
+     * @param {string} name
+     * @returns
+     */
+    settingUpdated(name: string): void;
 }
+declare var Class: {
+    new (): {};
+};
 declare var System: sys;
 //# sourceMappingURL=sys.d.ts.map

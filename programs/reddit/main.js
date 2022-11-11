@@ -16,9 +16,9 @@ class program extends System.program.default {
         this.maxWidth = "500px";
 
         /**
-         * @type reddit
+         * @type {reddit}
          */
-        this.redditApi = new (await System.run(this.PATH.folder() + "/api.js"))(["memes"]);
+        this.redditApi = new (await System.getLib("redditApi")) //new (await System.run(this.PATH.folder() + "/api.js"))(["memes"]);
         this.redditApi.vars = await SystemFileSystem.getFileJson("c/user/reddit/settings.json")
 
         console.log("started as id " + this.id);

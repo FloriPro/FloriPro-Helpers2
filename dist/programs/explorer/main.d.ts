@@ -1,5 +1,4 @@
-declare class program {
-    init(): Promise<void>;
+declare class program extends standardProg {
     path: any;
     windowUserCanResize: boolean;
     windowShowTitle: boolean;

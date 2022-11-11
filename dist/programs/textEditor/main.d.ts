@@ -1,7 +1,4 @@
-declare const program_base: any;
-declare class program extends program_base {
-    [x: string]: any;
-    init(file: any): Promise<void>;
+declare class program extends standardProg {
     button1Clicks: number;
     windowUserCanResize: boolean;
     windowShowTitle: boolean;

@@ -1,6 +1,7 @@
 [
     "imageViewer",
     "reddit",
+    "redditApi",
     "testScript",
     "jShell"
 ]

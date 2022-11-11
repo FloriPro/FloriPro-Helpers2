@@ -43,26 +43,18 @@ class program extends System.program.default {
     }
     async installProgram(_, __, programName) {
         var l = await SystemHtml.WindowHandler.presets.createLoading("Installing", "Downloading " + programName);
-        var pdata = await (await System.network.fetch("programs/" + programName + ".json")).text();
-        await l.setNum(25);
 
-        System.program.installPackage(pdata, true, l);
-        //var pdata = JSON.parse(pdata);
-        //await SystemFileSystem.unpackPackage(pdata);
-        //await l.setNum(50);
-        //
-        //var location = await SystemFileSystem.getFileString("c/_temp/installLocation.dat");
-        //await SystemFileSystem.moveInFolder("c/_temp", location);
-        //await l.setNum(75);
-        //var ret = await System.run(location + "/install.js");
-        //if (ret) {
-        //    SystemHtml.WindowHandler.presets.createConfirm("Installed", "Succesfully installed!");
-        //} else {
-        //    SystemHtml.WindowHandler.presets.createConfirm("Installed", "Unexpected response!");
-        //}
-        //await l.setNum(100);
-        //
-        //setTimeout(() => { l.stop(); }, 250);
+        //check if allready installed
+        if (await System.program.installed(programName)) {
+            var r = await SystemHtml.WindowHandler.presets.createConfirm("Allready installed", "This is already installed do you want to continue?");
+            if (!r) {
+                l.stop();
+                return;
+            }
+        }
+
+        var pdata = await (await System.network.fetch("programs/" + programName + ".json")).text();
+        System.program.installPackage(pdata, true, l, undefined, programName);
     }
 }
 new program();

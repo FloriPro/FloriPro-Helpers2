@@ -38,6 +38,10 @@ class program extends System.program.default {
                     }
                 }, this, undefined);
                 this.consoleEventId = System.console.addListener((dat, self) => { self.update(dat); }, this);
+
+                for (var x of System.console.get()) {
+                    this.update(x);
+                }
             });
         this.window.close = () => {
             try {

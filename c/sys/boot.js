@@ -11,6 +11,5 @@ async function boot() {
             await System.run(x);
         }
     }
-    
 }
 boot();

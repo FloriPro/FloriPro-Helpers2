@@ -16,6 +16,7 @@ declare class Html {
     addHtmlEvent(elementTag: any, id: any, callback: any, eventType: any, t: any, variables: any): void;
 }
 declare class WindowHandler {
+    windowsCreated: number;
     moving: boolean;
     usedWindowId: any[];
     /** @type {{[id:number]:HtmlWindow}} */
@@ -49,10 +50,16 @@ declare class WindowHandler {
 declare class HtmlWindow {
     constructor(id: any);
     makeClose(): void;
+    /**
+     * remove the window
+     */
     remove(): void;
     ontop: boolean;
     size: {
-        parent: any;
+        /**
+         * @type {HtmlWindow}
+         */
+        parent: HtmlWindow;
         max: boolean;
         maxBefore: {
             pos: number[];
@@ -65,11 +72,12 @@ declare class HtmlWindow {
          * @param {number | undefined} y
          */
         setSize(x: number | undefined, y: number | undefined): Promise<void>;
-        getSize(): Promise<any[]>;
+        getSize(): Promise<number[]>;
         htmlSizing(): Promise<void>;
         userCanResize(yn: any): void;
         maxToggle(): Promise<void>;
         setMax(): Promise<void>;
+        updateMax(): Promise<void>;
     };
     appearence: {
         parent: any;
@@ -214,8 +222,23 @@ declare class confirmPreset {
 declare class loadingPreset {
     load(title: any, text: any): Promise<any>;
     returnFunction: (value: any) => void;
-    window: any;
-    setNum(proc: any): Promise<void>;
+    /**
+     * @type {HtmlWindow}
+     */
+    window: HtmlWindow;
+    /**
+     * sets the percentage of the window
+     * @param {number} proc percentage to set
+     */
+    setNum(proc: number): Promise<void>;
+    /**
+     * sets the text of the window
+     * @param {string} text text to set
+     */
+    setText(text: string): Promise<void>;
+    /**
+     * close window
+     */
     stop(): void;
 }
 declare var SystemHtml: Html;

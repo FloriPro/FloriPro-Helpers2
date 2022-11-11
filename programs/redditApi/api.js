@@ -4,6 +4,9 @@ class reddit {
      * @param {string[]} subreddits 
      */
     constructor(subreddits) {
+        if (subreddits == undefined) {
+            subreddits = ["_"];
+        }
         this.subreddits = subreddits;
         this.currentSubredditId = 0;
 

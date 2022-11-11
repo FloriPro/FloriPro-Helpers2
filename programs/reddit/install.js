@@ -1,4 +1,7 @@
 async function run() {
+    //install the needed dependencies
+    await System.program.easyPackageInstall("redditApi");
+    
     //file extensions
     await System.options.addValue("programs", "reddit", { "path": "c/programs/reddit/main.js", "name": "Reddit", "run": "c/programs/reddit/run.js" }, true);
     SystemHtml.updateStartmenu()

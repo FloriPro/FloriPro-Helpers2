@@ -1,7 +1,7 @@
 class sys {
     constructor() {
         this.options = new options();
-        this.program = new program();
+        this.program = new systemProgramHandler();
         this.settings = new settingsHandler()
         this.network = new Network();
         this.console = new MyConsole();
@@ -12,10 +12,18 @@ class sys {
         this.eventHandler = new eventHandler();
         this.eventHandler.construct();
     }
+    /**
+     * run a javascript file
+     */
     async run(path) {
         var dec = `var PATH=new System.path('${path}');`;
         return eval(dec + "\n" + await SystemFileSystem.getFileString(path));
     }
+    /**
+     * gives a random alphanumeric string
+     * @param {number} length 
+     * @returns {string} random alphanumeric string
+     */
     makeid(length) {
         var result = '';
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -26,6 +34,10 @@ class sys {
         }
         return result;
     }
+    /**
+     * opens a file with the right program
+     * @param {string} path
+     */
     async open(path) {
         var o = await System.options.get("fileExtensionOpener")
         var p = path.split("/")
@@ -37,6 +49,20 @@ class sys {
             programToOpen = o[fileEnding];
         }
         System.program.runProgram(programToOpen, path);
+    }
+    /**
+     * gives you the class of the libary
+     * @param {string} name libary name
+     * @returns {Promise<typeof Class>}
+     */
+    async getLib(name) {
+        var path = (await System.options.get("libs"))[name];
+        if (path == undefined) {
+            console.warn("Could not find lib");
+            return class { };
+        }
+        var lib = System.run(path);
+        return lib;
     }
 }
 class MyConsole {
@@ -107,10 +133,19 @@ class MyConsole {
             }
         }
 
+        /**
+         * @type { [string, *][] }
+         */
         this.logs = [];
 
         this.listeners = {};
     }
+    /**
+     * Internal method
+     * @param {string} type 
+     * @param  {...any} dat 
+     * @returns 
+     */
     add(type, ...dat) {
         var d = dat.join(" ");
         this.logs.push([type, d]);
@@ -123,20 +158,34 @@ class MyConsole {
             try {
                 updateListener[0]([type, d], updateListener[1]);
             } catch {
+                delete this.listeners[k];
                 return;
                 console.error("console listener errored! removing");
-                delete this.listeners[k];
             }
         }
     }
-    addListener(callback, variabel) {
+    /**
+     * add an event listener on any console log
+     * @param {([type,loggedObject]:[string, any], variable:any)} callback gets called
+     * @param {*} variable 
+     * @returns 
+     */
+    addListener(callback, variable) {
         var id = System.makeid(100);
-        this.listeners[id] = [callback, variabel];
+        this.listeners[id] = [callback, variable];
         return id;
     }
+    /**
+     * remove an event listener
+     * @param {string} id event listener id
+     */
     removeListener(id) {
         delete this.listeners[id];
     }
+    /**
+     * returns a list of all last 100 console logs
+     * @returns {string[]}
+     */
     getString() {
         var out = []
         for (var x of this.logs) {
@@ -144,6 +193,10 @@ class MyConsole {
         }
         return out;
     }
+    /**
+     * returns a list of all last 100 console logs
+     * @returns 
+     */
     get() {
         return this.logs;
     }
@@ -166,24 +219,64 @@ class Path {
     constructor(path) {
         this.path = path
     }
+    /**
+     * [folder1, folder2, folder3, file]
+     * @returns {string[]}
+     */
     sections() {
         return this.path.split("/");
     }
+    /**
+     * name of the file
+     * @returns {string}
+     */
     file() {
         return this.sections()[this.sections.length - 1]
     }
+    /**
+     * path to the file
+     * @returns {string}
+     */
     folder() {
         return this.sections().slice(0, -1).join("/");
     }
 }
-class program {
+class systemProgramHandler {
     constructor() {
         this.programRegister = {};
         this.default = standardProg;
     }
+    /**
+     * @param {string} name name of the program/libary
+     * @returns {Promise<boolean>} true if the program/libary exists, false otherwise
+     */
+    async installed(name) {
+        var libs = await System.options.get("libs");
+        var programs = await System.options.get("programs");
+        if (Object.keys(libs).includes(name)) {
+            return true;
+        }
+        if (Object.keys(programs).includes(name)) {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * starts a program form a file
+     * @param {string} path the path to the program
+     * @param {*} args a argument that gets passed to the program when it is started
+     * @returns {program} the created program
+     */
     async runProgram(path, args) {
         return await this.runProgramString(await SystemFileSystem.getFileString(path), path, args)
     }
+    /**
+     * starts a program from the string provided in "dat"
+     * @param {string} dat the program string to start
+     * @param {string} path the path to the program
+     * @param {*} args a argument that gets passed to the program when it is started
+     * @returns {program} the created program
+     */
     async runProgramString(dat, path, args) {
         if (path == undefined) {
             path = "c";
@@ -197,37 +290,65 @@ class program {
         r.init(args);
         return r;
     }
+
     /**
-     * 
-     * @param {string} data 
-     * @param {boolean} display 
-     * @param {HtmlWindow} l 
+     * uses installPackage to install the package from this github repository
+     * @param {string} name 
+     * @param {boolean} overwrite should overwrite if allready exists
      */
-    async installPackage(data, display, l) {
+    async easyPackageInstall(name, overwrite) {
+
+        if (await System.program.installed(name) && overwrite != true) {
+            return false;
+        }
+        var l = await SystemHtml.WindowHandler.presets.createLoading("Installing " + name, "Downloading " + name);
+        await System.program.installPackage(await (await System.network.fetch(`programs/${name}.json`)).text(), true, l, false, name);
+        return true;
+    }
+
+    /**
+     * installs a package. Can allso display the progress in a window
+     * @param {string} data package
+     * @param {boolean} display show prograss in a window
+     * @param {loadingPreset} displayWindow the window to display the progress
+     */
+    async installPackage(data, display, displayWindow, showInstallInfo, name) {
+        if (name == undefined) { name = "?"; }
+
+        await displayWindow.setNum(25);
+        await displayWindow.setText("Installing " + name);
+
+        if (showInstallInfo == undefined) {
+            showInstallInfo = display;
+        }
+
         var pdata = JSON.parse(data);
         await SystemFileSystem.unpackPackage(pdata);
-        if (display == true) await l.setNum(50);
+        if (display == true) await displayWindow.setNum(50);
         var location = await SystemFileSystem.getFileString("c/_temp/installLocation.dat");
         await SystemFileSystem.moveInFolder("c/_temp", location);
-        console.log("100");
         await delay(100);
-        console.log("running install...");
-        if (display == true) await l.setNum(75);
+        console.log("running install " + name);
+        if (display == true) await displayWindow.setNum(75);
         var ret = await (await System.run(location + "/install.js"));
 
-        if (display == true) {
+        if (showInstallInfo == true) {
             if (ret) {
                 SystemHtml.WindowHandler.presets.createConfirm("Installed", "Succesfully installed!");
             } else {
                 SystemHtml.WindowHandler.presets.createConfirm("Installed", "Unexpected response!");
             }
-            await l.setNum(100);
 
-            setTimeout(() => { l.stop(); }, 250);
         }
+        if (display == true) {
+            await displayWindow.setNum(100);
+            delay(250);
+            displayWindow.stop();
+        }
+        console.log("finished installation " + name);
     }
     /**
-     * 
+     * finds a free id for a now program
      * @returns {number}
      */
     findFreeId() {
@@ -238,6 +359,10 @@ class program {
         }
         return i;
     }
+    /**
+     * stop the with id named program
+     * @param {number} id 
+     */
     stop(id) {
         this.programRegister[id].isStopping();
         delete this.programRegister[id]
@@ -274,7 +399,7 @@ class options {
     /**
      * returns the data of an option (allways a dict)
      * @param {string} option name of the option whitch contains a dict of values
-     * @returns {{string:*}} dict of the values of the option
+     * @returns {Promise<{ [any: string]: any }} dict of the values of the option
      */
     async get(option) {
         var d = SystemFileSystem.getFileJson("c/sys/options/" + option + ".json");
@@ -384,12 +509,23 @@ class settingsHandler {
     constructor() {
         this.settingsUpdater = {}
     }
+    /**
+     * calback gets called when the specified setting changes
+     * @param {string} name the name of the setting to view
+     * @param {(settingsName)} callback 
+     */
     addSettingsUpdater(name, callback) {
         if (this.settingsUpdater[name] == undefined) {
             this.settingsUpdater[name] = [];
         }
         this.settingsUpdater[name].push(callback);
     }
+    /**
+     * gets called this when a setting changes.
+     * Internal method
+     * @param {string} name 
+     * @returns 
+     */
     settingUpdated(name) {
         if (this.settingsUpdater[name] == undefined) {
             return;
@@ -399,5 +535,6 @@ class settingsHandler {
         }
     }
 }
+var Class = class { } //for "tsc" ///--remove--
 var System = new sys();//for "tsc" ///--remove--
 System = new sys();

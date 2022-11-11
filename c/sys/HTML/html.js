@@ -194,6 +194,8 @@ class Html {
 }
 class WindowHandler {
     constructor() {
+        this.windowsCreated = 1;
+
         this.moving = false;
         this.usedWindowId = [];
         /** @type {{[id:number]:HtmlWindow}} */
@@ -242,14 +244,6 @@ class WindowHandler {
                     SystemHtml.WindowHandler.moving = true;
                     SystemHtml.WindowHandler.movingWindowId = id;
                 }
-                //close
-                if (event.target.classList.contains("close")) {
-                    SystemHtml.WindowHandler.getWindowById(id).makeClose()
-                }
-                //close
-                if (event.target.classList.contains("maximize")) {
-                    SystemHtml.WindowHandler.getWindowById(id).size.maxToggle();
-                }
             }
         });
         System.eventHandler.addEventHandler("mouseup", (event) => {
@@ -276,6 +270,15 @@ class WindowHandler {
                         return;
                     }
                 }
+
+                //close
+                if (event.target.classList.contains("close")) {
+                    SystemHtml.WindowHandler.getWindowById(id).makeClose()
+                }
+                //maximize
+                if (event.target.classList.contains("maximize")) {
+                    SystemHtml.WindowHandler.getWindowById(id).size.maxToggle();
+                }
             }
         });
         System.eventHandler.addEventHandler("resize", (event, args) => {
@@ -283,7 +286,7 @@ class WindowHandler {
             //update fullscreen windows
             for (var id in Object.keys(SystemHtml.WindowHandler.windows)) {
                 if (SystemHtml.WindowHandler.windows[id].size.max == true) {
-                    SystemHtml.WindowHandler.windows[id].size.setMax();
+                    SystemHtml.WindowHandler.windows[id].size.updateMax();
                 }
             }
         });
@@ -310,7 +313,12 @@ class WindowHandler {
         var w = new HtmlWindow(id);
         w.onReady = readyCallback
         await w.load(id, name);
-        w.setPosition(20, 20)
+
+        this.windowsCreated++;
+        if (20 * this.windowsCreated >= (window.innerWidth - 50) / 10 || 20 * this.windowsCreated >= (window.innerHeight - 50) / 10) {
+            this.windowsCreated = 1;
+        }
+        w.setPosition(20 * this.windowsCreated, 20 * this.windowsCreated)
 
         this.windows[id] = w;
 
@@ -403,6 +411,9 @@ class HtmlWindow {
             this.remove();
         }
     }
+    /**
+     * remove the window
+     */
     remove() {
         SystemHtml.WindowHandler.removeWindow(this.#id)
     }
@@ -411,6 +422,9 @@ class HtmlWindow {
         this.ontop = true;
         this.size = new class {
             constructor(parent) {
+                /**
+                 * @type {HtmlWindow}
+                 */
                 this.parent = parent;
                 this.max = false;
 
@@ -459,9 +473,12 @@ class HtmlWindow {
                 this.maxBefore["pos"] = this.parent.getPosition();
                 this.maxBefore["userResize"] = this.parent.canUserResize
 
+                await this.updateMax();
+            }
+            async updateMax() {
                 this.userCanResize(false);
                 this.parent.setPosition(0, 0);
-                this.setSize(window.innerWidth, window.innerHeight - 39);
+                await this.setSize(window.innerWidth, window.innerHeight - 39);
             }
         }(this)
         this.appearence = new class {
@@ -1059,6 +1076,9 @@ class loadingPreset {
             this.returnFunction = res;
         });
         //make window
+        /**
+         * @type {HtmlWindow}
+         */
         this.window = await SystemHtml.WindowHandler.createWindow(title,
             //onready:
             async () => {
@@ -1076,12 +1096,26 @@ class loadingPreset {
         }
         return promise;
     }
+    /**
+     * sets the percentage of the window
+     * @param {number} proc percentage to set
+     */
     async setNum(proc) {
         var p = await this.window.getHtmlElement("p");
         p.innerText = proc + "%"
     }
+    /**
+     * sets the text of the window
+     * @param {string} text text to set
+     */
+    async setText(text) {
+        (await this.window.getHtmlElement("text")).innerText = text;
+    }
+    /**
+     * close window
+     */
     stop() {
-        this.window.remove()
+        this.window.remove();
     }
 }
 
