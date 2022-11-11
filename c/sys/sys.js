@@ -17,7 +17,11 @@ class sys {
      */
     async run(path) {
         var dec = `var PATH=new System.path('${path}');`;
-        return eval(dec + "\n" + await SystemFileSystem.getFileString(path));
+        try {
+            return eval(dec + "\n" + await SystemFileSystem.getFileString(path));
+        } catch (e) {
+            console.error(e);
+        }
     }
     /**
      * gives a random alphanumeric string
@@ -281,13 +285,21 @@ class systemProgramHandler {
         if (path == undefined) {
             path = "c";
         }
-        var r = await eval(dat)
+        try {
+            var r = await eval(dat)
+        } catch (e) {
+            console.error(e);
+        }
         var id = this.findFreeId();
 
         this.programRegister[id] = r;
         r.id = id;
         r.PATH = new System.path(path);
-        r.init(args);
+        try {
+            r.init(args);
+        } catch (e) {
+            console.error(e);
+        }
         return r;
     }
 
