@@ -361,6 +361,9 @@ class WindowHandler {
     getWindowById(id) {
         return this.windows[id];
     }
+    /**
+     * @returns {HtmlWindow}
+     */
     get focusedWindow() {
         return this.windowLayering[this.windowLayering.length - 1];
     }
@@ -375,19 +378,30 @@ class WindowHandler {
     updateWindowLayering() {
         var i = 1;
         for (var x of this.windowLayering) {
-            this.getWindowById(x).setLayer(i);
-            if (i == this.windowLayering.length) {
-                var b = this.getWindowById(x).ontop;
-                this.getWindowById(x).ontop = true;
-                if (b != true) {
-                    this.updateTaskBar();
+            var win = this.getWindowById(x)
+            if (win != undefined) {
+                win.setLayer(i);
+                if (i == this.windowLayering.length) {
+                    var b = win.ontop;
+                    win.ontop = true;
+                    if (b != true) {
+                        this.updateTaskBar();
+                    }
+                    win.getHtml().style.filter = "";
+                } else {
+                    win.ontop = false;
+                    win.getHtml().style.filter = "brightness(0.9)";
                 }
-                this.getWindowById(x).getHtml().style.filter = "";
-            } else {
-                this.getWindowById(x).ontop = false;
-                this.getWindowById(x).getHtml().style.filter = "brightness(0.9)";
+                i++;
             }
-            i++;
+        }
+
+        if (this.focusedWindow != undefined) {
+            if (this.getWindowById(this.focusedWindow).size.fullMax) {
+                document.querySelector("#taskbar").style.display = "none";
+            } else {
+                document.querySelector("#taskbar").style.display = "";
+            }
         }
     }
     updateTaskBar() {
@@ -443,8 +457,9 @@ class HtmlWindow {
                  */
                 this.parent = parent;
                 this.max = false;
+                this.fullMax = false;
 
-                this.maxBefore = { "pos": [20, 20], "size": [100, 100], "userResize": true }
+                this.maxBefore = { "normal": { "pos": [20, 20], "size": [100, 100], "userResize": true, "showTitle": true }, "fullmax": {}, "max": {} };
             }
             /**
              * sets the x/y size of the window, if defined
@@ -479,22 +494,66 @@ class HtmlWindow {
                 if (this.max) {
                     await this.setMax();
                 } else {
-                    this.parent.setPosition(this.maxBefore["pos"][0], this.maxBefore["pos"][1]);
-                    this.setSize(this.maxBefore["size"][0], this.maxBefore["size"][1]);
-                    this.userCanResize(this.maxBefore["userResize"]);
+                    this.notMax();
                 }
             }
+            async setfullMax() {
+                var t = "normal";
+                if (this.max) t = "max";
+                if (this.fullMax) t = "fullmax";
+
+                this.maxBefore[t]["size"] = await this.getSize();
+                this.maxBefore[t]["pos"] = this.parent.getPosition();
+                this.maxBefore[t]["userResize"] = this.parent.canUserResize
+                this.maxBefore[t]["showTitle"] = this.parent.appearence.title;
+
+                this.fullMax = true;
+                this.max = true;
+
+                this.userCanResize(false);
+                this.parent.setPosition(0, 0);
+                await this.setSize(window.innerWidth, window.innerHeight);
+                this.parent.appearence.showTitle(false);
+
+                SystemHtml.WindowHandler.updateWindowLayering();
+            }
+            async notMax() {
+                this.fullMax = false;
+                this.max = false;
+                var t = "normal";
+
+                this.parent.setPosition(this.maxBefore[t]["pos"][0], this.maxBefore[t]["pos"][1]);
+                this.setSize(this.maxBefore[t]["size"][0], this.maxBefore[t]["size"][1]);
+                this.userCanResize(this.maxBefore[t]["userResize"]);
+                this.parent.appearence.showTitle(this.maxBefore[t]["showTitle"]);
+                SystemHtml.WindowHandler.updateWindowLayering();
+            }
             async setMax() {
-                this.maxBefore["size"] = await this.getSize();
-                this.maxBefore["pos"] = this.parent.getPosition();
-                this.maxBefore["userResize"] = this.parent.canUserResize
+                var t = "normal";
+                if (this.max) { t = "max" };
+                if (this.fullMax) { t = "fullmax" };
+
+                this.maxBefore[t]["size"] = await this.getSize();
+                this.maxBefore[t]["pos"] = this.parent.getPosition();
+                this.maxBefore[t]["userResize"] = this.parent.canUserResize;
+
+                this.parent.appearence.showTitle(this.maxBefore["normal"]["showTitle"]);
+                this.maxBefore[t]["showTitle"] = this.parent.appearence.title;
+
+                this.fullMax = false;
+                this.max = true;
 
                 await this.updateMax();
+                SystemHtml.WindowHandler.updateWindowLayering();
             }
             async updateMax() {
                 this.userCanResize(false);
                 this.parent.setPosition(0, 0);
-                await this.setSize(window.innerWidth, window.innerHeight - 39);
+                if (this.fullMax) {
+                    await this.setSize(window.innerWidth, window.innerHeight);
+                } else {
+                    await this.setSize(window.innerWidth, window.innerHeight - 39);
+                }
             }
         }(this)
         this.appearence = new class {

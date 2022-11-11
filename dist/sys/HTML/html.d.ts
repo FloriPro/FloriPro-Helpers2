@@ -40,7 +40,10 @@ declare class WindowHandler {
      * @returns {HtmlWindow} requested window
      */
     getWindowById(id: number): HtmlWindow;
-    get focusedWindow(): any;
+    /**
+     * @returns {HtmlWindow}
+     */
+    get focusedWindow(): HtmlWindow;
     putWindowOnTop(id: any): void;
     updateWindowLayering(): void;
     updateTaskBar(): void;
@@ -61,10 +64,16 @@ declare class HtmlWindow {
          */
         parent: HtmlWindow;
         max: boolean;
+        fullMax: boolean;
         maxBefore: {
-            pos: number[];
-            size: number[];
-            userResize: boolean;
+            normal: {
+                pos: number[];
+                size: number[];
+                userResize: boolean;
+                showTitle: boolean;
+            };
+            fullmax: {};
+            max: {};
         };
         /**
          * sets the x/y size of the window, if defined
@@ -76,6 +85,8 @@ declare class HtmlWindow {
         htmlSizing(): Promise<void>;
         userCanResize(yn: any): void;
         maxToggle(): Promise<void>;
+        setfullMax(): Promise<void>;
+        notMax(): Promise<void>;
         setMax(): Promise<void>;
         updateMax(): Promise<void>;
     };

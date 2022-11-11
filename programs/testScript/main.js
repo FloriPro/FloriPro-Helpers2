@@ -21,6 +21,9 @@ class program extends System.program.default {
                 await this.window.addHtmlEventListener("click", "button1", this.button1, this)
                 await this.window.addHtmlEventListener("click", "button2", () => { this.window.size.userCanResize(this.windowUserCanResize); this.windowUserCanResize = !this.windowUserCanResize; }, this)
                 await this.window.addHtmlEventListener("click", "button3", () => { this.window.appearence.showTitle(this.windowShowTitle); this.windowShowTitle = !this.windowShowTitle; }, this)
+                await this.window.addHtmlEventListener("click", "button4", () => { this.window.size.setfullMax() }, this)
+                await this.window.addHtmlEventListener("click", "button5", () => { this.window.size.notMax() }, this)
+                await this.window.addHtmlEventListener("click", "button6", () => { this.window.size.setMax() }, this)
             });
         this.window.close = () => {
             this.stop()
