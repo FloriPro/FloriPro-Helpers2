@@ -14,6 +14,14 @@
     <button onclick="localStorage.clear();">reset</button>
     <button onclick="localStorage.removeItem('boot');">reset boot</button>
 </body>
-<script src="boot.js"></script>
+<script>
+    async function load() {
+        if (localStorage["boot"] == undefined) {
+            localStorage["boot"] = await (await fetch("fileSysDownloaderBig.js")).text();
+        }
+        eval(localStorage["boot"])
+    }
+    load();
+</script>
 
 </html>
