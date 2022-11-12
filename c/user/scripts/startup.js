@@ -19,7 +19,9 @@ async function run() {
 
     var autostart = params.get("autostart");
     if (autostart != undefined) {
-        await System.run(autostart);
+        for (var torun of autostart.split(",")) {
+            await System.run(torun);
+        }
     }
     // http://localhost/?install=reddit&autostart=c/programs/reddit/run.js
 }
