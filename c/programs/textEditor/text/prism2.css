@@ -19,7 +19,7 @@
 #editing,
 #highlighting {
   position: absolute;
-  height: calc(100% - 127px);
+  height: calc(100% - 150px);
 }
 
 /* Move the textarea in front of the result */

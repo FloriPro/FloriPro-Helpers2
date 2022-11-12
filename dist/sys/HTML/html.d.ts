@@ -47,7 +47,7 @@ declare class WindowHandler {
     putWindowOnTop(id: any): void;
     updateWindowLayering(): void;
     updateTaskBar(): void;
-    createTaskBarProgram(name: any, ontop: any, id: any): HTMLDivElement;
+    createTaskBarProgram(name: any, ontop: any, id: any, window: any): HTMLDivElement;
     focus(id: any): void;
 }
 declare class HtmlWindow {
@@ -91,9 +91,16 @@ declare class HtmlWindow {
         updateMax(): Promise<void>;
     };
     appearence: {
-        parent: any;
+        /**
+         * @type {HtmlWindow}
+         */
+        parent: HtmlWindow;
         title: boolean;
+        shown: boolean;
         showTitle(yn: any): void;
+        minimize(): void;
+        show(): void;
+        toggleMinimize(): void;
     };
     canUserResize: boolean;
     close: () => boolean;

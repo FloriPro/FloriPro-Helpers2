@@ -300,6 +300,11 @@ class WindowHandler {
                 if (event.target.classList.contains("maximize")) {
                     SystemHtml.WindowHandler.getWindowById(id).size.maxToggle();
                 }
+                //minimize
+                if (event.target.classList.contains("minimize")) {
+                    SystemHtml.WindowHandler.getWindowById(id).appearence.toggleMinimize();
+                    this.updateTaskBar();
+                }
             }
         });
         System.eventHandler.addEventHandler("resize", (event, args) => {
@@ -319,7 +324,6 @@ class WindowHandler {
         remove(this.usedWindowId, id);
         remove(this.windowLayering, id);
         this.updateWindowLayering();
-        this.updateTaskBar();
     }
     /**
      * @async
@@ -344,7 +348,6 @@ class WindowHandler {
         this.windows[id] = w;
 
         this.updateWindowLayering();
-        this.updateTaskBar();
 
         setTimeout(() => {
             this.focus(id);
@@ -381,17 +384,22 @@ class WindowHandler {
         this.updateWindowLayering();
     }
     updateWindowLayering() {
-        var i = 1;
+        var windowLayeringWithoutHidden = []
         for (var x of this.windowLayering) {
+            if (this.getWindowById(x) != undefined && this.getWindowById(x).appearence.shown) {
+                windowLayeringWithoutHidden.push(x);
+            }
+        }
+
+        var i = 1;
+        for (var x of windowLayeringWithoutHidden) {
             var win = this.getWindowById(x)
+
             if (win != undefined) {
                 win.setLayer(i);
-                if (i == this.windowLayering.length) {
+                if (i == windowLayeringWithoutHidden.length) {
                     var b = win.ontop;
                     win.ontop = true;
-                    if (b != true) {
-                        this.updateTaskBar();
-                    }
                     win.getHtml().style.filter = "";
                 } else {
                     win.ontop = false;
@@ -408,19 +416,25 @@ class WindowHandler {
                 document.querySelector("#taskbar").style.display = "";
             }
         }
+        this.updateTaskBar();
     }
     updateTaskBar() {
         var programList = document.querySelector("#taskbar-programList");
         programList.innerHTML = "";
         for (var x of Object.keys(this.windows)) {
-            var p = this.createTaskBarProgram(this.windows[x].getTitle(), this.windows[x].ontop, this.windows[x].getId());
+            var p = this.createTaskBarProgram(this.windows[x].getTitle(), this.windows[x].ontop, this.windows[x].getId(), this.windows[x]);
+
             programList.append(p);
         }
     }
-    createTaskBarProgram(name, ontop, id) {
+    createTaskBarProgram(name, ontop, id, window) {
         var programDiv = document.createElement("div");
         programDiv.className = "programListElement";
-        if (ontop) { programDiv.className += " selected" }
+        if (window.appearence.shown) {
+            if (ontop) { programDiv.className += " selected" }
+        } else {
+            if (ontop) { programDiv.className += " hidden" }
+        }
         programDiv.onclick = () => {
             SystemHtml.WindowHandler.focus(id);
         }
@@ -432,6 +446,7 @@ class WindowHandler {
         return programDiv
     }
     focus(id) {
+        this.getWindowById(id).appearence.show();
         this.putWindowOnTop(id);
     }
 }
@@ -489,8 +504,10 @@ class HtmlWindow {
             userCanResize(yn) {
                 this.parent.canUserResize = yn;
                 if (yn) {
+                    this.parent.getHtml().querySelector(".maximize").style.display = "";
                     this.parent.getHtml().style.padding = "12px"
                 } else {
+                    this.parent.getHtml().querySelector(".maximize").style.display = "none";
                     this.parent.getHtml().style.padding = "0px"
                 }
             }
@@ -516,6 +533,7 @@ class HtmlWindow {
                 this.max = true;
 
                 this.userCanResize(false);
+                this.parent.getHtml().querySelector(".maximize").style.display = "";
                 this.parent.setPosition(0, 0);
                 await this.setSize(window.innerWidth, window.innerHeight);
                 this.parent.appearence.showTitle(false);
@@ -553,6 +571,7 @@ class HtmlWindow {
             }
             async updateMax() {
                 this.userCanResize(false);
+                this.parent.getHtml().querySelector(".maximize").style.display = "";
                 this.parent.setPosition(0, 0);
                 if (this.fullMax) {
                     await this.setSize(window.innerWidth, window.innerHeight);
@@ -563,8 +582,12 @@ class HtmlWindow {
         }(this)
         this.appearence = new class {
             constructor(parent) {
+                /**
+                 * @type {HtmlWindow}
+                 */
                 this.parent = parent;
                 this.title = true;
+                this.shown = true;
             }
             showTitle(yn) {
                 this.title = yn;
@@ -575,6 +598,25 @@ class HtmlWindow {
                 } else {
                     h.querySelector(".title-bar").style.display = "none";
                     h.querySelector(".contentBody").style.height = "calc(100% - 0px)";
+                }
+            }
+            minimize() {
+                var h = this.parent.getHtml();
+                h.style.display = "none";
+
+                this.shown = false;
+            }
+            show() {
+                var h = this.parent.getHtml();
+                h.style.display = "";
+
+                this.shown = true;
+            }
+            toggleMinimize() {
+                if (this.show) {
+                    this.minimize();
+                } else {
+                    this.show();
                 }
             }
         }(this)

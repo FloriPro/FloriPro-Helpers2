@@ -45,6 +45,9 @@ input {
     color: black;
     letter-spacing: 0;
     margin-right: 24px;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .title-bar-text span {
@@ -61,6 +64,7 @@ input {
     min-width: 16px;
     min-height: 14px;
     border: 0px;
+    margin: 0px;
 }
 
 .title-bar-controls button:active {
@@ -156,6 +160,13 @@ input {
     background-color: #585858;
 }
 
+#taskbar-programList .programListElement.hidden {
+    background-color: #222222;
+}
+
+#taskbar-programList .programListElement.hidden p {
+    color: #7e7e7e;
+}
 
 p {
     margin: 0px;

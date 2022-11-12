@@ -10,18 +10,23 @@ class program extends System.program.default {
 
 
         console.log("started as id " + this.id);
+        /**
+         * @type {HtmlWindow}
+         */
         this.window = await SystemHtml.WindowHandler.createWindow("Text editor",
             //onready:
             async () => {
                 //set html
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
                 await this.window.size.setSize(450, 500);
-                await this.window.size.userCanResize(true);
-                await this.loadPrism();
+                this.window.size.userCanResize(true);
 
                 await this.window.addHtmlEventListener("click", "save", this.save, this)
                 await this.window.addHtmlEventListener("click", "saveAs", this.saveAs, this)
                 await this.window.addHtmlEventListener("click", "open", this.open, this)
+                await this.window.addHtmlEventListener("click", "codeStyle", this.codeStyle, this)
+
+                await this.loadPrism();
 
                 if (file != undefined) {
                     this.file = file;
@@ -38,19 +43,25 @@ class program extends System.program.default {
         }
     }
     async loadPrism() {
-        var styleSheet = document.createElement("style")
-        styleSheet.innerText = await SystemFileSystem.getFileString("c/programs/textEditor/text/prism.css")
-        document.head.appendChild(styleSheet)
-        var styleSheet = document.createElement("style")
-        styleSheet.innerText = await SystemFileSystem.getFileString("c/programs/textEditor/text/prism2.css")
-        document.head.appendChild(styleSheet)
+        if (window.prismAllreadyInitialized == undefined) {
+            var styleSheet = document.createElement("style")
+            styleSheet.innerText = await SystemFileSystem.getFileString("c/programs/textEditor/text/prism.css")
+            document.head.appendChild(styleSheet)
+            var styleSheet = document.createElement("style")
+            styleSheet.innerText = await SystemFileSystem.getFileString("c/programs/textEditor/text/prism2.css")
+            document.head.appendChild(styleSheet)
 
-        try {
-            eval(await SystemFileSystem.getFileString("c/programs/textEditor/text/prism.js"))
-            //eval(await getFile("c/programs/text/prismaddon.js"))
-        } catch (e) {
-            console.error(e);
+            try {
+                eval(await SystemFileSystem.getFileString("c/programs/textEditor/text/prism.js"))
+                //eval(await getFile("c/programs/text/prismaddon.js"))
+            } catch (e) {
+                console.error(e);
+            }
+
+            //don't load prism again (it doesn't unload itself when the window is closed)
+            window.prismAllreadyInitialized = true;
         }
+
         Prism.highlightElement(this.window.getHtml().querySelector('.highlighting-content'));
     }
     async save() {
@@ -82,6 +93,16 @@ class program extends System.program.default {
         (await this.window.getHtmlElement("fileName")).innerText = this.file;
         this.window.getHtml().querySelector("#editing").value = (await SystemFileSystem.getFileString(this.file)).replace("\r\n", "\n");
         this.window.getHtml().querySelector("#editing").oninput()
+    }
+    async codeStyle() {
+        var cStyle = await SystemHtml.WindowHandler.presets.createStringSelect("Code Style", "python, javascript, css, etc.");
+        if (cStyle == undefined) { return; }
+
+        (await this.window.getHtmlElement("highlightingContent")).className = "highlighting-content language-" + cStyle;
+        (await this.window.getHtmlElement("editing")).oninput();
+
+        //this.wind.getHtml().querySelector(".highlighting-content").className = "highlighting-content language-" + cStyle;
+        //Prism.highlightElement(this.wind.getHtml().querySelector('.highlighting-content'));
     }
 }
 new program();

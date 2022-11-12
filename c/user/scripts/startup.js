@@ -15,5 +15,12 @@ async function run() {
             }
         }
     }
+
+
+    var autostart = params.get("autostart");
+    if (autostart != undefined) {
+        await System.run(autostart);
+    }
+    // http://localhost/?install=reddit&autostart=c/programs/reddit/run.js
 }
 run();
