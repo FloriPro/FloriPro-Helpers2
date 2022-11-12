@@ -312,6 +312,9 @@ class WindowHandler {
                     SystemHtml.WindowHandler.putWindowOnTop(id);
                     SystemHtml.WindowHandler.resize = true;
                     SystemHtml.WindowHandler.resizeWindowId = id;
+
+                    //iframs not clickable
+                    this.iframeNoClick()
                 }
                 //move
                 else if (event.target.classList.contains("title-bar") || SystemHtml.elementArrayContainsClass(event.composedPath(), "title-bar-text")) {
@@ -319,6 +322,9 @@ class WindowHandler {
                         SystemHtml.WindowHandler.putWindowOnTop(id);
                         SystemHtml.WindowHandler.moving = true;
                         SystemHtml.WindowHandler.movingWindowId = id;
+
+                        //iframs not clickable
+                        this.iframeNoClick()
                     }
                 }
             }
@@ -345,8 +351,20 @@ class WindowHandler {
                 currentwindow.setPosition(x, y);
 
                 SystemHtml.WindowHandler.moving = false;
+
+
+                var ifr = document.querySelectorAll("iframe");
+                for (var iframe of ifr) {
+                    iframe.style.pointerEvents = "";
+                }
             } if (SystemHtml.WindowHandler.resize == true) {
-                SystemHtml.WindowHandler.resize = false
+                SystemHtml.WindowHandler.resize = false;
+
+
+                var ifr = document.querySelectorAll("iframe");
+                for (var iframe of ifr) {
+                    iframe.style.pointerEvents = "";
+                }
             }
         }, [this]);
         System.eventHandler.addEventHandler("click", (event, args) => {
@@ -391,6 +409,12 @@ class WindowHandler {
                 }
             }
         });
+    }
+    iframeNoClick() {
+        var ifr = document.querySelectorAll("iframe");
+        for (var iframe of ifr) {
+            iframe.style.pointerEvents = "none";
+        }
     }
     async removeWindow(id) {
         SystemHtml.removeAllEvents(id);

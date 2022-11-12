@@ -35,6 +35,7 @@ declare class WindowHandler {
     };
     windowLayering: any[];
     presets: presets;
+    iframeNoClick(): void;
     removeWindow(id: any): Promise<void>;
     /**
      * @async
