@@ -52,6 +52,7 @@ class program extends System.program.default {
             var b = document.createElement("button")
             b.innerText = x + "/";
             b.setAttribute("element", i + "_el")
+            b.contextscript = () => { return { "remove Folder": this.removeF, "rename Folder": this.renameF } };
             folderStuff.append(b)
 
             await this.window.parseNewHtml();
@@ -61,7 +62,20 @@ class program extends System.program.default {
         for (var x of await SystemFileSystem.getFiles(this.path)) {
             var b = document.createElement("button")
             b.innerText = x;
+            b.setAttribute("path", this.path + "/" + x);
             b.setAttribute("element", i + "_el")
+            b.contextscript = () => {
+                return {
+                    "remove File": this.removeFi, "rename File": this.renameFi, "run": async (event) => {
+                        var response = await System.run(event.target.getAttribute("path"));
+                        if (response != undefined) {
+                            SystemHtml.WindowHandler.presets.createInformation("run responded:", response);
+                        }
+                    }, "run as Program": (event) => {
+                        System.program.runProgram(event.target.getAttribute("path"));
+                    }
+                }
+            };
             fileStuff.append(b)
 
             await this.window.parseNewHtml();
@@ -97,6 +111,18 @@ class program extends System.program.default {
         if (folderName == undefined) { return }
         SystemFileSystem.createFolder(this.path, folderName)
         await this.create();
+    }
+    async removeF() {
+        console.warn("todo: removeF");
+    }
+    async renameF() {
+        console.warn("todo: renameF");
+    }
+    async removeFi() {
+        console.warn("todo: removeFi");
+    }
+    async renameFi() {
+        console.warn("todo: renameFi");
     }
 }
 new program();
