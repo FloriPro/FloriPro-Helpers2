@@ -9,6 +9,9 @@ class program extends System.program.default {
         this.windowShowTitle = false;
 
         console.log("started as id " + this.id);
+        /**
+         * @type {HtmlWindow}
+         */
         this.window = await SystemHtml.WindowHandler.createWindow("test",
             //onready:
             async () => {
@@ -17,13 +20,19 @@ class program extends System.program.default {
                 await this.window.size.setSize(200, 300)
                 await this.window.size.userCanResize(false)
 
+
+
                 //add event listeners
                 await this.window.addHtmlEventListener("click", "button1", this.button1, this)
-                await this.window.addHtmlEventListener("click", "button2", () => { this.window.size.userCanResize(this.windowUserCanResize); this.windowUserCanResize = !this.windowUserCanResize; }, this)
-                await this.window.addHtmlEventListener("click", "button3", () => { this.window.appearence.showTitle(this.windowShowTitle); this.windowShowTitle = !this.windowShowTitle; }, this)
-                await this.window.addHtmlEventListener("click", "button4", () => { this.window.size.setfullMax() }, this)
-                await this.window.addHtmlEventListener("click", "button5", () => { this.window.size.notMax() }, this)
-                await this.window.addHtmlEventListener("click", "button6", () => { this.window.size.setMax() }, this)
+                await this.window.addHtmlEventListener("click", "button2", () => { this.window.size.userCanResize(this.windowUserCanResize); this.windowUserCanResize = !this.windowUserCanResize; }, this);
+                await this.window.addHtmlEventListener("click", "button3", () => { this.window.appearence.showTitle(this.windowShowTitle); this.windowShowTitle = !this.windowShowTitle; }, this);
+                await this.window.addHtmlEventListener("click", "button4", () => { this.window.size.setfullMax() }, this);
+                await this.window.addHtmlEventListener("click", "button5", () => { this.window.size.notMax() }, this);
+                await this.window.addHtmlEventListener("click", "button6", () => { this.window.size.setMax() }, this);
+
+                var exHere = await this.window.getHtmlElement("exHere")
+                exHere.contextscript = () => { return { "test2": this.test2, "test3": this.test3 } };
+
             });
         this.window.close = () => {
             this.stop()
@@ -35,6 +44,12 @@ class program extends System.program.default {
         var e = await this.window.getHtmlElement("button1return")
         e.innerText = "" + this.button1Clicks;
         console.log("button1 pressed!");
+    }
+    test2() {
+        alert("2")
+    }
+    test3() {
+        alert("3")
     }
 }
 new program();

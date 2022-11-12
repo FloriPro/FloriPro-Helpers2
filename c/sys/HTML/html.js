@@ -75,6 +75,7 @@ class Html {
         }, [_StartMenuButton, _StartMenu]);
 
         this.WindowHandler = new WindowHandler();
+        this.ContextMenu = new ContextMenu();
 
         function startMenuButton_Toggle() {
             if (_StartMenu.style.display != "") {
@@ -192,6 +193,80 @@ class Html {
         this.htmlEventList[name][eventType].push([callback, variables])
     }
 }
+class ContextMenu {
+    constructor() {
+        this.ContextEvent = class {
+            constructor(element) {
+                this.target = element;
+            }
+        }
+
+        System.eventHandler.addEventHandler("mousedown", (event) => {
+            if (event.target.className == "contextmenubutton") {
+                event.target.onclick();
+            }
+
+            //close all contextmenus
+            for (var x of document.querySelectorAll(".contextmenu")) {
+                x.remove();
+            }
+        });
+        System.eventHandler.addEventHandler("contextmenu", (event) => {
+            var eventButtons = {};
+            var path = event.composedPath().reverse();
+            for (var pathElement of path) {
+                if (pathElement != document && pathElement != window) {
+                    var contextScript = pathElement.contextscript
+                    var contextDat = pathElement.getAttribute("contextdat");
+
+                    var dat = {};
+
+                    if (contextScript != null) {
+                        var cs = contextScript();
+                        for (var x of Object.keys(cs)) {
+                            dat[x] = [cs[x], new this.ContextEvent(pathElement)];
+                        }
+                    }
+                    if (contextDat != null) {
+                        var cs = eval("(" + contextDat + ")");
+                        for (var x of Object.keys(cs)) {
+                            dat[x] = [cs[x], new this.ContextEvent(pathElement)];
+                        }
+                    }
+
+                    for (var x of Object.keys(dat)) {
+                        eventButtons[x] = dat[x];
+                    }
+                }
+            }
+            this.showContext(eventButtons, [event.clientX, event.clientY]);
+        }, []);
+    }
+
+    showContext(eventButtons, position) {
+        var div = document.createElement("div");
+        div.className = "contextmenu"
+        div.style.top = position[1] + "px";
+        div.style.left = position[0] + "px";
+
+        for (var x of Object.keys(eventButtons)) {
+            div.appendChild(this.createContextButton(x, eventButtons[x]));
+        }
+
+        document.body.appendChild(div);
+    }
+    createContextButton(name, information) {
+        var button = document.createElement("button");
+        button.className = "contextmenubutton"
+        button.innerText = name;
+        button.onclick = (event) => {
+            information[0](information[1]);
+        }
+
+        return button;
+    }
+}
+
 class WindowHandler {
     constructor() {
         this.windowsCreated = 1;

@@ -15,7 +15,7 @@
     "compositionend": false,
     "compositionstart": false,
     "compositionupdate": false,
-    "contextmenu": false,
+    "contextmenu": true,
     "cuechange": false,
     "dblclick": false,
     "drag": false,

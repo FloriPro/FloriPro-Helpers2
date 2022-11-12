@@ -3,6 +3,7 @@ declare class Html {
     htmlEventListThis: {};
     loadSystem(): Promise<void>;
     WindowHandler: WindowHandler;
+    ContextMenu: ContextMenu;
     updateStartmenu(): Promise<void>;
     loadStartMenu(_StartMenu: any): Promise<void>;
     elementArrayContainsClass(array: any, clas: any): boolean;
@@ -14,6 +15,15 @@ declare class Html {
     htmlEventParser(event: Event): void;
     removeAllEvents(id: any): void;
     addHtmlEvent(elementTag: any, id: any, callback: any, eventType: any, t: any, variables: any): void;
+}
+declare class ContextMenu {
+    ContextEvent: {
+        new (element: any): {
+            target: any;
+        };
+    };
+    showContext(eventButtons: any, position: any): void;
+    createContextButton(name: any, information: any): HTMLButtonElement;
 }
 declare class WindowHandler {
     windowsCreated: number;
