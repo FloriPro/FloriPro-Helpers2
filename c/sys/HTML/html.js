@@ -417,7 +417,6 @@ class WindowHandler {
             }
         });
         System.eventHandler.addEventHandler("resize", (event, args) => {
-            console.log("resize");
             //update fullscreen windows
             for (var id in Object.keys(SystemHtml.WindowHandler.windows)) {
                 if (SystemHtml.WindowHandler.windows[id].size.max == true) {
