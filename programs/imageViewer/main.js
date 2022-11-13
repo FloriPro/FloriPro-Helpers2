@@ -4,7 +4,7 @@ class program extends System.program.default {
         //don't use!
     }
     async init(file) {
-        console.log("started as id " + this.id);
+
         this.window = await SystemHtml.WindowHandler.createWindow("Image Viewer",
             //onready:
             async () => {

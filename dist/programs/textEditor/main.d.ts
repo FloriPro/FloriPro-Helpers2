@@ -1,7 +1,4 @@
 declare class program extends standardProg {
-    button1Clicks: number;
-    windowUserCanResize: boolean;
-    windowShowTitle: boolean;
     /**
      * @type {HtmlWindow}
      */

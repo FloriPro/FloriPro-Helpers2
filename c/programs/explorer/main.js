@@ -5,10 +5,8 @@ class program extends System.program.default {
     }
     async init() {
         this.path = "c";
-        this.windowUserCanResize = true;
-        this.windowShowTitle = false;
 
-        console.log("started as id " + this.id);
+
         /**
          * @type {HtmlWindow}
          */

@@ -4,11 +4,6 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
-        this.button1Clicks = 0;
-        this.windowUserCanResize = true;
-        this.windowShowTitle = false;
-
-        console.log("started as id " + this.id);
         this.window = await SystemHtml.WindowHandler.createWindow("Settings",
             //onready:
             async () => {

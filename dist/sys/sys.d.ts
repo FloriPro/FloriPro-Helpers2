@@ -177,6 +177,11 @@ declare class options {
 declare class eventHandler {
     lifeMakerVars: {};
     handlers: {};
+    keysDown: {};
+    mouse: {
+        x: number;
+        y: number;
+    };
     construct(): Promise<void>;
     replacementEvents: {
         [any: string]: any;

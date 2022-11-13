@@ -8,7 +8,6 @@ class program extends System.program.default {
         this.windowUserCanResize = true;
         this.windowShowTitle = false;
 
-        console.log("started as id " + this.id);
         /**
          * @type {HtmlWindow}
          */

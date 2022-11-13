@@ -4,12 +4,8 @@ class program extends System.program.default {
         //don't use!
     }
     async init(file) {
-        this.button1Clicks = 0;
-        this.windowUserCanResize = true;
-        this.windowShowTitle = false;
 
 
-        console.log("started as id " + this.id);
         /**
          * @type {HtmlWindow}
          */

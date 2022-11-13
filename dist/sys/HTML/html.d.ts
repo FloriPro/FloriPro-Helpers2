@@ -212,6 +212,7 @@ declare class presets {
     createStringSelect(title: any, text: any): Promise<any>;
     createConfirm(title: any, text: any): Promise<any>;
     createInformation(title: any, text: any): Promise<any>;
+    createFastConfirm(textYes: any, textNo: any): Promise<any>;
 }
 declare class fileSelectPreset {
     load(title: any): Promise<any>;

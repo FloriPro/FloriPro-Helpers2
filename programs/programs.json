@@ -1,8 +1,8 @@
-[
-    "imageViewer",
-    "reddit",
-    "redditApi",
-    "testScript",
-    "jShell",
-    "unoSupreme"
-]
+{
+    "imageViewer": "programs/imageViewer",
+    "reddit": "programs/reddit",
+    "redditApi": "programs/redditApi",
+    "testScript": "programs/testScript",
+    "jShell": "programs/jShell",
+    "unoSupreme": "programs/unoSupreme"
+}

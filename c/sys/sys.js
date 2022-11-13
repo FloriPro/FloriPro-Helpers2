@@ -151,7 +151,11 @@ class MyConsole {
      * @returns 
      */
     add(type, ...dat) {
-        var d = dat.join(" ");
+        if (dat.length != 1) {
+            var d = dat.join(" ");
+        } else {
+            var d = dat[0];
+        }
         this.logs.push([type, d]);
         if (Object.keys(this.logs).length > 100) {
             this.logs.splice(0, 1);
@@ -440,6 +444,8 @@ class eventHandler {
     constructor() {
         this.lifeMakerVars = {}
         this.handlers = {}
+        this.keysDown = {};
+        this.mouse = { "x": 0, "y": 0 };
     }
     async construct() {
         this.replacementEvents = await System.options.get("eventReplacements");
@@ -480,7 +486,7 @@ class eventHandler {
         //special fonctions to make life easyer for mobile
         if ((event.type == "touchmove" || event.type == "touchend" || event.type == "touchstart") && (event.movementX == undefined || event.movementY == undefined)) {
             var toutches = event.touches;
-            
+
             if (toutches.length == 0) {
                 toutches = [{ "pageX": System.eventHandler.lifeMakerVars["mox"], "pageY": System.eventHandler.lifeMakerVars["moy"] }]
             }
@@ -499,6 +505,24 @@ class eventHandler {
         }
         if (event.type == "touchend") {
             System.eventHandler.lifeMakerVars["mox"] = null;
+        }
+        if (event.type == "keydown") {
+            System.eventHandler.keysDown[event.code] = true;
+        }
+        if (event.type == "keyup") {
+            System.eventHandler.keysDown[event.code] = false;
+        }
+        if (event.type == "mousemove") {
+            System.eventHandler.mouse["x"] = event.clientX;
+            System.eventHandler.mouse["y"] = event.clientY;
+        }
+        if (event.type == "mousedown") {
+            System.eventHandler.mouse["x"] = event.clientX;
+            System.eventHandler.mouse["y"] = event.clientY;
+        }
+        if (event.type == "mouseup") {
+            System.eventHandler.mouse["x"] = event.clientX;
+            System.eventHandler.mouse["y"] = event.clientY;
         }
 
 

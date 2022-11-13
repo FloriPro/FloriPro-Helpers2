@@ -37,11 +37,20 @@ def path_to_dict(path):
 oldData = {}
 ds = os.listdir("programs/")
 
+before = {}
+
 for prog in ds:
-    if not prog.endswith(".json"):
-        prog="programs/"+prog
-        with open("./"+prog+".json", "w") as f:
-            p = path_to_dict("./"+prog+"/")
-            d = json.dumps(p)
-            f.write(d)
-            f.close()
+    before[prog] = ""
+while True:
+    for prog in ds:
+        if not prog.endswith(".json"):
+            pro = "programs/"+prog
+            p = path_to_dict("./"+pro+"/")
+            if p != before[prog]:
+                before[prog] = p
+                with open("./"+pro+".json", "w") as f:
+                    d = json.dumps(p)
+                    f.write(d)
+                    f.close()
+                print("remade "+pro)
+    time.sleep(1)

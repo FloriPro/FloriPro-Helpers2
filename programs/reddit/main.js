@@ -21,7 +21,7 @@ class program extends System.program.default {
         this.redditApi = new (await System.getLib("redditApi")) //new (await System.run(this.PATH.folder() + "/api.js"))(["memes"]);
         this.redditApi.vars = await SystemFileSystem.getFileJson("c/user/reddit/settings.json")
 
-        console.log("started as id " + this.id);
+
         this.window = await SystemHtml.WindowHandler.createWindow("Reddit",
             //onready:
             async () => {

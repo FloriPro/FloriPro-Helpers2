@@ -95,6 +95,17 @@ class Html {
             document.querySelector("#all").style.background = 'url("' + SystemFileSystem.toImg(await SystemFileSystem.getFileString((await System.options.get("settings"))["backgroundImage"][0])) + '") center center / cover no-repeat';
         }
         backgroundImgLoader();
+
+        System.eventHandler.addEventHandler("keydown", async (event) => {
+            if (event.key == "F5") {
+                event.preventDefault();
+                if (event.ctrlKey) {
+                    if (await SystemHtml.WindowHandler.presets.createFastConfirm("reset everything", "cancel")) {
+                        System.run("c/sys/functions/reset.js");
+                    }
+                }
+            }
+        })
     }
     async updateStartmenu() {
         SystemHtml.loadStartMenu(document.querySelector("#StartMenuPrograms"))
@@ -244,6 +255,11 @@ class ContextMenu {
     }
 
     showContext(eventButtons, position) {
+        //close all contextmenus
+        for (var x of document.querySelectorAll(".contextmenu")) {
+            x.remove();
+        }
+
         var div = document.createElement("div");
         div.className = "contextmenu"
         div.style.top = position[1] + "px";
@@ -946,6 +962,15 @@ class presets {
         if (text == undefined) { text = "Information" }
         var f = new informationPreset()
         return await f.load(title, text);
+    }
+    async createFastConfirm(textYes, textNo) {
+        return new Promise((resolve, reject) => {
+            var b = {}
+            b[textYes] = [() => { resolve(true); }, undefined];
+            b[textNo] = [() => { resolve(false); }, undefined];
+            SystemHtml.ContextMenu.showContext(b, [System.eventHandler.mouse.x - 10, System.eventHandler.mouse.y - 10]);
+
+        });
     }
 }
 

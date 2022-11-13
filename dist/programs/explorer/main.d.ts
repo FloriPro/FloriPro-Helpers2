@@ -1,7 +1,5 @@
 declare class program extends standardProg {
     path: any;
-    windowUserCanResize: boolean;
-    windowShowTitle: boolean;
     /**
      * @type {HtmlWindow}
      */
