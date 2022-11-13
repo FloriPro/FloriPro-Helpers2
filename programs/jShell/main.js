@@ -4,11 +4,12 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
-        this.button1Clicks = 0;
-        this.windowUserCanResize = true;
-        this.windowShowTitle = false;
+        console.log(this); //testing console
+        this.returnObjects = {};
 
-        console.log("started as id " + this.id);
+        this.loadStyle()
+
+
         /**
          * @type HtmlWindow
          */
@@ -29,7 +30,9 @@ class program extends System.program.default {
                             if (r == undefined) {
                                 console.debug('> undefined');
                             } else {
-                                console.log('> ' + r);
+                                var id = System.makeid(100);
+                                this.returnObjects[id] = r;
+                                console.log('> ' + r + "__jshellLookup" + id);
                             };
                         } catch (e) {
                             console.error(e);
@@ -54,6 +57,18 @@ class program extends System.program.default {
         }
 
     }
+
+    async loadStyle() {
+        if (window.jShellInitialized == undefined) {
+            var styleSheet = document.createElement("style")
+            styleSheet.innerText = await SystemFileSystem.getFileString(this.PATH.folder() + "/style.css");
+            document.head.appendChild(styleSheet)
+            window.jShellInitialized = true;
+        }
+    }
+    /**
+     * @param {[string,any]} dat 
+     */
     async update(dat) {
         var color = "white"
         switch (dat[0]) {
@@ -80,9 +95,143 @@ class program extends System.program.default {
         var p = document.createElement("p");
         p.style.color = color;
 
+        var text = dat[1];
+        if (typeof text == "string" && text.includes("__jshellLookup")) {
+            text = text.split("__jshellLookup")[0];
+            p.setAttribute("jshell_lookup", dat[1].split("__jshellLookup")[1]);
+        } else {
+            var id = System.makeid(100);
+            this.returnObjects[id] = dat[1];
+            p.setAttribute("jshell_lookup", id);
+        }
+        p.title = "click for more information";
 
-        p.innerText = dat[1];
+        p.addEventListener("click", (event) => { this.openObject(event) });
+
+        p.innerText = text + "";
         (await this.window.getHtmlElement("consoleLog")).prepend(p);
+    }
+
+    openObject(event) {
+        var lookup = event.target.getAttribute("jshell_lookup");
+        new ObjectAnalyser(this.returnObjects[lookup], this.PATH, "");
+    }
+}
+class ObjectAnalyser {
+    constructor(obj, path, otherAnalysersBefore) {
+        this.PATH = path;
+        this.obj = obj;
+        this.lookup = {};
+        this.run()
+        this.otherAnalysersBefore = otherAnalysersBefore + "/" + this.obj.constructor.name;
+    }
+    async run() {
+        /**
+         * @type {HtmlWindow}
+         */
+        this.window = await SystemHtml.WindowHandler.createWindow("ObjectAnalyser",
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/objAnalyze.html"));
+                await this.window.size.setSize(600, 600);
+                await this.window.size.userCanResize(true);
+
+                (await this.window.getHtmlElement("path")).innerText = this.otherAnalysersBefore;
+
+                this.parseDat();
+            });
+        this.window.close = () => {
+            return true
+        }
+    }
+    async parseDat() {
+        //console.log(this.obj);
+        //console.log(this.obj.constructor);
+        //console.log("name: " + this.obj.constructor.name);
+        (await this.window.getHtmlElement("classname")).innerText = this.obj.constructor.name;
+
+        var pn = Object.getOwnPropertyNames(this.obj);
+        for (var m of pn) {
+            await this.genObject(this.obj[m], m);
+        }
+
+        await this.genObject(Object.getPrototypeOf(this.obj), "[[ Prototype ]]")
+
+
+        //var p = document.createElement("p");
+        //p.innerText = "[[ Prototype ]]"
+        //p.setAttribute("objLookup", this.genLookup(Object.getPrototypeOf(this.obj)))
+        //attributeElem.append(p)
+    }
+
+    async genObject(obj, m) {
+        try {
+            var attributeElem = await this.window.getHtmlElement("attributes")
+
+            var p = document.createElement("p");
+            var name = document.createElement("span");
+            name.innerText = m + ": ";
+            name.style.color = "red";
+
+            var value = document.createElement("span");
+
+            if (typeof obj == "object" && obj != null) {
+                value.innerText = obj.constructor.name + " | " + obj;
+                value.setAttribute("objLookup", this.genLookup(obj))
+                p.classList.add("objLookup");
+            }
+            else {
+
+                if ((obj + "").length > 3 + 55) {
+                    value.innerText = (obj + "").slice(0, 0 + 55) + "...";
+                    value.setAttribute("big", this.genLookup(obj));
+
+                    value.classList.add("opText");
+                    p.classList.add("objLookup");
+                } else {
+                    value.innerText = obj + "";
+                    value.setAttribute("objLookup", this.genLookup(obj));
+
+                    p.classList.add("objLookup");
+                }
+            }
+
+            value.classList.add("jshellValue")
+            value.setAttribute("name", m);
+            name.setAttribute("name", m);
+            p.setAttribute("name", m);
+
+            p.append(name);
+            p.append(value);
+            attributeElem.append(p)
+
+            name.setAttribute("objLookup", this.genLookup(obj))
+            p.setAttribute("objLookup", this.genLookup(obj))
+            p.addEventListener("click", async (event) => {
+                var lookup = event.target.getAttribute("objLookup");
+                if (lookup != null) {
+                    new ObjectAnalyser(this.getLookup(lookup), this.PATH, this.otherAnalysersBefore);
+                } else {
+                    var big = event.target.getAttribute("big");
+
+                    await SystemFileSystem.setFileString("c/_temp/big.txt", this.getLookup(big) + "");
+                    await System.program.runProgram("c/programs/textEditor/main.js", "c/_temp/big.txt")
+                    //SystemHtml.WindowHandler.presets.createInformation("Big of '" + event.target.getAttribute("name") + "'", this.getLookup(big) + "");
+                }
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    genLookup(element) {
+        var id = System.makeid(100);
+        this.lookup[id] = element;
+        return id;
+    }
+    getLookup(id) {
+        return this.lookup[id];
     }
 }
 new program();

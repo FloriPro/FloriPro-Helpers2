@@ -1,0 +1,11 @@
+.opText:hover {
+    background-color: rgb(234, 255, 177);
+}
+
+.objLookup:hover {
+    background-color: rgb(196, 196, 196);
+}
+
+.jshellValue {
+    overflow-wrap: anywhere;
+}
