@@ -179,23 +179,21 @@ class ObjectAnalyser {
             if (typeof obj == "object" && obj != null) {
                 value.innerText = obj.constructor.name + " | " + obj;
                 value.setAttribute("objLookup", this.genLookup(obj))
-                p.classList.add("objLookup");
             }
             else {
-
-                if ((obj + "").length > 3 + 55) {
-                    value.innerText = (obj + "").slice(0, 0 + 55) + "...";
-                    value.setAttribute("big", this.genLookup(obj));
-
-                    value.classList.add("opText");
-                    p.classList.add("objLookup");
-                } else {
-                    value.innerText = obj + "";
-                    value.setAttribute("objLookup", this.genLookup(obj));
-
-                    p.classList.add("objLookup");
-                }
+                value.innerText = obj + "";
+                value.setAttribute("objLookup", this.genLookup(obj));
             }
+
+            //if value is verry long
+            if (value.innerText.length > 3 + 55) {
+                value.innerText = value.innerText.slice(0, 0 + 55) + "...";
+                value.removeAttribute("objLookup");
+                //value.setAttribute("objLookup", null);
+                value.setAttribute("big", this.genLookup(obj));
+                value.classList.add("opText");
+            }
+            p.classList.add("objLookup");
 
             value.classList.add("jshellValue")
             value.setAttribute("name", m);
