@@ -4,5 +4,6 @@
     "redditApi": "programs/redditApi",
     "testScript": "programs/testScript",
     "jShell": "programs/jShell",
-    "unoSupreme": "programs/unoSupreme"
+    "unoSupreme": "programs/unoSupreme",
+    "steffanPack": "programs/steffanPack"
 }
