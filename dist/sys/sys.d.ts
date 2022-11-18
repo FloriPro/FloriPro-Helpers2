@@ -209,7 +209,7 @@ declare class settingsHandler {
      * @param {string} name the name of the setting to view
      * @param {(settingsName)} callback
      */
-    addSettingsUpdater(name: string, callback: any): void;
+    addSettingsUpdater(name: string, callback: settingsName): void;
     /**
      * gets called this when a setting changes.
      * Internal method

@@ -26,6 +26,7 @@ declare class ContextMenu {
     createContextButton(name: any, information: any): HTMLButtonElement;
 }
 declare class WindowHandler {
+    iframeConnections: {};
     windowsCreated: number;
     moving: boolean;
     usedWindowId: any[];

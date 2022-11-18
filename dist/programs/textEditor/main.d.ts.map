@@ -1,1 +1,1 @@
-{"version":3,"file":"main.d.ts","sourceRoot":"","sources":["../../../c/programs/textEditor/main.js"],"names":[],"mappings":"AAAA;IAQQ;;OAEG;IACH,QAFU,UAAU,CAyBd;IAPM,UAAgB;IAahC,2BAqBC;IACD,sBAUC;IACD,wBASC;IACD,sBAQC;IACD,2BASC;CACJ"}
+{"version":3,"file":"main.d.ts","sourceRoot":"","sources":["../../../c/programs/textEditor/main.js"],"names":[],"mappings":"AAAA;IAKI,+BAkCC;IA/BG;;OAEG;IACH,QAFU,UAAU,CAyBd;IAPM,UAAgB;IAahC,2BAqBC;IACD,sBAUC;IACD,wBASC;IACD,sBAQC;IACD,2BASC;CACJ"}

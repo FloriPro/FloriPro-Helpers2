@@ -285,6 +285,8 @@ class ContextMenu {
 
 class WindowHandler {
     constructor() {
+        this.iframeConnections = {};
+
         this.windowsCreated = 1;
 
         this.moving = false;
@@ -419,9 +421,26 @@ class WindowHandler {
         System.eventHandler.addEventHandler("resize", (event, args) => {
             //update fullscreen windows
             for (var id in Object.keys(SystemHtml.WindowHandler.windows)) {
-                if (SystemHtml.WindowHandler.windows[id].size.max == true) {
+                if (SystemHtml.WindowHandler.windows[id] != undefined && SystemHtml.WindowHandler.windows[id].size.max == true) {
                     SystemHtml.WindowHandler.windows[id].size.updateMax();
                 }
+            }
+        });
+
+        window.addEventListener('message', async function (e) {
+            var data = JSON.parse(e.data);
+            var x = SystemHtml.WindowHandler.iframeConnections[data["id"]]
+            
+            if (data["type"] == "prompt") {
+                var r = await SystemHtml.WindowHandler.presets.createStringSelect(data["text"], data["text"]);
+                x.contentWindow.postMessage(JSON.stringify({ "type": "return", "id": data["returnid"], "return": r }), x.src);
+            }
+            else if (data["type"] == "confirm") {
+                var r = await SystemHtml.WindowHandler.presets.createConfirm(data["text"], data["text"]);
+                x.contentWindow.postMessage(JSON.stringify({ "type": "return", "id": data["returnid"], "return": r }), x.src);
+            }
+            else if (data["type"] == "alert") {
+                SystemHtml.WindowHandler.presets.createInformation(data["text"], data["text"]);
             }
         });
     }
@@ -895,6 +914,16 @@ class HtmlWindow {
             x.removeAttribute("element");
 
             x.setAttribute("windowId", this.#id);
+        }
+
+        var e = this.getHtml().querySelectorAll("iframe:not([iframeChanged])");
+        for (var x of e) {
+            x.onload = () => {
+                var id = System.makeid(10);
+                SystemHtml.WindowHandler.iframeConnections[id] = x;
+                x.contentWindow.postMessage(JSON.stringify({ "type": "newConnection", "src": e.src, "id": id, "origin": location.origin }), x.src);
+            }
+            x.setAttribute("iframeChanged", "true");
         }
     }
     /**
