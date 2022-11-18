@@ -536,7 +536,7 @@ class WindowHandler {
                     win.getHtml().style.filter = "";
                 } else {
                     win.ontop = false;
-                    win.getHtml().style.filter = "brightness(0.9)";
+                    win.getHtml().style.filter = "brightness(0.98)";
                 }
                 i++;
             }
