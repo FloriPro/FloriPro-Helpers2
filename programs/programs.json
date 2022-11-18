@@ -5,5 +5,6 @@
     "testScript": "programs/testScript",
     "jShell": "programs/jShell",
     "unoSupreme": "programs/unoSupreme",
-    "steffanPack": "programs/steffanPack"
+    "steffanPack": "programs/steffanPack",
+    "liveChat": "programs/liveChat"
 }
