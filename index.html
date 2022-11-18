@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" manifest="https://floripro.github.io/FloriPro-Helpers2/offline.manifest">
+<html lang="en">
 
 <head>
     <title>FloriPro Helpers v2</title>
@@ -7,6 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Just a collection of all my things">
     <meta name="author" content="FloriPro">
+    <meta name="theme-color" content="black">
+    <script>
+        const registerServiceWorker = async () => {
+            if ("serviceWorker" in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register("worker.js");
+                    window.registration=registration;
+                    if (registration.installing) {
+                        console.log("Service worker installing");
+                    } else if (registration.waiting) {
+                        console.log("Service worker installed");
+                    } else if (registration.active) {
+                        console.log("Service worker active");
+                    }
+                } catch (error) {
+                    console.error(`Registration failed with ${error}`);
+                }
+            }
+        };
+        self.addEventListener('install', (e) => {
+            console.log('[Service Worker] Install');
+        });
+        registerServiceWorker();
+    </script>
     <link rel="manifest" href="pwa.webmanifest" />
 </head>
 
