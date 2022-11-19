@@ -42,9 +42,9 @@ class program extends System.program.default {
 
 
                 //add event listeners
-                await this.window.addHtmlEventListener("onkeyup", "send", async (_, __, ___, event) => {
+                await this.window.addHtmlEventListener("onkeyup", "send", async (thi, __, ___, event) => {
                     if (event.keyCode == 13) {
-                        var u = (await System.program.programRegister[0].window.getHtmlElement("username")).value
+                        var u = (await this.window.getHtmlElement("username")).value
                         if (u == "") {
                             u = "?"
                         }
