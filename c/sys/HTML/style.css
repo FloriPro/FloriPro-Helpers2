@@ -306,3 +306,7 @@ button[aria-label="Close"]:hover {
 .StartMenuFastButton {
     justify-content: center;
 }
+
+iframe {
+    display: block;
+}

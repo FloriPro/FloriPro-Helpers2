@@ -727,7 +727,7 @@ class HtmlWindow {
                 var h = this.parent.getHtml();
                 if (yn) {
                     h.querySelector(".title-bar").style.display = "";
-                    h.querySelector(".contentBody").style.height = "calc(100% - 43px)";
+                    h.querySelector(".contentBody").style.height = "calc(100% - 40px)";
                 } else {
                     h.querySelector(".title-bar").style.display = "none";
                     h.querySelector(".contentBody").style.height = "calc(100% - 0px)";
