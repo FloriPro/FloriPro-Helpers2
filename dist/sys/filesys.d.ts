@@ -34,9 +34,9 @@ declare class FileSystemClass {
     /**
      *
      * @param {string} path
-     * @returns {FileSysFile} FileSysFile
+     * @returns {Promise<FileSysFile>} FileSysFile
      */
-    getFile(path: string): FileSysFile;
+    getFile(path: string): Promise<FileSysFile>;
     /**
      *
      * @param {string} path
@@ -46,9 +46,9 @@ declare class FileSystemClass {
     /**
      * loads the file from local storage
      * @param {string} path
-     * @return {string}
+     * @return {Promise<string>}
      */
-    localFileLoad(path: string): string;
+    localFileLoad(path: string): Promise<string>;
     getUnusedId(): number;
     /**
      *
@@ -94,12 +94,18 @@ declare class packageLoader {
     b64_to_utf8(str: any): string;
 }
 declare class FileSysFile {
-    constructor(path: any, text: any);
+    constructor(path: any);
     path: any;
-    text: any;
+    text(): Promise<any>;
     remove(): Promise<boolean>;
     rename(): Promise<boolean>;
     getInformation(): Promise<boolean>;
+    /**
+     * checks if this file is a online data file
+     * @return {boolean}
+     */
+    isOnlineData(): boolean;
+    getOnlineDataLink(): Promise<string>;
 }
 declare class FileSysInfo {
     createdDate: string;

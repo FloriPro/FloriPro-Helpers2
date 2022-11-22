@@ -181,10 +181,10 @@ class FileSystemClass {
     /**
      * 
      * @param {string} path 
-     * @returns {FileSysFile} FileSysFile
+     * @returns {Promise<FileSysFile>} FileSysFile
      */
     async getFile(path) {
-        var out = new FileSysFile(path, await this.getFileString(path));
+        var out = new FileSysFile(path);
         return out;
     }
     /**
@@ -200,7 +200,7 @@ class FileSystemClass {
     /**
      * loads the file from local storage
      * @param {string} path 
-     * @return {string}
+     * @return {Promise<string>}
      */
     async localFileLoad(path) {
         if (this.realLocalStorage.getItem(fastFileLookup[path]) == undefined) {
@@ -332,9 +332,11 @@ class packageLoader {
     }
 }
 class FileSysFile {
-    constructor(path, text) {
+    constructor(path) {
         this.path = path;
-        this.text = text;
+    }
+    async text() {
+        return await this.getFileString(this.path);
     }
     async remove() {
         console.warn("File: remove not implemented");
@@ -347,6 +349,26 @@ class FileSysFile {
     async getInformation() {
         console.warn("File: getInformation not implemented");
         return false
+    }
+    /**
+     * checks if this file is a online data file
+     * @return {boolean}
+     */
+    async isOnlineData() {
+        var r = await SystemFileSystem.localFileLoad(this.path);
+        if (r.startsWith(".od__")) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    async getOnlineDataLink() {
+        var r = await SystemFileSystem.localFileLoad(this.path)
+        if (r.startsWith(".od__")) {
+            return r.replace(".od__", "");
+        }
+        return undefined;
     }
 }
 class FileSysInfo { //TODO

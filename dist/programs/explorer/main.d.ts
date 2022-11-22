@@ -7,6 +7,7 @@ declare class program extends standardProg {
     window: HtmlWindow;
     events(): Promise<void>;
     create(): Promise<void>;
+    odFiles: any[];
     button1(_: any, __: any, vars: any): Promise<void>;
     button2(_: any, __: any, vars: any): Promise<void>;
     back(): Promise<void>;

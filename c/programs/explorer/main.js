@@ -40,6 +40,7 @@ class program extends System.program.default {
         await this.events();
 
 
+        this.odFiles = [];
         var folderStuff = await this.window.getHtmlElement("folderList")
         folderStuff.innerHTML = "";
         var fileStuff = await this.window.getHtmlElement("fileList")
@@ -62,11 +63,12 @@ class program extends System.program.default {
         for (var x of await SystemFileSystem.getFiles(this.path)) {
             var b = document.createElement("button")
             b.innerText = x;
+            this.odFiles[x] = await (await SystemFileSystem.getFile(this.path + "/" + x)).getOnlineDataLink()
             b.setAttribute("path", this.path + "/" + x);
             b.setAttribute("element", i + "_el")
             b.setAttribute("program", this.id)
-            b.contextscript = () => {
-                return {
+            b.contextscript = (target) => {
+                var r = {
                     "remove File": this.removeFi, "rename File": this.renameFi, "run": async (event) => {
                         var response = await System.run(event.target.getAttribute("path"));
                         if (response != undefined) {
@@ -75,7 +77,13 @@ class program extends System.program.default {
                     }, "run as Program": (event) => {
                         System.program.runProgram(event.target.getAttribute("path"));
                     }
+                };
+                if (this.odFiles[target.getAttribute("path").split("/")[target.getAttribute("path").split("/").length - 1]] != undefined) {
+                    r["get Link"] = async (event) => {
+                        SystemHtml.WindowHandler.presets.createInformation("Link", await (await SystemFileSystem.getFile(event.target.getAttribute("path"))).getOnlineDataLink());
+                    }
                 }
+                return r;
             };
             fileStuff.append(b)
 

@@ -233,7 +233,7 @@ class ContextMenu {
                     var dat = {};
 
                     if (contextScript != null) {
-                        var cs = contextScript();
+                        var cs = contextScript(pathElement);
                         for (var x of Object.keys(cs)) {
                             dat[x] = [cs[x], new this.ContextEvent(pathElement)];
                         }
@@ -430,7 +430,7 @@ class WindowHandler {
         window.addEventListener('message', async function (e) {
             var data = JSON.parse(e.data);
             var x = SystemHtml.WindowHandler.iframeConnections[data["id"]]
-            
+
             if (data["type"] == "prompt") {
                 var r = await SystemHtml.WindowHandler.presets.createStringSelect(data["text"], data["text"]);
                 x.contentWindow.postMessage(JSON.stringify({ "type": "return", "id": data["returnid"], "return": r }), x.src);
@@ -1416,9 +1416,18 @@ class informationPreset {
                 (await this.window.getHtmlElement("text")).innerText = text;
 
                 await this.window.size.setSize(400, 200);
-                await this.window.size.userCanResize(true)
+                await this.window.size.userCanResize(true);
 
                 //add event listeners
+                var r = (await this.window.getHtmlElement("text"))
+                r.contextscript = (target) => {
+                    return {
+                        "copy": async (event) => {
+                            await navigator.clipboard.writeText(event.target.innerText);
+                        }
+                    }
+                }
+
                 await this.window.addHtmlEventListener("onclick", "ok", async () => {
                     //read data
                     this.returnFunction(true);
