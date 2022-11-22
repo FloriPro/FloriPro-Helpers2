@@ -1,0 +1,1 @@
+System.program.runProgram(PATH.folder() + "/information.js")

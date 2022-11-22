@@ -6,5 +6,9 @@
     "S": {
         "tooltip":"Settings",
         "click": "c/programs/settings/run.js"
+    },
+    "I":{
+        "tooltip":"Informations",
+        "click":"c/sys/functions/informationrun.js"
     }
 }

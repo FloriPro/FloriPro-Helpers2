@@ -121,7 +121,8 @@ input {
 }
 
 #taskbar {
-    background: rgb(29, 29, 29);
+    background: rgb(29 29 29 / 67%);
+    backdrop-filter: blur(11px);
     /* border-top: 1px solid #fff; */
     bottom: 0;
     color: #000;
@@ -148,20 +149,24 @@ input {
 
 #taskbar-programList .programListElement {
     color: white;
-    margin-right: 20px;
-    background-color: #262626;
+    margin-right: 1px;
+    background-color: transparent;
+    border-bottom: #003cff61 2px solid;
+    cursor: default;
+    transition: 0.2s;
 }
 
 #taskbar-programList .programListElement:hover {
-    background-color: #3a3a3a;
+    background-color: #3a3a3a70;
+    border-bottom-width: 3px;
 }
 
 #taskbar-programList .programListElement.selected {
-    background-color: #585858;
+    background-color: #58585870;
 }
 
 #taskbar-programList .programListElement.hidden {
-    background-color: #222222;
+    background-color: #22222270;
 }
 
 #taskbar-programList .programListElement.hidden p {
@@ -244,7 +249,7 @@ button[aria-label="Close"]:hover {
     text-align: center;
     justify-content: center;
     font-size: 50px;
-    background: rgb(29, 29, 29);
+    background: transparent;
 }
 
 #startMenuButton span {
@@ -293,6 +298,11 @@ button[aria-label="Close"]:hover {
 .contextmenubutton {
     background-color: transparent;
 }
+
 .contextmenubutton:hover {
     background-color: #00000029;
+}
+
+.StartMenuFastButton {
+    justify-content: center;
 }
