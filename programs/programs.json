@@ -4,7 +4,7 @@
     "redditApi": "programs/redditApi",
     "testScript": "programs/testScript",
     "jShell": "programs/jShell",
-    "unoSupreme": "programs/unoSupreme",
+    "unuSupreme": "programs/unuSupreme",
     "steffanPack": "programs/steffanPack",
     "liveChat": "programs/liveChat"
 }

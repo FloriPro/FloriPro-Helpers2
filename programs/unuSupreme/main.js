@@ -4,7 +4,7 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
-        this.window = await SystemHtml.WindowHandler.createWindow("UNO-Supreme",
+        this.window = await SystemHtml.WindowHandler.createWindow("UNU-Supreme",
             //onready:
             async () => {
                 //set html
