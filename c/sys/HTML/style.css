@@ -10,6 +10,15 @@
     top: 0;
 }
 
+*[tooltip]:hover::after {
+    content: attr(tooltip);
+    position: fixed;
+    left: 35px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.699);
+    border-radius: 2px;
+}
+
 input {
     outline: none;
 }
