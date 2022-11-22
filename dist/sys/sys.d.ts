@@ -139,6 +139,12 @@ declare class systemProgramHandler {
      * @param {number} id
      */
     stop(id: number): void;
+    /**
+     * get the program of the given id
+     * @param {number} id
+     * @return {standardProg}
+     */
+    get(id: number): standardProg;
 }
 declare class standardProg {
     id: number;

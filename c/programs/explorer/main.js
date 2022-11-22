@@ -50,6 +50,8 @@ class program extends System.program.default {
             var b = document.createElement("button")
             b.innerText = x + "/";
             b.setAttribute("element", i + "_el")
+            b.setAttribute("path", this.path + "/" + x);
+            b.setAttribute("program", this.id)
             b.contextscript = () => { return { "remove Folder": this.removeF, "rename Folder": this.renameF } };
             folderStuff.append(b)
 
@@ -62,6 +64,7 @@ class program extends System.program.default {
             b.innerText = x;
             b.setAttribute("path", this.path + "/" + x);
             b.setAttribute("element", i + "_el")
+            b.setAttribute("program", this.id)
             b.contextscript = () => {
                 return {
                     "remove File": this.removeFi, "rename File": this.renameFi, "run": async (event) => {
@@ -110,17 +113,24 @@ class program extends System.program.default {
         SystemFileSystem.createFolder(this.path, folderName)
         await this.create();
     }
-    async removeF() {
+    async removeF(event) {
         console.warn("todo: removeF");
+        System.program.get(parseInt(event.target.getAttribute("program"))).create();
     }
-    async renameF() {
+    async renameF(event) {
         console.warn("todo: renameF");
+        System.program.get(parseInt(event.target.getAttribute("program"))).create();
     }
-    async removeFi() {
-        console.warn("todo: removeFi");
+    async removeFi(event) {
+        await SystemFileSystem.removeFile(event.target.getAttribute("path"))
+        System.program.get(parseInt(event.target.getAttribute("program"))).create();
     }
-    async renameFi() {
-        console.warn("todo: renameFi");
+    async renameFi(event) {
+        var p = new System.path(event.target.getAttribute("path"));
+        await SystemFileSystem.setFileString(p.folder() + "/" + await SystemHtml.WindowHandler.presets.createStringSelect("File Name", "New File Name for " + p.file() + " Here"), await SystemFileSystem.getFileString(event.target.getAttribute("path")));
+        await SystemFileSystem.removeFile(event.target.getAttribute("path"))
+
+        System.program.get(parseInt(event.target.getAttribute("program"))).create();
     }
 }
 new program();

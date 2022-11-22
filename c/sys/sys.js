@@ -239,7 +239,7 @@ class Path {
      * @returns {string}
      */
     file() {
-        return this.sections()[this.sections.length - 1]
+        return this.sections()[this.sections().length - 1]
     }
     /**
      * path to the file
@@ -382,6 +382,14 @@ class systemProgramHandler {
     stop(id) {
         this.programRegister[id].isStopping();
         delete this.programRegister[id]
+    }
+    /**
+     * get the program of the given id
+     * @param {number} id 
+     * @return {standardProg}
+     */
+    get(id) {
+        return this.programRegister[id];
     }
 }
 

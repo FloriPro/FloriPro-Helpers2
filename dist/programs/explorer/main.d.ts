@@ -12,9 +12,9 @@ declare class program extends standardProg {
     back(): Promise<void>;
     newFile(): Promise<void>;
     newFolder(): Promise<void>;
-    removeF(): Promise<void>;
-    renameF(): Promise<void>;
-    removeFi(): Promise<void>;
-    renameFi(): Promise<void>;
+    removeF(event: any): Promise<void>;
+    renameF(event: any): Promise<void>;
+    removeFi(event: any): Promise<void>;
+    renameFi(event: any): Promise<void>;
 }
 //# sourceMappingURL=main.d.ts.map

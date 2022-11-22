@@ -10,7 +10,9 @@ class FileSystemClass {
         if (localStorage["save"] != undefined) {
             var save = JSON.parse(localStorage["save"]);
             for (var path of Object.keys(save)) {
-                this.setFileString(path, save[path])
+                if (save[path] != "") {
+                    this.setFileString(path, save[path])
+                }
                 //localStorage[fastFileLookup[x]] = save[x];
             }
         }
@@ -32,8 +34,10 @@ class FileSystemClass {
         //save persistand files in localstorage "save"
         var persistandFileJson = await this.getFileJson("c/persistandFiles.json");
         for (var x of persistandFileJson) {
-            var dat = await this.getFileString(x);
-            save[x] = dat;
+            if (await this.fileExists(x)) {
+                var dat = await this.getFileString(x);
+                save[x] = dat;
+            }
         }
         console.log(save);
         this.realLocalStorage["save"] = JSON.stringify(save);
