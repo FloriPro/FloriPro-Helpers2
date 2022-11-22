@@ -14,5 +14,9 @@
     "resetQuestion": [
         true,
         "bool"
+    ],
+    "startupDisclaimer": [
+        true,
+        "bool"
     ]
 }
