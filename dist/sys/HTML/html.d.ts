@@ -18,8 +18,9 @@ declare class Html {
 }
 declare class ContextMenu {
     ContextEvent: {
-        new (element: any): {
+        new (element: any, ogEvent: any): {
             target: any;
+            originalEvent: any;
         };
     };
     showContext(eventButtons: any, position: any): void;

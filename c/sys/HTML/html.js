@@ -207,8 +207,9 @@ class Html {
 class ContextMenu {
     constructor() {
         this.ContextEvent = class {
-            constructor(element) {
+            constructor(element, ogEvent) {
                 this.target = element;
+                this.originalEvent = ogEvent;
             }
         }
 
@@ -235,13 +236,13 @@ class ContextMenu {
                     if (contextScript != null) {
                         var cs = contextScript(pathElement);
                         for (var x of Object.keys(cs)) {
-                            dat[x] = [cs[x], new this.ContextEvent(pathElement)];
+                            dat[x] = [cs[x], new this.ContextEvent(pathElement, event)];
                         }
                     }
                     if (contextDat != null) {
                         var cs = eval("(" + contextDat + ")");
                         for (var x of Object.keys(cs)) {
-                            dat[x] = [cs[x], new this.ContextEvent(pathElement)];
+                            dat[x] = [cs[x], new this.ContextEvent(pathElement, event)];
                         }
                     }
 
@@ -414,7 +415,7 @@ class WindowHandler {
                 //minimize
                 if (event.target.classList.contains("minimize")) {
                     SystemHtml.WindowHandler.getWindowById(id).appearence.toggleMinimize();
-                    this.updateTaskBar();
+
                 }
             }
         });
@@ -736,8 +737,8 @@ class HtmlWindow {
             minimize() {
                 var h = this.parent.getHtml();
                 h.style.display = "none";
-
                 this.shown = false;
+                SystemHtml.WindowHandler.updateTaskBar();
             }
             show() {
                 var h = this.parent.getHtml();
@@ -812,9 +813,38 @@ class HtmlWindow {
     async load(id, name) {
         var windowStr = await SystemFileSystem.getFileString("c/sys/HTML/window.html");
 
-        windowStr = windowStr.replace("%%id%%", "" + id)
+        windowStr = windowStr.replace("%%id%%", "" + id).replace("%%id%%", "" + id)
         windowStr = windowStr.replace("%%name%%", name)
         document.querySelector("#stuff").insertAdjacentHTML('beforeend', windowStr);
+        document.querySelector(".window_" + id).contextscript = (event) => {
+            if (SystemHtml.WindowHandler.getWindowById(event.getAttribute("windowId")).size.fullMax) {
+                r["size normal"] = (clickEvent) => {
+                    SystemHtml.WindowHandler.getWindowById(clickEvent.target.getAttribute("windowId")).size.notMax();
+                    console.log(clickEvent)
+                }
+            }
+            return r;
+        }
+        document.querySelector(".window_" + id).querySelector(".title-bar").contextscript = (event) => {
+            return {
+                "close": (clickEvent) => {
+                    SystemHtml.WindowHandler.getWindowById(clickEvent.target.parentNode.parentNode.getAttribute("windowId")).makeClose()
+                    console.log(clickEvent)
+                },
+                "minimize": (clickEvent) => {
+                    SystemHtml.WindowHandler.getWindowById(clickEvent.target.parentNode.parentNode.getAttribute("windowId")).appearence.minimize();
+                    console.log(clickEvent)
+                },
+                "maximize": (clickEvent) => {
+                    SystemHtml.WindowHandler.getWindowById(clickEvent.target.parentNode.parentNode.getAttribute("windowId")).size.setMax()
+                    console.log(clickEvent)
+                },
+                "fullmax": (clickEvent) => {
+                    SystemHtml.WindowHandler.getWindowById(clickEvent.target.parentNode.parentNode.getAttribute("windowId")).size.setfullMax()
+                    console.log(clickEvent)
+                }
+            }
+        }
 
 
         this.size.setSize(this.#sizeX, this.#sizeY);
