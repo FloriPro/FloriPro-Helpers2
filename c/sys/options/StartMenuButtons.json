@@ -8,7 +8,7 @@
         "click": "c/programs/settings/run.js"
     },
     "I":{
-        "tooltip":"Informations",
+        "tooltip":"Informations (Impressum)",
         "click":"c/sys/functions/informationrun.js"
     }
 }
