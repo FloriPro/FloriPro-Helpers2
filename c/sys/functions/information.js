@@ -55,7 +55,7 @@ class program extends System.program.default {
                     async () => {
                         //set html
                         await this.window.setContent(`<div element="data"></div>`);
-                        await this.window.size.setSize(400, 300)
+                        await this.window.size.setSize(300, 500)
                         this.window.size.userCanResize(true)
 
                         var e = await this.window.getHtmlElement("data");
@@ -75,8 +75,14 @@ class program extends System.program.default {
                                 var el = document.createElement("img");
                                 el.style.maxWidth = "100%";
                                 el.style.width = "300px";
-                                el.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(x.path));
+                                el.style.minHeight = "10px";
+                                el.style.backgroundColor = "aqua";
                                 e.append(el);
+                                var d = async (el, x) => {
+                                    el.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(x.path));
+
+                                }
+                                d(el, x);
                             }
                         }
                     });

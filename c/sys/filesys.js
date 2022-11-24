@@ -15,6 +15,7 @@ class FileSystemClass {
                 }
                 //localStorage[fastFileLookup[x]] = save[x];
             }
+            localStorage.removeItem("save");
         }
     }
     async reset() {
@@ -134,6 +135,7 @@ class FileSystemClass {
                 var array = await f.arrayBuffer();
                 var dat = await this.bufferToString(array, l);
 
+
                 l.stop();
                 r = dat;
             }
@@ -145,22 +147,22 @@ class FileSystemClass {
         }
     }
     async bufferToString(buf, l) {
-        var view = new Uint8Array(buf);
         var out = ""
-        var timeForEveryPercent = view.length / 10;
-        var i = 0;
-        var p = 0;
-        for (var x of view) {
-            out += String.fromCharCode(x);
-            if (i >= timeForEveryPercent) {
-                i = 0;
-                if (l != null && timeForEveryPercent > 1000) {
-                    p += 10;
-                    l.setNum(p)
-                    await delay(10);
-                }
-            }
-            i++;
+        //var i = 0;
+        //var p = 0;
+        var view = new Uint8Array(buf);
+        //var timeForEveryPercent = view.length / 5;
+        for (var x = 0; x < view.length; x++) {
+            out += String.fromCharCode(view[x]);
+            //if (i >= timeForEveryPercent) {
+            //    i = 0;
+            //    if (l != null && timeForEveryPercent > 1000) {
+            //        p += 20;
+            //        l.setNum(p)
+            //        await delay(0);
+            //    }
+            //}
+            //i++;
         }
         return out;
     }

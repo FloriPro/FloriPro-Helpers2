@@ -443,6 +443,7 @@ class options {
             await SystemFileSystem.setFileString("c/sys/options/" + option + ".json", JSON.stringify(d))
             return true;
         } else {
+            console.warn("no overwrite")
             return false;
         }
     }

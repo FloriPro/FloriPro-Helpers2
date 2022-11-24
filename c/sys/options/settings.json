@@ -18,5 +18,9 @@
     "startupDisclaimer": [
         true,
         "bool"
+    ],
+    "tracker": [
+        true,
+        "bool"
     ]
 }
