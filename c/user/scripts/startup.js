@@ -23,6 +23,10 @@ async function run() {
             await System.run(torun);
         }
     }
+
+    if (params.get("clear") != undefined) {
+        location.search = "";
+    }
     // http://localhost/?install=reddit&autostart=c/programs/reddit/run.js
 }
 run();
