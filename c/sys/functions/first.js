@@ -12,14 +12,15 @@ async function run() {
         if (o["startupDisclaimer"][0] == true) {
             System.program.runProgram(PATH.folder() + "/information.js")
         }
+        System.run("c/sys/functions/first/cleanupSettings.js");
     }
-    //tracker
-    if (o["tracker"] == undefined) {
-        o["tracker"] = [true, "bool"]
-        await System.options.addValue("settings", "tracker", [true, "bool"], true);
+    //analytics
+    if (o["analytics"] == undefined) {
+        o["analytics"] = [true, "bool"]
+        await System.options.addValue("settings", "analytics", [true, "bool"], true);
     }
-    if (o["tracker"][0] == true) {
-        System.run("c/sys/functions/tracker.js");
+    if (o["analytics"][0] == true) {
+        System.run("c/sys/functions/analytics.js");
     }
 }
 

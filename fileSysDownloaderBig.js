@@ -47,6 +47,7 @@ async function loader() {
     if (localStorage.getItem("fileSystemTable") == null || overwriteNotRedownload) {
         var r = await fetch("filesys.json?v=" + (Math.random() * 1000000));
         var d = JSON.parse(await r.text());
+        originalFileSystem = d;
         FileSystemTable = load(d, "c");
         localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
 

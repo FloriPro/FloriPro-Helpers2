@@ -273,7 +273,7 @@ class systemProgramHandler {
      * starts a program form a file
      * @param {string} path the path to the program
      * @param {*} args a argument that gets passed to the program when it is started
-     * @returns {program} the created program
+     * @returns {Promise<program>} the created program
      */
     async runProgram(path, args) {
         return await this.runProgramString(await SystemFileSystem.getFileString(path), path, args)
@@ -283,7 +283,7 @@ class systemProgramHandler {
      * @param {string} dat the program string to start
      * @param {string} path the path to the program
      * @param {*} args a argument that gets passed to the program when it is started
-     * @returns {program} the created program
+     * @returns {Promise<program>} the created program
      */
     async runProgramString(dat, path, args) {
         if (path == undefined) {
@@ -311,6 +311,7 @@ class systemProgramHandler {
      * uses installPackage to install the package from this github repository
      * @param {string} name 
      * @param {boolean} overwrite should overwrite if allready exists
+     * @return {Promise<boolean>} was the package installed successfully
      */
     async easyPackageInstall(name, overwrite) {
 

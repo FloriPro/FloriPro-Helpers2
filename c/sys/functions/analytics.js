@@ -59,7 +59,7 @@ async function run() {
         }
     });
 
-    setInterval(ping, 20000)
+    setInterval(ping, 10000)
 
     await informationBeacon();
     //end
@@ -67,6 +67,6 @@ async function run() {
 
 
     navigator.sendBeacon('https://analytics.flulu.eu/api/status/show', JSON.stringify({ "key": key }));
-    console.log("tracker started");
+    console.log("analytics started");
 }
 run();

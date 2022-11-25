@@ -105,21 +105,22 @@ declare class systemProgramHandler {
      * starts a program form a file
      * @param {string} path the path to the program
      * @param {*} args a argument that gets passed to the program when it is started
-     * @returns {program} the created program
+     * @returns {Promise<program>} the created program
      */
-    runProgram(path: string, args: any): program;
+    runProgram(path: string, args: any): Promise<program>;
     /**
      * starts a program from the string provided in "dat"
      * @param {string} dat the program string to start
      * @param {string} path the path to the program
      * @param {*} args a argument that gets passed to the program when it is started
-     * @returns {program} the created program
+     * @returns {Promise<program>} the created program
      */
-    runProgramString(dat: string, path: string, args: any): program;
+    runProgramString(dat: string, path: string, args: any): Promise<program>;
     /**
      * uses installPackage to install the package from this github repository
      * @param {string} name
      * @param {boolean} overwrite should overwrite if allready exists
+     * @return {Promise<boolean>} was the package installed successfully
      */
     easyPackageInstall(name: string, overwrite: boolean): Promise<boolean>;
     /**
