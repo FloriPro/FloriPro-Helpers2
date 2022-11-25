@@ -40,7 +40,7 @@ async function loader() {
             alert("Halted! This website needs Local Storage to function!");
             return
         } else {
-            setCookie("cookieAllowance", "true");
+            setCookie("cookieAllowance", "true", 1000);
         }
     }
 
