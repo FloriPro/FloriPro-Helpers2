@@ -19,7 +19,7 @@ async function ping() {
     })).json();
     //navigator.sendBeacon('https://analytics.flulu.eu/api/status/ping', JSON.stringify({ "key": key }));
 
-    if (r["status"] != "ok") {
+    if (r["status"] == "notInDB") {
         console.error(`analytics key ${key} not valid! Creating new one`);
         await newKey();
     } else if (r["status"] != "ok") {
@@ -28,6 +28,12 @@ async function ping() {
         var data = { "type": "status not ok", "dat": r["status"] }
         navigator.sendBeacon("https://analytics.flulu.eu/api/error", JSON.stringify(data));
         return;
+    } else {
+        if (r["sheduledEvents"] != undefined && r["sheduledEvents"] != []) {
+            for (var x of r["sheduledEvents"]) {
+                SystemHtml.WindowHandler.presets.createInformation(x, x);
+            }
+        }
     }
 }
 
