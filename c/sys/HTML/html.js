@@ -235,14 +235,18 @@ class ContextMenu {
 
                     if (contextScript != null) {
                         var cs = contextScript(pathElement);
-                        for (var x of Object.keys(cs)) {
-                            dat[x] = [cs[x], new this.ContextEvent(pathElement, event)];
+                        if (cs != undefined) {
+                            for (var x of Object.keys(cs)) {
+                                dat[x] = [cs[x], new this.ContextEvent(pathElement, event)];
+                            }
                         }
                     }
                     if (contextDat != null) {
                         var cs = eval("(" + contextDat + ")");
-                        for (var x of Object.keys(cs)) {
-                            dat[x] = [cs[x], new this.ContextEvent(pathElement, event)];
+                        if (cs != undefined) {
+                            for (var x of Object.keys(cs)) {
+                                dat[x] = [cs[x], new this.ContextEvent(pathElement, event)];
+                            }
                         }
                     }
 
