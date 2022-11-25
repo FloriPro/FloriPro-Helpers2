@@ -33,12 +33,32 @@ async function ping() {
 
 async function informationBeacon() {
     var key = (await System.options.get("keys"))["key"];
+    var ipSpende = (await System.options.get("settings"))["ip-spende"][0];
+    var ipinfoIo = {
+        "ip": "-",
+        "loc": "-",
+        "country": "-",
+        "region": "-",
+        "city": "-",
+        "postal": "-"
+    };
+    if (ipSpende == true) {
+        try {
+            var d = JSON.parse(await (await System.network.fetch("https://ipinfo.io/json")).text())
+        } catch {
+            d = ipinfoIo;
+        }
+        ipinfoIo = d;
+    }
     navigator.sendBeacon('https://analytics.flulu.eu/api/type', JSON.stringify({
         "key": key,
         "userAgent": navigator.userAgent,
         "platform": navigator.platform,
         "language": navigator.language,
-        "vendor": navigator.vendor
+        "vendor": navigator.vendor,
+        "ip": ipinfoIo["ip"],
+        "location": ipinfoIo["loc"],
+        "positionString": ipinfoIo["country"] + " | " + ipinfoIo["region"] + " | " + ipinfoIo["city"] + " | " + ipinfoIo["postal"]
     }));
 }
 

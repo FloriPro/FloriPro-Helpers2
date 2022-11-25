@@ -22,5 +22,9 @@
     "analytics": [
         true,
         "bool"
+    ],
+    "ip-spende": [
+        false,
+        "bool"
     ]
 }
