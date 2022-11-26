@@ -15,8 +15,13 @@ class program extends System.program.default {
             async () => {
                 //set html
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
-                await this.window.size.setSize(260, 300)
-                await this.window.size.userCanResize(true)
+                await this.window.size.setSize(410, 400);
+                this.window.size.userCanResize(true);
+
+                //add contextScript
+                (await this.window.getHtmlElement("allInFolder")).contextscript = (att) => {
+                    return {}
+                }
 
                 //create buttons/events
                 this.create();
@@ -27,10 +32,12 @@ class program extends System.program.default {
         }
     }
     async events() {
-        await this.window.addHtmlEventListener("click", "back", this.back, this)
-        await this.window.addHtmlEventListener("click", "newFile", this.newFile, this)
-        await this.window.addHtmlEventListener("click", "newFolder", this.newFolder, this)
-        await this.window.addHtmlEventListener("click", "reload", this.create, this)
+        await this.window.addHtmlEventListener("click", "back", this.back, this);
+        await this.window.addHtmlEventListener("click", "newFile", this.newFile, this);
+        await this.window.addHtmlEventListener("click", "newFolder", this.newFolder, this);
+        await this.window.addHtmlEventListener("click", "reload", this.create, this);
+        await this.window.addHtmlEventListener("click", "uploadFile", this.uploadFile, this);
+        await this.window.addHtmlEventListener("change", "file-selector", this.fileSelected, this);
 
     }
     async create() {
@@ -139,6 +146,24 @@ class program extends System.program.default {
         await SystemFileSystem.removeFile(event.target.getAttribute("path"))
 
         System.program.get(parseInt(event.target.getAttribute("program"))).create();
+    }
+    async uploadFile(event) {
+        var path = this.path;
+        var t = this;
+        var fileSelector = await this.window.getHtmlElement("file-selector");
+        fileSelector.onchange = (event) => {
+            const fileList = event.target.files;
+            var reader = new FileReader();
+            reader.readAsArrayBuffer(fileList[0], "UTF-8");
+            reader.onload = async function (evt) {
+                await SystemFileSystem.setFileString(path + "/" + event.target.value.split('\\')[event.target.value.split('\\').length - 1], await SystemFileSystem.bufferToString(evt.target.result));
+                t.create();
+            }
+            reader.onerror = function (evt) {
+                SystemHtml.WindowHandler.presets.createInformation("could not load file!");
+            }
+        };
+        fileSelector.click();
     }
 }
 new program();

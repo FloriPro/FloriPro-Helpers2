@@ -17,5 +17,6 @@ declare class program extends standardProg {
     renameF(event: any): Promise<void>;
     removeFi(event: any): Promise<void>;
     renameFi(event: any): Promise<void>;
+    uploadFile(event: any): Promise<void>;
 }
 //# sourceMappingURL=main.d.ts.map

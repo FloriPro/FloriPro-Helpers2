@@ -6,10 +6,10 @@ async function run() {
     var params = new URLSearchParams(location.search);
     var toInstall = params.get("install");
 
+    await delay(100);
     if (toInstall != null) {
         for (var toInstall of toInstall.split(",")) {
             if (!await System.program.installed(toInstall)) {
-                await delay(100);
                 var l = await SystemHtml.WindowHandler.presets.createLoading("Installing " + toInstall, "Downloading " + toInstall);
                 await System.program.installPackage(await (await System.network.fetch(`programs/${toInstall}.json`)).text(), true, l, false, toInstall);
             }

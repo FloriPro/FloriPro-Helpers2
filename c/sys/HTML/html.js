@@ -89,12 +89,18 @@ class Html {
         System.settings.addSettingsUpdater("backgroundImage", () => {
             console.log("update")
             backgroundImgLoader();
-        })
-
+        });
         async function backgroundImgLoader() {
             document.querySelector("#all").style.background = 'url("' + SystemFileSystem.toImg(await SystemFileSystem.getFileString((await System.options.get("settings"))["backgroundImage"][0])) + '") center center / cover no-repeat';
         }
         backgroundImgLoader();
+
+        //other imgs
+        //document.querySelector("#startMenuButton").style.padding = "0";
+        document.querySelector("#startMenuButton").querySelector("span").style.background = 'url("' + SystemFileSystem.toImg(await SystemFileSystem.getFileString("c/sys/imgs/gray.webp")) + '") center center / cover no-repeat';
+        document.querySelector("#startMenuButton").querySelector("span").innerHTML = "";
+        //document.querySelector("#startMenuButton").querySelector("span").style.height = "35px";
+        //document.querySelector("#startMenuButton").querySelector("span").style.width = "35px";
 
         System.eventHandler.addEventHandler("keydown", async (event) => {
             if (event.key == "F5") {

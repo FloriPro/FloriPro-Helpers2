@@ -133,7 +133,7 @@ class FileSystemClass {
                 var d = r.slice(5)
                 var f = await (await fetch(d));
                 var array = await f.arrayBuffer();
-                var dat = await this.bufferToString(array, l);
+                var dat = await this.bufferToString(array);
 
 
                 l.stop();
@@ -146,7 +146,7 @@ class FileSystemClass {
             return this.ramFiles[path];
         }
     }
-    async bufferToString(buf, l) {
+    async bufferToString(buf) {
         var out = ""
         //var i = 0;
         //var p = 0;
