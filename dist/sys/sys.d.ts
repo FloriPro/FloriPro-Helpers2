@@ -189,6 +189,8 @@ declare class eventHandler {
         x: number;
         y: number;
     };
+    clickDown: number;
+    checkClickDelta: boolean;
     construct(): Promise<void>;
     replacementEvents: {
         [any: string]: any;

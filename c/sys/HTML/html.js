@@ -167,6 +167,13 @@ class Html {
      * @param {Event} event 
      */
     htmlEventParser(event) {
+        if (System.eventHandler.checkClickDelta) {
+            var delta = event.timeStamp - System.eventHandler.clickDown;
+            if (delta > 500) {
+                return;
+            }
+        }
+
         var id = event.target.getAttribute("windowid")
 
         //check if window is focused
@@ -495,6 +502,9 @@ class WindowHandler {
         var id = this.getFreeId();
         this.usedWindowId.push(id);
         this.windowLayering.push(id);
+        /**
+         * @type {HtmlWindow}
+         */
         var w = new (await System.run("c/sys/HTML/HtmlWindow.js"))(id);
         w.onReady = readyCallback
         await w.load(id, name);

@@ -456,6 +456,8 @@ class eventHandler {
         this.handlers = {}
         this.keysDown = {};
         this.mouse = { "x": 0, "y": 0 };
+        this.clickDown = -1;
+        this.checkClickDelta = true;
     }
     async construct() {
         this.replacementEvents = await System.options.get("eventReplacements");
@@ -474,6 +476,8 @@ class eventHandler {
             window.addEventListener(x, this.event);
             this.handlers[x] = []
         }
+
+        this.checkClickDelta = (await System.options.get("settings"))["phoneRightclick"][0]
     }
     /**
      * @param {string} type 
@@ -493,7 +497,9 @@ class eventHandler {
      * @param {Event} event 
      */
     event(event, type, replacement) {
-        //special fonctions to make life easyer for mobile
+        if (replacement == undefined) { replacement = false; }
+
+        //special functions to make life easyer for mobile
         if ((event.type == "touchmove" || event.type == "touchend" || event.type == "touchstart") && (event.movementX == undefined || event.movementY == undefined)) {
             var toutches = event.touches;
 
@@ -529,14 +535,24 @@ class eventHandler {
         if (event.type == "mousedown") {
             System.eventHandler.mouse["x"] = event.clientX;
             System.eventHandler.mouse["y"] = event.clientY;
+            System.eventHandler.clickDown = event.timeStamp;
         }
         if (event.type == "mouseup") {
             System.eventHandler.mouse["x"] = event.clientX;
             System.eventHandler.mouse["y"] = event.clientY;
         }
+        if (event.type == "click" && replacement == false) {
+            if (System.eventHandler.checkClickDelta) {
+                var delta = event.timeStamp - System.eventHandler.clickDown;
+                //cancel click event if delta is greater than 500
+                if (delta > 500) {
+                    //instead call a contextmenu event
+                    System.eventHandler.event(event, "contextmenu", true)
+                    return;
+                }
+            }
+        }
 
-
-        if (replacement == undefined) { replacement = false; }
         if (type == undefined) { type = event.type }
         if (System.eventHandler.shouldPrevent[event.type]) {
             if (event.cancelable) {
