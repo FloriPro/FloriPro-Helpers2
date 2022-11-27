@@ -457,7 +457,8 @@ class eventHandler {
         this.keysDown = {};
         this.mouse = { "x": 0, "y": 0 };
         this.clickDown = -1;
-        this.checkClickDelta = true;
+        //TODO: weird behavior when on pc
+        this.checkClickDelta = false;
     }
     async construct() {
         this.replacementEvents = await System.options.get("eventReplacements");
@@ -477,7 +478,7 @@ class eventHandler {
             this.handlers[x] = []
         }
 
-        this.checkClickDelta = (await System.options.get("settings"))["phoneRightclick"][0]
+        //this.checkClickDelta = (await System.options.get("settings"))["phoneRightclick"][0]
     }
     /**
      * @param {string} type 
