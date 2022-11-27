@@ -84,12 +84,12 @@ class HtmlWindow {
                 this.userCanResize(false);
                 this.parent.getHtml().querySelector(".maximize").style.display = "";
                 this.parent.setPosition(0, 0);
-
+                
                 this.parent.getHtml().style.transition = this.transitionTime + "ms";
                 await this.setSize(window.innerWidth, window.innerHeight);
                 await delay(this.transitionTime);
                 this.parent.getHtml().style.transition = "0s";
-
+                
                 this.parent.appearence.showTitle(false);
 
                 SystemHtml.WindowHandler.updateWindowLayering();
@@ -282,10 +282,10 @@ class HtmlWindow {
         windowStr = windowStr.replace("%%name%%", name)
         document.querySelector("#stuff").insertAdjacentHTML('beforeend', windowStr);
         document.querySelector(".window_" + id).contextscript = (event) => {
-            var r = {};
             if (SystemHtml.WindowHandler.getWindowById(event.getAttribute("windowId")).size.fullMax) {
                 r["size normal"] = (clickEvent) => {
                     SystemHtml.WindowHandler.getWindowById(clickEvent.target.getAttribute("windowId")).size.notMax();
+                    console.log(clickEvent)
                 }
             }
             return r;
@@ -315,22 +315,6 @@ class HtmlWindow {
         this.size.setSize(this.#sizeX, this.#sizeY);
         this.size.userCanResize(true);
         setTimeout(this.onReady, 1);
-
-        this.createAnimation();
-    }
-
-    async createAnimation() {
-        await delay(10);
-        var transitionTime = 50;
-        //create animation
-        var h = this.getHtml();
-        h.style.transition = transitionTime + "ms";
-        await delay(5);
-        h.style.MozTransform = "scale(1)";
-        h.style.WebkitTransform = "scale(1)";
-        h.style.opacity = "1";
-        await delay(transitionTime);
-        h.style.transition = "0ms";
     }
 
     /**

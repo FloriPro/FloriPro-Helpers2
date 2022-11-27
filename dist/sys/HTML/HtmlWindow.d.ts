@@ -81,7 +81,6 @@ declare class HtmlWindow {
      */
     rename(name: string): Promise<void>;
     load(id: any, name: any): Promise<void>;
-    createAnimation(): Promise<void>;
     /**
      * Only used by the programm for resizing
      * @param {number} sizeX

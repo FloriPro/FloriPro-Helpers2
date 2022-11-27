@@ -3,9 +3,13 @@
         "c/user/backgrounds/background1.jpg",
         "file"
     ],
-    "phoneRightclick": [
-        true,
-        "bool"
+    "stringSetting": [
+        "hi",
+        "string"
+    ],
+    "stringNumber": [
+        "5",
+        "number"
     ],
     "resetQuestion": [
         true,
