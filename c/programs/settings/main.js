@@ -49,7 +49,7 @@ class program extends System.program.default {
         if (s[setting][1] == "file")
             o = await SystemHtml.WindowHandler.presets.createFileSelect("Select File")
         if (s[setting][1] == "number")
-            o = await SystemHtml.WindowHandler.presets.createNumSelect()
+            o = parseInt(await SystemHtml.WindowHandler.presets.createNumSelect());
         if (s[setting][1] == "string")
             o = await SystemHtml.WindowHandler.presets.createStringSelect()
         if (s[setting][1] == "bool") {

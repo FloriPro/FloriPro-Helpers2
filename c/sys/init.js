@@ -12,6 +12,14 @@ remove = function (arr, what) {
 delay = function (time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
+isJson = function (obj) {
+    try{
+        JSON.parse(obj);
+        return true;
+    }catch{
+        return false;
+    }
+}
 
 
 SystemFileSystem = undefined;
