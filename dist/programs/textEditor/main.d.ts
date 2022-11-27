@@ -1,4 +1,5 @@
 declare class program extends standardProg {
+    init(file: any): Promise<void>;
     /**
      * @type {HtmlWindow}
      */
