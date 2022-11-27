@@ -498,8 +498,9 @@ class eventHandler {
      */
     event(event, type, replacement) {
         if (replacement == undefined) { replacement = false; }
+        if (type == undefined) { type = event.type }
 
-        //special functions to make life easyer for mobile
+        //adds movementX and movementY to all toutch events
         if ((event.type == "touchmove" || event.type == "touchend" || event.type == "touchstart") && (event.movementX == undefined || event.movementY == undefined)) {
             var toutches = event.touches;
 
@@ -535,7 +536,11 @@ class eventHandler {
         if (event.type == "mousedown") {
             System.eventHandler.mouse["x"] = event.clientX;
             System.eventHandler.mouse["y"] = event.clientY;
-            System.eventHandler.clickDown = event.timeStamp;
+        }
+        if (type == "mousedown") {
+            if (replacement == true) {
+                System.eventHandler.clickDown = event.timeStamp;
+            }
         }
         if (event.type == "mouseup") {
             System.eventHandler.mouse["x"] = event.clientX;
@@ -553,7 +558,6 @@ class eventHandler {
             }
         }
 
-        if (type == undefined) { type = event.type }
         if (System.eventHandler.shouldPrevent[event.type]) {
             if (event.cancelable) {
                 event.preventDefault();
