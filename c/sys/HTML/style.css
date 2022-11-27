@@ -24,6 +24,7 @@ input {
 }
 
 .window {
+    opacity: 1;
     background: transparent;
     padding: 12px;
     cursor: nw-resize;

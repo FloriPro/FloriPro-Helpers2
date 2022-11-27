@@ -469,9 +469,17 @@ class WindowHandler {
             iframe.style.pointerEvents = "none";
         }
     }
-    async removeWindow(id) {
+    removeWindow(id) {
         SystemHtml.removeAllEvents(id);
-        this.windows[id].getHtml().remove();
+
+        var h = this.windows[id].getHtml()
+        h.style.transition = "250ms";
+        h.style.MozTransform = 'scale(0.75)';
+        h.style.WebkitTransform = 'scale(0.75)';
+        h.style.opacity = "0";
+        setTimeout(() => {
+            h.remove();
+        }, 250);
         delete this.windows[id]
         remove(this.usedWindowId, id);
         remove(this.windowLayering, id);
@@ -650,7 +658,12 @@ class WindowHandler {
             if (ontop) { programDiv.className += " hidden" }
         }
         programDiv.onclick = () => {
-            SystemHtml.WindowHandler.focus(id);
+            if (SystemHtml.WindowHandler.getWindowById(id).ontop && SystemHtml.WindowHandler.getWindowById(id).appearence.shown) {
+                SystemHtml.WindowHandler.getWindowById(id).appearence.minimize();
+            }
+            else {
+                SystemHtml.WindowHandler.focus(id);
+            }
         }
 
         var titleElement = programDiv.querySelector("p");
@@ -660,7 +673,7 @@ class WindowHandler {
 
         programDiv.append(titleElement);
     }
-    focus(id) {
+    async focus(id) {
         this.getWindowById(id).appearence.show();
         this.putWindowOnTop(id);
     }

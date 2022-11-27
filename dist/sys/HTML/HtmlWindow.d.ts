@@ -43,6 +43,7 @@ declare class HtmlWindow {
         showOverflow(): Promise<void>;
     };
     appearence: {
+        transitionTime: number;
         /**
          * @type {HtmlWindow}
          */
@@ -50,9 +51,9 @@ declare class HtmlWindow {
         title: boolean;
         shown: boolean;
         showTitle(yn: any): void;
-        minimize(): void;
-        show(): void;
-        toggleMinimize(): void;
+        minimize(): Promise<void>;
+        show(): Promise<void>;
+        toggleMinimize(): Promise<void>;
     };
     canUserResize: boolean;
     close: () => boolean;

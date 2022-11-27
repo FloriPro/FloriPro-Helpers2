@@ -84,7 +84,12 @@ class HtmlWindow {
                 this.userCanResize(false);
                 this.parent.getHtml().querySelector(".maximize").style.display = "";
                 this.parent.setPosition(0, 0);
+                
+                this.parent.getHtml().style.transition = this.transitionTime + "ms";
                 await this.setSize(window.innerWidth, window.innerHeight);
+                await delay(this.transitionTime);
+                this.parent.getHtml().style.transition = "0s";
+                
                 this.parent.appearence.showTitle(false);
 
                 SystemHtml.WindowHandler.updateWindowLayering();
@@ -148,6 +153,7 @@ class HtmlWindow {
         }(this)
         this.appearence = new class {
             constructor(parent) {
+                this.transitionTime = 200;
                 /**
                  * @type {HtmlWindow}
                  */
@@ -166,23 +172,50 @@ class HtmlWindow {
                     h.querySelector(".contentBody").style.height = "calc(100% - 0px)";
                 }
             }
-            minimize() {
+            async minimize() {
                 var h = this.parent.getHtml();
-                h.style.display = "none";
+
+                this.parent.getHtml().style.transition = this.transitionTime + "ms";
+                var o = h.style.top
+                h.style.top = (parseInt(o) + (window.innerHeight / 4)) + "px";
+                h.style.opacity = "0";
+                h.style.MozTransform = 'scale(0.5)';
+                h.style.WebkitTransform = 'scale(0.5)';
+
                 this.shown = false;
                 SystemHtml.WindowHandler.updateTaskBar();
-            }
-            show() {
-                var h = this.parent.getHtml();
-                h.style.display = "";
 
-                this.shown = true;
+                await delay(this.transitionTime);
+                h.style.top = o;
+                this.parent.getHtml().style.transition = "0s";
+                h.style.opacity = "1";
+
+                h.style.display = "none";
             }
-            toggleMinimize() {
+            async show() {
+                if (this.shown != true) {
+                    this.shown = true;
+
+                    var h = this.parent.getHtml();
+                    var o = h.style.top
+                    h.style.top = (parseInt(o) + (window.innerHeight / 4)) + "px";
+                    h.style.transition = this.transitionTime + "ms";
+                    h.style.opacity = "0";
+                    h.style.display = "";
+                    await delay(1);
+                    h.style.top = o;
+                    h.style.MozTransform = "scale(1)";
+                    h.style.WebkitTransform = "scale(1)";
+                    h.style.opacity = "1";
+                    await delay(this.transitionTime);
+                    h.style.transition = "0s";
+                }
+            }
+            async toggleMinimize() {
                 if (this.show) {
-                    this.minimize();
+                    await this.minimize();
                 } else {
-                    this.show();
+                    await this.show();
                 }
             }
         }(this)

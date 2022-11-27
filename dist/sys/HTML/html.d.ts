@@ -42,7 +42,7 @@ declare class WindowHandler {
      */
     presets: presets;
     iframeNoClick(): void;
-    removeWindow(id: any): Promise<void>;
+    removeWindow(id: any): void;
     /**
      * @async
      * @param {string} name Name of the window
@@ -86,7 +86,7 @@ declare class WindowHandler {
      * @param {HTMLDivElement} programDiv
      */
     setTaskbarDivValues(name: string, ontop: boolean, id: number, window: HtmlWindow, programDiv: HTMLDivElement): void;
-    focus(id: any): void;
+    focus(id: any): Promise<void>;
 }
 declare var SystemHtml: Html;
 //# sourceMappingURL=html.d.ts.map
