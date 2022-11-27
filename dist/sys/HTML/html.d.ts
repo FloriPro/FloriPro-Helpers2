@@ -63,8 +63,29 @@ declare class WindowHandler {
     get focusedWindow(): HtmlWindow;
     putWindowOnTop(id: any): void;
     updateWindowLayering(): void;
+    hideTaskbar(): Promise<void>;
+    showTaskbar(): Promise<void>;
     updateTaskBar(): void;
+    /**
+     *
+     * @param {HTMLDivElement} element
+     */
+    slowRemoveTaskbar(element: HTMLDivElement): Promise<void>;
+    /**
+     *
+     * @param {HTMLDivElement} element
+     */
+    slowCreateTaskbar(element: HTMLDivElement): Promise<void>;
     createTaskBarProgram(name: any, ontop: any, id: any, window: any): HTMLDivElement;
+    /**
+     *
+     * @param {string} name
+     * @param {boolean} ontop
+     * @param {number} id
+     * @param {HtmlWindow} window
+     * @param {HTMLDivElement} programDiv
+     */
+    setTaskbarDivValues(name: string, ontop: boolean, id: number, window: HtmlWindow, programDiv: HTMLDivElement): void;
     focus(id: any): void;
 }
 declare var SystemHtml: Html;

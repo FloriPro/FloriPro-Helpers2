@@ -20,6 +20,7 @@ class HtmlWindow {
         this.ontop = true;
         this.size = new class {
             constructor(parent) {
+                this.transitionTime = 50;
                 /**
                  * @type {HtmlWindow}
                  */
@@ -94,7 +95,12 @@ class HtmlWindow {
                 var t = "normal";
 
                 this.parent.setPosition(this.maxBefore[t]["pos"][0], this.maxBefore[t]["pos"][1]);
+
+                this.parent.getHtml().style.transition = this.transitionTime + "ms";
                 this.setSize(this.maxBefore[t]["size"][0], this.maxBefore[t]["size"][1]);
+                await delay(this.transitionTime);
+                this.parent.getHtml().style.transition = "0s";
+
                 this.userCanResize(this.maxBefore[t]["userResize"]);
                 this.parent.appearence.showTitle(this.maxBefore[t]["showTitle"]);
                 SystemHtml.WindowHandler.updateWindowLayering();
@@ -124,7 +130,10 @@ class HtmlWindow {
                 if (this.fullMax) {
                     await this.setSize(window.innerWidth, window.innerHeight);
                 } else {
-                    await this.setSize(window.innerWidth, window.innerHeight - 39);
+                    this.parent.getHtml().style.transition = this.transitionTime + "ms";
+                    await this.setSize(window.innerWidth, window.innerHeight - 35);
+                    await delay(this.transitionTime);
+                    this.parent.getHtml().style.transition = "0s";
                 }
             }
             async setInnerSize(x, y) {

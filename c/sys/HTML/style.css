@@ -154,6 +154,7 @@ input {
     right: 0;
     z-index: 5000;
     height: 35px;
+    transition: 0.2s;
 }
 
 #taskbar-programList {
@@ -165,6 +166,7 @@ input {
 
 #taskbar-programList p {
     color: white;
+    transition: 0.1s;
 
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -173,27 +175,41 @@ input {
 
 #taskbar-programList .programListElement {
     max-width: 27vw;
+    width: fit-content;
 
     color: white;
-    margin-right: 5px;
+    margin-right: 7px;
     background-color: transparent;
     border-bottom: #5bb7ffb8 2px solid;
     cursor: default;
-    transition: 0.1s;
+    transition: 0.2s;
 }
 
-#taskbar-programList .programListElement:hover {
+#taskbar-programList .programListElement:hover:not(.selected) {
     background-color: #3a3a3a70;
     /*border-bottom-width: 3px;*/
-    padding-left: 3px;
-    margin-left: -3px;
-    padding-right: 3px;
-    margin-right: calc(-3px + 5px);
+    padding-left: 3px !important;
+    margin-left: -3px !important;
+    padding-right: 3px !important;
+    margin-right: calc(-3px + 7px) !important;
+}
+
+#taskbar-programList .programListElement.selected:hover {
+    background-color: #3a3a3a70;
+    padding-left: 4px !important;
+    margin-left: -4px !important;
+    padding-right: 4px !important;
+    margin-right: calc(-4px + 7px) !important;
 }
 
 
 #taskbar-programList .programListElement.selected {
     background-color: #58585870;
+
+    padding-left: 2px;
+    margin-left: -2px;
+    padding-right: 2px;
+    margin-right: calc(-2px + 7px);
 }
 
 #taskbar-programList .programListElement.selected:hover {
@@ -201,6 +217,7 @@ input {
 }
 
 #taskbar-programList .programListElement.hidden {
+    border-bottom-color: #4386b9b8;
     background-color: #22222270;
 }
 

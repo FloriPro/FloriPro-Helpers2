@@ -7,6 +7,7 @@ declare class HtmlWindow {
     remove(): void;
     ontop: boolean;
     size: {
+        transitionTime: number;
         /**
          * @type {HtmlWindow}
          */
