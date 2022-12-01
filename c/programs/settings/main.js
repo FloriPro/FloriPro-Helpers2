@@ -63,6 +63,8 @@ class program extends System.program.default {
             var dat = JSON.parse(txt);
             var pf = await SystemFileSystem.getFileJson("c/persistandFiles.json");
             await this.asyncUpdateFiles(dat["sys"], "c/sys", pf)
+            await this.asyncUpdateFiles(dat["programs"], "c/programs", pf)
+
             information.setNum(100);
             information.setText("Updated!");
             (await this.window.getHtmlElement("checkForUpdate")).innerText = "Newest version!";
