@@ -69,7 +69,7 @@ class program extends System.program.default {
      * @param {[string,any]} dat 
      */
     async update(dat) {
-        var color = "white"
+        var color = "aqua";
         switch (dat[0]) {
             case "debug":
                 color = "gray";
@@ -82,6 +82,11 @@ class program extends System.program.default {
 
             case "warn":
                 color = "rgb(222, 167, 0)";
+                break;
+
+            case "trace":
+                await this.printStack(dat[2]);
+                color = "white";
                 break;
 
             case "error":
@@ -111,13 +116,30 @@ class program extends System.program.default {
         (await this.window.getHtmlElement("consoleLog")).prepend(p);
     }
 
+    async printStack(dat) {
+        dat.type = "trace";
+        var p = document.createElement("p");
+        p.style.color = "gray";
+
+        var id = System.makeid(100);
+        this.returnObjects[id] = dat;
+        p.setAttribute("jshell_lookup", id);
+
+        p.title = "click for more information";
+        p.addEventListener("click", (event) => { this.openObject(event) });
+
+        p.innerText = "Stack";
+        (await this.window.getHtmlElement("consoleLog")).prepend(p);
+    }
+
     openObject(event) {
         var lookup = event.target.getAttribute("jshell_lookup");
-        new ObjectAnalyser(this.returnObjects[lookup], this.PATH, "");
+        new ObjectAnalyser(this.returnObjects[lookup], this.PATH, "", undefined);
     }
 }
 class ObjectAnalyser {
-    constructor(obj, path, otherAnalysersBefore) {
+    constructor(obj, path, otherAnalysersBefore, parent) {
+        this.parent = parent;
         this.PATH = path;
         this.obj = obj;
         this.lookup = {};
@@ -152,10 +174,31 @@ class ObjectAnalyser {
 
         var pn = Object.getOwnPropertyNames(this.obj);
         for (var m of pn) {
-            await this.genObject(this.obj[m], m);
+            try {
+                await this.genObject(this.obj[m], m);
+            } catch (e) {
+                //TODO: automatically detect, when to load from parent!
+                console.warn("insecting from parent!")
+                //trying to access it from parent
+                var p = this.parent.getObject(m)
+                if (p != undefined) {
+                    await this.genObject(p, m);
+                }
+            }
         }
 
         await this.genObject(Object.getPrototypeOf(this.obj), "[[ Prototype ]]")
+    }
+
+    getObject(m) {
+        try {
+            return this.obj[m];
+        } catch {
+            if (this.parent == undefined) {
+                return null;
+            }
+            return this.parent.getObject(m);
+        }
     }
 
     async genObject(obj, m) {
@@ -202,7 +245,7 @@ class ObjectAnalyser {
             p.addEventListener("click", async (event) => {
                 var lookup = event.target.getAttribute("objLookup");
                 if (lookup != null) {
-                    new ObjectAnalyser(this.getLookup(lookup), this.PATH, this.otherAnalysersBefore);
+                    new ObjectAnalyser(this.getLookup(lookup), this.PATH, this.otherAnalysersBefore, this);
                 } else {
                     var big = event.target.getAttribute("big");
 
@@ -211,6 +254,17 @@ class ObjectAnalyser {
                     //SystemHtml.WindowHandler.presets.createInformation("Big of '" + event.target.getAttribute("name") + "'", this.getLookup(big) + "");
                 }
             });
+
+            p.contextscript = () => {
+                return {
+                    "copy as text": (event) => {
+                        navigator.clipboard.writeText(obj + "");
+                    },
+                    "to global variable": async (event) => {
+                        window[await SystemHtml.WindowHandler.presets.createStringSelect("Name", "Global Variable Name:")] = obj;
+                    }
+                };
+            }
         } catch (e) {
             console.error(e);
         }

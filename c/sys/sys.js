@@ -84,6 +84,20 @@ class MyConsole {
                 System.console.add("debug", ...dat);
             }
         }
+        var OldConsoletrace = console.trace;
+        console.trace = (...dat) => {
+
+            //handle other
+            if (dat[dat.length - 1] == "no-event") {
+                dat.splice(dat.length - 1);
+                OldConsoletrace(...dat);
+                return;
+            } else {
+                OldConsoletrace(...dat);
+                var error = new Error();
+                System.console.add("trace", dat, error);
+            }
+        }
         var OldConsoleerror = console.error;
         console.error = (...dat) => {
 
@@ -151,7 +165,7 @@ class MyConsole {
      * @returns 
      */
     add(type, ...dat) {
-        if (dat.length != 1) {
+        if (dat.length != 1 && type != "trace") {
             var d = dat.join(" ");
         } else {
             var d = dat[0];
@@ -164,7 +178,11 @@ class MyConsole {
         for (var k of Object.keys(this.listeners)) {
             var updateListener = this.listeners[k];
             try {
-                updateListener[0]([type, d], updateListener[1]);
+                if (type == "trace") {
+                    updateListener[0]([type, dat[0], dat[1]], updateListener[1]);
+                } else {
+                    updateListener[0]([type, d], updateListener[1]);
+                }
             } catch {
                 delete this.listeners[k];
                 return;
