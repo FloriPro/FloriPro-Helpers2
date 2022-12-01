@@ -82,10 +82,16 @@ class program extends System.program.default {
         }, this)
     }
 
+    /**
+     * 
+     * @param {*} dat 
+     * @param {string} path 
+     * @param {*} persistandFiles 
+     */
     async asyncUpdateFiles(dat, path, persistandFiles) {
         for (var x of Object.keys(dat)) {
             if (x.includes(".")) {
-                if (!persistandFiles.includes(path + "/" + x)) {
+                if (!persistandFiles.includes(path + "/" + x) && !path.startsWith("c/sys/options")) {
                     console.log("update " + path + "/" + x);
                     await SystemFileSystem.setFileString(path + "/" + x, this.b64_to_utf8(dat[x]));
                 }
