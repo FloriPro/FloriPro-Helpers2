@@ -84,12 +84,12 @@ class HtmlWindow {
                 this.userCanResize(false);
                 this.parent.getHtml().querySelector(".maximize").style.display = "";
                 this.parent.setPosition(0, 0);
-                
+
                 this.parent.getHtml().style.transition = this.transitionTime + "ms";
                 await this.setSize(window.innerWidth, window.innerHeight);
                 await delay(this.transitionTime);
                 this.parent.getHtml().style.transition = "0s";
-                
+
                 this.parent.appearence.showTitle(false);
 
                 SystemHtml.WindowHandler.updateWindowLayering();
@@ -270,9 +270,10 @@ class HtmlWindow {
     }
     /**
      * renames the window
-     * @param {string} name 
+     * @param {string} name
+     * @returns {void}
      */
-    async rename(name) {
+    rename(name) {
         this.getHtml().querySelector(".window-name").innerText = name;
     }
     async load(id, name) {
@@ -311,10 +312,11 @@ class HtmlWindow {
             }
         }
 
-
-        this.size.setSize(this.#sizeX, this.#sizeY);
+        await this.size.setSize(this.#sizeX, this.#sizeY);
         this.size.userCanResize(true);
-        setTimeout(this.onReady, 1);
+        setTimeout(this.onReady, 2);
+        await delay(1);
+        return;
     }
 
     /**
@@ -343,10 +345,14 @@ class HtmlWindow {
      * @param {string} htmlstr 
      */
     async setContent(htmlstr) {
+        console.log("htmlstr: " + htmlstr);
         var html = this.getHtml();
-        var cont = html.querySelector(".content")
+        var cont = html.querySelector(".content");
         cont.innerHTML = htmlstr;
         await this.parseNewHtml();
+        setTimeout(() => {
+            console.log(this.getHtml());
+        }, 500);
     }
 
     /**

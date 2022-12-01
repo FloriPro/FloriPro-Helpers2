@@ -473,6 +473,7 @@ class WindowHandler {
         SystemHtml.removeAllEvents(id);
 
         var h = this.windows[id].getHtml()
+        h.className = "window _remove";
         h.style.transition = "250ms";
         h.style.MozTransform = 'scale(0.75)';
         h.style.WebkitTransform = 'scale(0.75)';
@@ -495,6 +496,9 @@ class WindowHandler {
         var id = this.getFreeId();
         this.usedWindowId.push(id);
         this.windowLayering.push(id);
+        /**
+         * @type {HtmlWindow}
+         */
         var w = new (await System.run("c/sys/HTML/HtmlWindow.js"))(id);
         w.onReady = readyCallback
         await w.load(id, name);
@@ -506,12 +510,8 @@ class WindowHandler {
         w.setPosition(20 * this.windowsCreated, 20 * this.windowsCreated)
 
         this.windows[id] = w;
-
+        await SystemHtml.WindowHandler.focus(id);
         this.updateWindowLayering();
-
-        setTimeout(() => {
-            this.focus(id);
-        }, 1);
         return w;
     }
     getFreeId() {

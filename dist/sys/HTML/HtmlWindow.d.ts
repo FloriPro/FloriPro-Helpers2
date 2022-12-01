@@ -78,8 +78,9 @@ declare class HtmlWindow {
     /**
      * renames the window
      * @param {string} name
+     * @returns {void}
      */
-    rename(name: string): Promise<void>;
+    rename(name: string): void;
     load(id: any, name: any): Promise<void>;
     /**
      * Only used by the programm for resizing
