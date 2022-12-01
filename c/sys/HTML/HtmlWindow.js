@@ -4,8 +4,11 @@ class HtmlWindow {
     #sizeX;
     #sizeY;
 
-    makeClose() {
-        if (SystemHtml.WindowHandler.getWindowById(this.#id).close()) {
+    /**
+     * asks the window if it wants to be closed. If yes, closes it
+     */
+    async makeClose() {
+        if (await SystemHtml.WindowHandler.getWindowById(this.#id).close()) {
             this.remove();
         }
     }
@@ -18,6 +21,24 @@ class HtmlWindow {
 
     constructor(id) {
         this.ontop = true;
+        this.animationHandler = new class {
+            constructor(parent) {
+                this.parent = parent;
+                this.animations = 0;
+            }
+            addAnimation(msSpeed) {
+                this.animations++;
+                if (this.parent.getHtml() != undefined)
+                    this.parent.getHtml().style.transition = msSpeed + "ms";
+            }
+            finishedAnimation() {
+                this.animations--;
+                if (this.animations == 0) {
+                    if (this.parent.getHtml() != undefined)
+                        this.parent.getHtml().style.transition = "0s";
+                }
+            }
+        }(this);
         this.size = new class {
             constructor(parent) {
                 this.transitionTime = 50;
@@ -85,10 +106,13 @@ class HtmlWindow {
                 this.parent.getHtml().querySelector(".maximize").style.display = "";
                 this.parent.setPosition(0, 0);
 
-                this.parent.getHtml().style.transition = this.transitionTime + "ms";
+                this.parent.animationHandler.addAnimation(this.transitionTime);
+                //this.parent.getHtml().style.transition = this.transitionTime + "ms";
                 await this.setSize(window.innerWidth, window.innerHeight);
                 await delay(this.transitionTime);
-                this.parent.getHtml().style.transition = "0s";
+
+                this.parent.animationHandler.finishedAnimation();
+                //this.parent.getHtml().style.transition = "0s";
 
                 this.parent.appearence.showTitle(false);
 
@@ -101,10 +125,10 @@ class HtmlWindow {
 
                 this.parent.setPosition(this.maxBefore[t]["pos"][0], this.maxBefore[t]["pos"][1]);
 
-                this.parent.getHtml().style.transition = this.transitionTime + "ms";
-                this.setSize(this.maxBefore[t]["size"][0], this.maxBefore[t]["size"][1]);
+                this.parent.animationHandler.addAnimation(this.transitionTime);
+                this.setSize(this.maxBefore[t]["size"][0], this.maxBefore[t]["size"][1],);
                 await delay(this.transitionTime);
-                this.parent.getHtml().style.transition = "0s";
+                this.parent.animationHandler.finishedAnimation();
 
                 this.userCanResize(this.maxBefore[t]["userResize"]);
                 this.parent.appearence.showTitle(this.maxBefore[t]["showTitle"]);
@@ -135,10 +159,10 @@ class HtmlWindow {
                 if (this.fullMax) {
                     await this.setSize(window.innerWidth, window.innerHeight);
                 } else {
-                    this.parent.getHtml().style.transition = this.transitionTime + "ms";
+                    this.parent.animationHandler.addAnimation(this.transitionTime);
                     await this.setSize(window.innerWidth, window.innerHeight - 35);
                     await delay(this.transitionTime);
-                    this.parent.getHtml().style.transition = "0s";
+                    this.parent.animationHandler.finishedAnimation();
                 }
             }
             async setInnerSize(x, y) {
@@ -159,7 +183,7 @@ class HtmlWindow {
                  */
                 this.parent = parent;
                 this.title = true;
-                this.shown = true;
+                this.shown = false;
             }
             showTitle(yn) {
                 this.title = yn;
@@ -175,7 +199,7 @@ class HtmlWindow {
             async minimize() {
                 var h = this.parent.getHtml();
 
-                this.parent.getHtml().style.transition = this.transitionTime + "ms";
+                this.parent.animationHandler.addAnimation(this.transitionTime);
                 var o = h.style.top
                 h.style.top = (parseInt(o) + (window.innerHeight / 4)) + "px";
                 h.style.opacity = "0";
@@ -187,7 +211,7 @@ class HtmlWindow {
 
                 await delay(this.transitionTime);
                 h.style.top = o;
-                this.parent.getHtml().style.transition = "0s";
+                this.parent.animationHandler.finishedAnimation();
                 h.style.opacity = "1";
 
                 h.style.display = "none";
@@ -195,20 +219,22 @@ class HtmlWindow {
             async show() {
                 if (this.shown != true) {
                     this.shown = true;
-
                     var h = this.parent.getHtml();
                     var o = h.style.top
                     h.style.top = (parseInt(o) + (window.innerHeight / 4)) + "px";
-                    h.style.transition = this.transitionTime + "ms";
+                    this.parent.animationHandler.addAnimation(this.transitionTime);
+                    h.style.MozTransform = 'scale(0.5)';
+                    h.style.WebkitTransform = 'scale(0.5)';
                     h.style.opacity = "0";
                     h.style.display = "";
+
                     await delay(1);
                     h.style.top = o;
                     h.style.MozTransform = "scale(1)";
                     h.style.WebkitTransform = "scale(1)";
                     h.style.opacity = "1";
                     await delay(this.transitionTime);
-                    h.style.transition = "0s";
+                    this.parent.animationHandler.finishedAnimation();
                 }
             }
             async toggleMinimize() {
@@ -224,6 +250,9 @@ class HtmlWindow {
         this.canUserResize = true;
 
         this.#id = id;
+        /**
+         * @returns {boolean | Promise<boolean>}
+         */
         this.close = () => {
             console.log("close action not defined!");
             return true;
@@ -250,12 +279,7 @@ class HtmlWindow {
      * @param {number} y 
      */
     setPosition(x, y) {
-        var element = this.getHtml()/*
-        if (x < 0) { x = 0; }
-        if (y < 0) { y = 0; }
-
-        if (x > window.innerWidth - 50) { x = window.innerWidth - 50 };
-        if (y > window.innerHeight - 40 - 39) { y = window.innerHeight - 40 - 39 };*/
+        var element = this.getHtml()
 
         element.style.left = x + 'px';
         element.style.top = y + 'px';
@@ -345,14 +369,10 @@ class HtmlWindow {
      * @param {string} htmlstr 
      */
     async setContent(htmlstr) {
-        console.log("htmlstr: " + htmlstr);
         var html = this.getHtml();
         var cont = html.querySelector(".content");
         cont.innerHTML = htmlstr;
         await this.parseNewHtml();
-        setTimeout(() => {
-            console.log(this.getHtml());
-        }, 500);
     }
 
     /**
@@ -405,7 +425,7 @@ class HtmlWindow {
         SystemHtml.removeAllEvents(this.#id);
     }
     /**
-     * needs to be called, *before* adding an event to an Element added *not* by {@link setContent}
+     * needs to be called, *before* adding an event to an Element. *Not* needed with {@link setContent}
      */
     async parseNewHtml() {
         var e = this.getHtml().querySelectorAll("*[element]")

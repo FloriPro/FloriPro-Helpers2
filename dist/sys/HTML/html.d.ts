@@ -32,7 +32,7 @@ declare class WindowHandler {
     windowsCreated: number;
     moving: boolean;
     usedWindowId: any[];
-    /** @type {{[id:number]:HtmlWindow}} */
+    /** @type {{[id: number]: HtmlWindow}} */
     windows: {
         [id: number]: HtmlWindow;
     };

@@ -72,6 +72,12 @@ class Html {
                 }
                 return true;
             }
+            if (event.composedPath().includes(document.querySelector("#minimizeAllWindows"))) {
+                for (var x of Object.keys(this.WindowHandler.windows)) {
+                    this.WindowHandler.windows[x].appearence.minimize();
+                }
+                this.WindowHandler.updateTaskBar();
+            }
         }, [_StartMenuButton, _StartMenu]);
 
         this.WindowHandler = new WindowHandler();
@@ -282,6 +288,14 @@ class ContextMenu {
         }
 
         document.body.appendChild(div);
+
+        if (div.offsetHeight + parseInt(div.style.top) > window.innerHeight) {
+            div.style.top = window.innerHeight - div.offsetHeight - 1 + "px";
+        }
+        if (div.offsetWidth + parseInt(div.style.left) > window.innerWidth) {
+            div.style.left = window.innerWidth - div.offsetWidth + "px";
+        }
+
     }
     createContextButton(name, information) {
         var button = document.createElement("button");
@@ -303,7 +317,7 @@ class WindowHandler {
 
         this.moving = false;
         this.usedWindowId = [];
-        /** @type {{[id:number]:HtmlWindow}} */
+        /** @type {{[id: number]: HtmlWindow}} */
         this.windows = {};
 
         this.windowLayering = [];
@@ -507,7 +521,8 @@ class WindowHandler {
         if (20 * this.windowsCreated >= (window.innerWidth - 50) / 10 || 20 * this.windowsCreated >= (window.innerHeight - 50) / 10) {
             this.windowsCreated = 1;
         }
-        w.setPosition(20 * this.windowsCreated, 20 * this.windowsCreated)
+        w.setPosition(20 * this.windowsCreated, 20 * this.windowsCreated);
+        w.getHtml().offsetHeight;
 
         this.windows[id] = w;
         await SystemHtml.WindowHandler.focus(id);
@@ -571,7 +586,7 @@ class WindowHandler {
         }
 
         if (this.focusedWindow != undefined && this.getWindowById(this.focusedWindow) != undefined) {
-            if (this.getWindowById(this.focusedWindow).size.fullMax) {
+            if (this.getWindowById(this.focusedWindow).size.fullMax && this.getWindowById(this.focusedWindow).appearence.shown) {
                 this.hideTaskbar();
             } else {
                 this.showTaskbar();
@@ -588,6 +603,8 @@ class WindowHandler {
         document.querySelector("#taskbar").style.display = "";
         await delay(10);
         document.querySelector("#taskbar").style.height = "";
+        await delay(200)
+        document.querySelector("#taskbar").style.display = "";
     }
 
     updateTaskBar() {
@@ -605,7 +622,7 @@ class WindowHandler {
             realyNeeded.push(div);
         }
 
-        for (var x of document.querySelectorAll(".programListElement")) {
+        for (var x of document.querySelectorAll(".programListElement:not(.remove)")) {
             if (!realyNeeded.includes(x)) {
                 this.slowRemoveTaskbar(x);
             }
@@ -617,10 +634,13 @@ class WindowHandler {
      * @param {HTMLDivElement} element 
      */
     async slowRemoveTaskbar(element) {
+        element.className = "programListElement remove"
+        element.setAttribute("windowid", -1);
+
         element.querySelector("p").style.color = "transparent";
         element.style.maxWidth = "0";
         element.style.padding = "0";
-        await delay(500);
+        await delay(200);
         element.remove();
     }
     /**
@@ -637,6 +657,16 @@ class WindowHandler {
         var programDiv = document.createElement("div");
         programDiv.style.maxWidth = "0";
         programDiv.style.padding = "0";
+        programDiv.contextscript = () => {
+            return {
+                "close": (event) => {
+                    SystemHtml.WindowHandler.getWindowById(event.target.getAttribute("windowid")).makeClose();
+                },
+                "minimize": (event) => {
+                    SystemHtml.WindowHandler.getWindowById(event.target.getAttribute("windowid")).appearence.minimize();
+                }
+            }
+        }
         var titleElement = document.createElement("p");
         programDiv.append(titleElement);
         this.setTaskbarDivValues(name, ontop, id, window, programDiv);
@@ -655,7 +685,7 @@ class WindowHandler {
         if (window.appearence.shown) {
             if (ontop) { programDiv.className += " selected" }
         } else {
-            if (ontop) { programDiv.className += " hidden" }
+            programDiv.className += " hidden"
         }
         programDiv.onclick = () => {
             if (SystemHtml.WindowHandler.getWindowById(id).ontop && SystemHtml.WindowHandler.getWindowById(id).appearence.shown) {

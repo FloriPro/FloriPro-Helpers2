@@ -1,11 +1,20 @@
 declare class HtmlWindow {
     constructor(id: any);
-    makeClose(): void;
+    /**
+     * asks the window if it wants to be closed. If yes, closes it
+     */
+    makeClose(): Promise<void>;
     /**
      * remove the window
      */
     remove(): void;
     ontop: boolean;
+    animationHandler: {
+        parent: any;
+        animations: number;
+        addAnimation(msSpeed: any): void;
+        finishedAnimation(): void;
+    };
     size: {
         transitionTime: number;
         /**
@@ -56,7 +65,10 @@ declare class HtmlWindow {
         toggleMinimize(): Promise<void>;
     };
     canUserResize: boolean;
-    close: () => boolean;
+    /**
+     * @returns {boolean | Promise<boolean>}
+     */
+    close: () => boolean | Promise<boolean>;
     onResize: () => void;
     onReady: () => void;
     /**
@@ -129,7 +141,7 @@ declare class HtmlWindow {
      */
     removeAllEventListeners(): Promise<void>;
     /**
-     * needs to be called, *before* adding an event to an Element added *not* by {@link setContent}
+     * needs to be called, *before* adding an event to an Element. *Not* needed with {@link setContent}
      */
     parseNewHtml(): Promise<void>;
     /**

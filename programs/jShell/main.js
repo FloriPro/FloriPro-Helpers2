@@ -4,7 +4,6 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
-        console.log(this); //testing console
         this.returnObjects = {};
 
         this.loadStyle()
@@ -157,12 +156,6 @@ class ObjectAnalyser {
         }
 
         await this.genObject(Object.getPrototypeOf(this.obj), "[[ Prototype ]]")
-
-
-        //var p = document.createElement("p");
-        //p.innerText = "[[ Prototype ]]"
-        //p.setAttribute("objLookup", this.genLookup(Object.getPrototypeOf(this.obj)))
-        //attributeElem.append(p)
     }
 
     async genObject(obj, m) {
