@@ -65,6 +65,14 @@ class program extends System.program.default {
             await this.asyncUpdateFiles(dat["sys"], "c/sys", pf)
             await this.asyncUpdateFiles(dat["programs"], "c/programs", pf)
 
+            VERSION = nv;
+
+            var r = async () => {
+                if (await SystemHtml.WindowHandler.presets.createConfirm("Reload?", "A reload is suggested. Would you like to reload?")) {
+                    location.reload();
+                }
+            }; r();
+
             information.setNum(100);
             information.setText("Updated!");
             (await this.window.getHtmlElement("checkForUpdate")).innerText = "Newest version!";
@@ -78,6 +86,7 @@ class program extends System.program.default {
         for (var x of Object.keys(dat)) {
             if (x.includes(".")) {
                 if (!persistandFiles.includes(path + "/" + x)) {
+                    console.log("update " + path + "/" + x);
                     await SystemFileSystem.setFileString(path + "/" + x, this.b64_to_utf8(dat[x]));
                 }
             } else {
