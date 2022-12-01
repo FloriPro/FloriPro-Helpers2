@@ -6,7 +6,7 @@ async function run() {
     var params = new URLSearchParams(location.search);
     var toInstall = params.get("install");
 
-    //await delay(100);
+    await delay(100);
     if (toInstall != null) {
         for (var toInstall of toInstall.split(",")) {
             if (!await System.program.installed(toInstall)) {

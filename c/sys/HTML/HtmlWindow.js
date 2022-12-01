@@ -307,6 +307,7 @@ class HtmlWindow {
         windowStr = windowStr.replace("%%name%%", name)
         document.querySelector("#stuff").insertAdjacentHTML('beforeend', windowStr);
         document.querySelector(".window_" + id).contextscript = (event) => {
+            r = {};
             if (SystemHtml.WindowHandler.getWindowById(event.getAttribute("windowId")).size.fullMax) {
                 r["size normal"] = (clickEvent) => {
                     SystemHtml.WindowHandler.getWindowById(clickEvent.target.getAttribute("windowId")).size.notMax();

@@ -33,8 +33,8 @@ class Html {
             var _StartMenu = a[1];
             var _StartMenuPrograms = a[1].querySelector("#StartMenuPrograms");
 
-            if (!event.composedPath().includes(_StartMenu) && !event.composedPath().includes(_StartMenuButton)) {
-                _StartMenu.style.display = "none";
+            if (!event.composedPath().includes(_StartMenu) && !event.composedPath().includes(_StartMenuButton) && _StartMenu.style.display == "") {
+                startMenuButton_Toggle();
             }
             else if (event.target == _StartMenuButton.querySelector("span")) {
                 startMenuButton_Toggle();
@@ -84,10 +84,17 @@ class Html {
         await this.WindowHandler.init();
         this.ContextMenu = new ContextMenu();
 
-        function startMenuButton_Toggle() {
+        async function startMenuButton_Toggle() {
             if (_StartMenu.style.display != "") {
                 _StartMenu.style.display = "";
+                await delay(1);
+                _StartMenu.style.opacity = "1";
+                _StartMenu.style.height = "";
+                await delay(400);
             } else {
+                _StartMenu.style.height = "0px";
+                _StartMenu.style.opacity = "0";
+                await delay(400);
                 _StartMenu.style.display = "none";
             }
         }
@@ -181,16 +188,23 @@ class Html {
             return;
         }
 
-        var element = event.target.getAttribute("windowelement");
-        if (element != undefined) {
-            var name = element + "__" + id;
+        //var element = event.target.getAttribute("windowelement");
+        for (var element of event.composedPath()) {
+            if (element != undefined && element != document && element != window) {
+                if (element.getAttribute("windowelement") != null) {
+                    element = element.getAttribute("windowelement")
+                    var name = element + "__" + id;
+                    if (Object.keys(this.htmlEventList).includes(name)) {
 
-            var eventType = event.type;
-            eventType = eventType.replace("on", "");
+                        var eventType = event.type;
+                        eventType = eventType.replace("on", "");
 
-            for (var x of this.htmlEventList[name][eventType]) {
-                this.htmlEventListThis[name].x = x[0];
-                this.htmlEventListThis[name].x(element, id, x[1], event);
+                        for (var element of this.htmlEventList[name][eventType]) {
+                            this.htmlEventListThis[name].x = element[0];
+                            this.htmlEventListThis[name].x(element, id, element[1], event);
+                        }
+                    }
+                }
             }
         }
     }

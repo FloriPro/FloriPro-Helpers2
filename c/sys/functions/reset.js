@@ -1,7 +1,7 @@
 async function run() {
     let skipQuestion = false;
     try {
-        var t = (await System.options.get("settings"))["resetQuestion"][0];
+        var t = (await System.options.get("settings"))["resetWithoutQuestion"][0];
         console.log(t);
         if (t == true) {
             skipQuestion = t;

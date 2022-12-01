@@ -4,13 +4,26 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
+        /**
+         * @type {HtmlWindow}
+         */
         this.window = await SystemHtml.WindowHandler.createWindow("Settings",
             //onready:
             async () => {
                 //set html
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
-                await this.window.size.setSize(500, 300)
-                await this.window.size.userCanResize(true)
+                await this.window.size.setSize(520, 400);
+                this.window.size.userCanResize(true);
+
+                System.network.fetch("version").then(async (response) => {
+                    var v = await response.text()
+                    if (v == VERSION) {
+                        (await this.window.getHtmlElement("checkForUpdate")).innerText = "Newest version!";
+                    } else {
+                        (await this.window.getHtmlElement("checkForUpdate")).innerText = "Update available! ";
+                        (await this.window.getHtmlElement("updateVersions")).innerText = VERSION + " -> " + v;
+                    }
+                })
 
                 await this.loadSettings();
             });
@@ -19,8 +32,69 @@ class program extends System.program.default {
             return true
         }
     }
+
+    async createEvents() {
+        await this.window.addHtmlEventListener("click", "updates", async () => {
+            var information = await SystemHtml.WindowHandler.presets.createLoading("Updating", "Verifying...");
+
+            var nv = await (await System.network.fetch("version")).text();
+            if (nv == VERSION) {
+                await SystemHtml.WindowHandler.presets.createInformation("Error", "You currently have the latest version!")
+                information.stop();
+                return;
+            }
+
+            if (!await SystemHtml.WindowHandler.presets.createConfirm("Update?", "all files in c/sys and c/programs that are shipped with this website will be replaced. This includes your changes you made to them!")) {
+                information.stop();
+                return;
+            }
+
+            information.setNum(5);
+            information.setText("Connecting...");
+
+            var con = await System.network.fetch("filesys.json");
+            information.setNum(10);
+            information.setText("Downloading...");
+            var txt = await con.text();
+
+            information.setNum(50);
+            information.setText("Applying changes");
+
+            var dat = JSON.parse(txt);
+            var pf = await SystemFileSystem.getFileJson("c/persistandFiles.json");
+            await this.asyncUpdateFiles(dat["sys"], "c/sys", pf)
+            information.setNum(100);
+            information.setText("Updated!");
+            (await this.window.getHtmlElement("checkForUpdate")).innerText = "Newest version!";
+            (await this.window.getHtmlElement("updateVersions")).innerText = "";
+            await delay(1000);
+            information.stop();
+        }, this)
+    }
+
+    async asyncUpdateFiles(dat, path, persistandFiles) {
+        for (var x of Object.keys(dat)) {
+            if (x.includes(".")) {
+                if (!persistandFiles.includes(path + "/" + x)) {
+                    await SystemFileSystem.setFileString(path + "/" + x, this.b64_to_utf8(dat[x]));
+                }
+            } else {
+                this.asyncUpdateFiles(dat[x], path + "/" + x, persistandFiles);
+            }
+        }
+    }
+    b64_to_utf8(str) {
+        try {
+            str = str.replace(/\s/g, '');
+            return decodeURIComponent(escape(window.atob(str)));
+        } catch {
+            return window.atob(str);
+        }
+    }
+
     async loadSettings() {
         await this.window.removeAllEventListeners();
+        await this.createEvents();
 
         //load settings
         var s = await System.options.get("settings")

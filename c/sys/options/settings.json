@@ -3,16 +3,8 @@
         "c/user/backgrounds/background1.jpg",
         "file"
     ],
-    "stringSetting": [
-        "hi",
-        "string"
-    ],
-    "stringNumber": [
-        "5",
-        "number"
-    ],
-    "resetQuestion": [
-        true,
+    "resetWithoutQuestion": [
+        false,
         "bool"
     ],
     "startupDisclaimer": [

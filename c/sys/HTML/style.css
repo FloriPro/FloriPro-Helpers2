@@ -11,11 +11,16 @@
 }
 
 .disable-select {
-    user-select: none; /* supported by Chrome and Opera */
-   -webkit-user-select: none; /* Safari */
-   -khtml-user-select: none; /* Konqueror HTML */
-   -moz-user-select: none; /* Firefox */
-   -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none;
+    /* supported by Chrome and Opera */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
 }
 
 *[tooltip]:hover::after {
@@ -248,14 +253,18 @@ p {
     /* box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff; */
     display: inline-block;
     display: flex;
-    height: auto;
+    height: 400px;
+    opacity: 0;
     left: 0;
     list-style: none;
     margin: 0;
     padding: 2px;
     position: absolute;
     bottom: 35px;
+    overflow: hidden;
     vertical-align: top;
+
+    transition: 400ms;
 }
 
 .StartMenuSelector {

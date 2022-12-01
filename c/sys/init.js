@@ -13,15 +13,15 @@ delay = function (time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
 isJson = function (obj) {
-    try{
+    try {
         JSON.parse(obj);
         return true;
-    }catch{
+    } catch {
         return false;
     }
 }
 
-
+VERSION = '0.2';
 SystemFileSystem = undefined;
 System = undefined
 SystemHtml = undefined;

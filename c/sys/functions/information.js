@@ -15,6 +15,9 @@ class program extends System.program.default {
                 await this.window.size.setSize(200, 300);
                 this.window.size.userCanResize(true);
 
+                (await this.window.getHtmlElement("version")).innerText = VERSION;
+                (await this.window.getHtmlElement("hasUpdated")).innerText = "";
+
                 this.howToUseList = await this.window.getHtmlElement("howToUseList");
                 this.howToUse = await SystemFileSystem.getFileJson(this.PATH.folder() + "/howToUse.json");
                 for (var x of Object.keys(this.howToUse)) {
