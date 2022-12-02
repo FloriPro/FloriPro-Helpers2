@@ -39,9 +39,10 @@ class program extends System.program.default {
 
             var nv = await (await System.network.fetch("version")).text();
             if (nv == VERSION) {
-                await SystemHtml.WindowHandler.presets.createInformation("Error", "You currently have the latest version!")
-                information.stop();
-                return;
+                if (await SystemHtml.WindowHandler.presets.createConfirm("Error", "You currently have the latest version! (NO to update nevertheless)")) {
+                    information.stop();
+                    return;
+                }
             }
 
             if (!await SystemHtml.WindowHandler.presets.createConfirm("Update?", "all files in c/sys and c/programs that are shipped with this website will be replaced. This includes your changes you made to them!")) {

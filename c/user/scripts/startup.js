@@ -29,4 +29,21 @@ async function run() {
     }
     // http://localhost/?install=reddit&autostart=c/programs/reddit/run.js
 }
+async function debugBridge() {
+    var address = "192.168.178.66"
+    var ws = new WebSocket("ws://" + address + ":8000");
+    window.onerror = function (error, url, line) {
+        ws.send(JSON.stringify({
+            type: "error",
+            data: error + ' URL:' + url + ' Line:' + line
+        }));
+    };
+    System.console.addListener((d, ws) => {
+        ws.send(JSON.stringify({
+            type: d[0],
+            data: JSON.stringify(d[1])
+        }))
+    }, ws)
+}
+//debugBridge();
 run();

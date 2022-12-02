@@ -21,7 +21,7 @@ isJson = function (obj) {
     }
 }
 
-VERSION = '0.5';
+VERSION = '0.6';
 SystemFileSystem = undefined;
 System = undefined
 SystemHtml = undefined;

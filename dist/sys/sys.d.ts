@@ -189,6 +189,8 @@ declare class eventHandler {
         x: number;
         y: number;
     };
+    mouseDownTime: number;
+    onmobile: boolean;
     construct(): Promise<void>;
     replacementEvents: {
         [any: string]: any;

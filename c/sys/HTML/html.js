@@ -173,6 +173,12 @@ class Html {
     }
 
     htmlEventHandler(event) {
+        if (event.type == "click") {
+            if (Date.now() - System.eventHandler.mouseDownTime > 500) {
+                console.log("cancel click HTML")
+                return;
+            }
+        }
         SystemHtml.htmlEventParser(event)
     }
     /**

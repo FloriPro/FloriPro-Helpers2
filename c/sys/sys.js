@@ -183,10 +183,10 @@ class MyConsole {
                 } else {
                     updateListener[0]([type, d], updateListener[1]);
                 }
-            } catch {
+            } catch (e) {
                 delete this.listeners[k];
+                console.error(e);
                 return;
-                console.error("console listener errored! removing");
             }
         }
     }
@@ -474,6 +474,8 @@ class eventHandler {
         this.handlers = {}
         this.keysDown = {};
         this.mouse = { "x": 0, "y": 0 };
+        this.mouseDownTime = -1;
+        this.onmobile = false;
     }
     async construct() {
         this.replacementEvents = await System.options.get("eventReplacements");
@@ -511,8 +513,10 @@ class eventHandler {
      * @param {Event} event 
      */
     event(event, type, replacement) {
+        if (type == undefined) { type = event.type }
         //special fonctions to make life easyer for mobile
-        if ((event.type == "touchmove" || event.type == "touchend" || event.type == "touchstart") && (event.movementX == undefined || event.movementY == undefined)) {
+        if ((type == "touchmove" || type == "touchend" || type == "touchstart") && (event.movementX == undefined || event.movementY == undefined)) {
+            System.eventHandler.onmobile = true;
             var toutches = event.touches;
 
             if (toutches.length == 0) {
@@ -531,37 +535,52 @@ class eventHandler {
                 System.eventHandler.lifeMakerVars["moy"] = toutches[0].pageY;
             }
         }
-        if (event.type == "touchend") {
+        if (type == "touchend") {
             System.eventHandler.lifeMakerVars["mox"] = null;
         }
-        if (event.type == "keydown") {
+        if (type == "keydown") {
             System.eventHandler.keysDown[event.code] = true;
         }
-        if (event.type == "keyup") {
+        if (type == "keyup") {
             System.eventHandler.keysDown[event.code] = false;
         }
-        if (event.type == "mousemove") {
+        if (type == "mousemove") {
             System.eventHandler.mouse["x"] = event.clientX;
             System.eventHandler.mouse["y"] = event.clientY;
         }
-        if (event.type == "mousedown") {
+        if ((type == "mousedown" && !System.eventHandler.onmobile) || (type == "mousedown" && replacement == true)) {
             System.eventHandler.mouse["x"] = event.clientX;
             System.eventHandler.mouse["y"] = event.clientY;
+            //console.trace(type + " | " + replacement)
+            /*
+            if (type == "mousedown" && replacement == undefined) {
+                debugger;
+            }*/
+            System.eventHandler.mouseDownTime = Date.now();
         }
-        if (event.type == "mouseup") {
+        if (type == "mouseup") {
             System.eventHandler.mouse["x"] = event.clientX;
             System.eventHandler.mouse["y"] = event.clientY;
         }
 
 
         if (replacement == undefined) { replacement = false; }
-        if (type == undefined) { type = event.type }
-        if (System.eventHandler.shouldPrevent[event.type]) {
+        if (System.eventHandler.shouldPrevent[type]) {
             if (event.cancelable) {
                 event.preventDefault();
             }
         }
-        //console.log("event: " + type);
+        if (type == "click" && replacement == false) {
+            //console.log("click " + (Date.now() - System.eventHandler.mouseDownTime))
+            if (Date.now() - System.eventHandler.mouseDownTime > 500) {
+                type = "contextmenu";
+                event.preventDefault();
+                System.eventHandler.mouseDownTime = -1;
+                System.eventHandler.event(event, "contextmenu", true);
+                return;
+            }
+        }
+
 
         for (var x of System.eventHandler.handlers[type]) {
             var r = x[0](event, x[1]);
@@ -570,8 +589,8 @@ class eventHandler {
             }
         }
 
-        if (System.eventHandler.replacementEventsK.includes(event.type) && replacement == false) {
-            System.eventHandler.event(event, System.eventHandler.replacementEvents[event.type], true);
+        if (System.eventHandler.replacementEventsK.includes(type) && replacement == false) {
+            System.eventHandler.event(event, System.eventHandler.replacementEvents[type], true);
         }
     }
 }
