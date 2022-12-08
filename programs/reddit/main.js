@@ -212,7 +212,7 @@ class program extends System.program.default {
             i.src = x;
             i.style.maxWidth = this.maxWidth;
             i.style.width = "100%";
-            i.setAttribute("element", "img")
+            i.setAttribute("element", "oneImg")
             this.img.append(iLoader);
             this.img.append(i);
         }
