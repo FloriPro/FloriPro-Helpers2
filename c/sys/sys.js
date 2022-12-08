@@ -476,6 +476,7 @@ class eventHandler {
         this.mouse = { "x": 0, "y": 0 };
         this.mouseDownTime = -1;
         this.onmobile = false;
+        this.longClick = false;
     }
     async construct() {
         this.replacementEvents = await System.options.get("eventReplacements");
@@ -494,6 +495,7 @@ class eventHandler {
             window.addEventListener(x, this.event);
             this.handlers[x] = []
         }
+        this.longClick = (await System.options.get("settings"))["long click for rightclick"][0]
     }
     /**
      * @param {string} type 
@@ -572,7 +574,7 @@ class eventHandler {
         }
         if (type == "click" && replacement == false) {
             //console.log("click " + (Date.now() - System.eventHandler.mouseDownTime))
-            if (Date.now() - System.eventHandler.mouseDownTime > 500) {
+            if (System.eventHandler.longClick == true && Date.now() - System.eventHandler.mouseDownTime > 500) {
                 type = "contextmenu";
                 event.preventDefault();
                 System.eventHandler.mouseDownTime = -1;

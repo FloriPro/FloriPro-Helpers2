@@ -11,6 +11,10 @@
         true,
         "bool"
     ],
+    "long click for rightclick": [
+        false,
+        "bool"
+    ],
     "analytics": [
         true,
         "bool"
