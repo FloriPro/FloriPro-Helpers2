@@ -234,11 +234,11 @@ class Network {
     }
     /**
      * @param {RequestInfo | URL} input 
-     * @param {...RequestInit} init 
+     * @param {RequestInit} init 
      * @returns {Promise<Response>}
      */
-    fetch(input, ...init) {
-        return fetch(input, ...init);
+    fetch(input, init) {
+        return fetch(input, init);
     }
 }
 class Path {

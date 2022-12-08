@@ -69,10 +69,10 @@ declare class MyConsole {
 declare class Network {
     /**
      * @param {RequestInfo | URL} input
-     * @param {...RequestInit} init
+     * @param {RequestInit} init
      * @returns {Promise<Response>}
      */
-    fetch(input: RequestInfo | URL, ...init: RequestInit[]): Promise<Response>;
+    fetch(input: RequestInfo | URL, init: RequestInit): Promise<Response>;
 }
 declare class Path {
     constructor(path: any);

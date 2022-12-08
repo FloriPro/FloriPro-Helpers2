@@ -15,10 +15,11 @@ class program extends System.program.default {
                 await this.window.size.setSize(520, 400);
                 this.window.size.userCanResize(true);
 
-                System.network.fetch("version").then(async (response) => {
+                System.network.fetch("version", { cache: "no-store" }).then(async (response) => {
                     var v = await response.text()
                     if (v == VERSION) {
-                        (await this.window.getHtmlElement("checkForUpdate")).innerText = "Newest version!";
+                        (await this.window.getHtmlElement("checkForUpdate")).innerText = "Newest version! ";
+                        (await this.window.getHtmlElement("updateVersions")).innerText = VERSION;
                     } else {
                         (await this.window.getHtmlElement("checkForUpdate")).innerText = "Update available! ";
                         (await this.window.getHtmlElement("updateVersions")).innerText = VERSION + " -> " + v;
@@ -37,7 +38,7 @@ class program extends System.program.default {
         await this.window.addHtmlEventListener("click", "updates", async () => {
             var information = await SystemHtml.WindowHandler.presets.createLoading("Updating", "Verifying...");
 
-            var nv = await (await System.network.fetch("version")).text();
+            var nv = await (await System.network.fetch("version", { cache: "no-store" })).text();
             if (nv == VERSION) {
                 if (await SystemHtml.WindowHandler.presets.createConfirm("Error", "You currently have the latest version! (NO to update nevertheless)")) {
                     information.stop();
@@ -53,7 +54,7 @@ class program extends System.program.default {
             information.setNum(5);
             information.setText("Connecting...");
 
-            var con = await System.network.fetch("filesys.json");
+            var con = await System.network.fetch("filesys.json", { cache: "no-store" });
             information.setNum(10);
             information.setText("Downloading...");
             var txt = await con.text();
@@ -66,6 +67,13 @@ class program extends System.program.default {
             await this.asyncUpdateFiles(dat["sys"], "c/sys", pf)
             await this.asyncUpdateFiles(dat["programs"], "c/programs", pf)
 
+            //run finishing toutches
+            try {
+                window.originalFileSystem = dat;
+                System.run("c/sys/functions/first/cleanupSettings.js");
+            } catch {
+                console.error("Error running version check");
+            }
             VERSION = nv;
 
             var r = async () => {
