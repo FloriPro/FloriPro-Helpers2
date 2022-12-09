@@ -251,7 +251,6 @@ class Network {
             xhr.responseType = "arraybuffer";
             xhr.onload = (e) => {
                 var uInt8Array = e.target.response;
-                console.log(uInt8Array);
 
                 var data = SystemFileSystem.bufferToString(uInt8Array);
 
@@ -303,6 +302,7 @@ class systemProgramHandler {
     constructor() {
         this.programRegister = {};
         this.default = standardProg;
+        this.intervalHandlers = {};
     }
     /**
      * @param {string} name name of the program/libary
@@ -431,6 +431,17 @@ class systemProgramHandler {
      * @param {number} id 
      */
     stop(id) {
+        //clear handlers
+        try {
+            if (this.intervalHandlers[id] != null) {
+                for (var x of this.intervalHandlers[id]) {
+                    clearInterval(x);
+                }
+            }
+        } catch {
+            console.error("could not stop handlers");
+        }
+
         this.programRegister[id].isStopping();
         delete this.programRegister[id]
     }
@@ -441,6 +452,17 @@ class systemProgramHandler {
      */
     get(id) {
         return this.programRegister[id];
+    }
+    setInterval(callback, interval, variable, programId) {
+        var intervalId = setInterval(this.handleInterval, interval, callback, programId, variable);
+        if (this.intervalHandlers[programId] == undefined) {
+            this.intervalHandlers[programId] = []
+        }
+        this.intervalHandlers[programId].push(intervalId);
+    }
+    handleInterval(callback, programId, variable) {
+        System.program.programRegister[programId].x = callback
+        System.program.programRegister[programId].x(variable);
     }
 }
 
@@ -467,6 +489,10 @@ class standardProg {
      */
     isStopping() {
 
+    }
+
+    setInterval(callback, interval, variable) {
+        return System.program.setInterval(callback, interval, variable, this.id);
     }
 }
 

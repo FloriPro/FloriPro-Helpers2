@@ -174,7 +174,7 @@ class HtmlWindow {
             async showOverflow() {
                 this.parent.getHtml().querySelector(".content").style.overflow = "auto";
             }
-        }(this)
+        }(this);
         this.appearence = new class {
             constructor(parent) {
                 this.transitionTime = 200;
@@ -244,7 +244,16 @@ class HtmlWindow {
                     await this.show();
                 }
             }
-        }(this)
+        }(this);
+
+
+        this.iframeConn = new class {
+            constructor(parent) {
+                this.parent = parent;
+            }
+
+        }(this);
+
         this.#sizeX = 200;
         this.#sizeY = 100;
         this.canUserResize = true;
@@ -375,6 +384,28 @@ class HtmlWindow {
         cont.innerHTML = htmlstr;
         await this.parseNewHtml();
     }
+    /**
+     * sets the content of the window to an iframe with the srcdoc containing the html.
+     * It has the element attribute "autogenIframe".
+     * To interact with the iframe html please use the class iframeConn.
+     * 
+     * For tecnical reasons at the start of the provided html a \<script\> element will be inserted
+     * @param {string} htmlstr the srcdoc of the iframe
+     */
+    async setContentIframe(htmlstr) {
+        var cont = this.getHtml().querySelector(".content");
+        cont.innerHTML = "";
+
+        var iframe = document.createElement("iframe");
+        iframe.srcdoc = "<script>" + await SystemFileSystem.getFileString("c/sys/HTML/iframescript.js") + "</script>" + htmlstr;
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.style.border = "0px";
+        iframe.setAttribute("element", "autogenIframe")
+        cont.append(iframe)
+
+        await this.parseNewHtml();
+    }
 
     /**
      * get the title of this window
@@ -443,7 +474,7 @@ class HtmlWindow {
             x.onload = () => {
                 var id = System.makeid(10);
                 SystemHtml.WindowHandler.iframeConnections[id] = x;
-                x.contentWindow.postMessage(JSON.stringify({ "type": "newConnection", "src": e.src, "id": id, "origin": location.origin }), x.src);
+                x.contentWindow.postMessage(JSON.stringify({ "type": "newConnection", "src": e.src, "id": id, "origin": location.origin }));//, x.src
             }
             x.setAttribute("iframeChanged", "true");
         }

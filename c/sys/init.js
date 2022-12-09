@@ -21,7 +21,11 @@ isJson = function (obj) {
     }
 }
 
-VERSION = '1.1.1.3';
+window.onerror = function (error, url, line) {
+    console.error(error);
+};
+
+VERSION = '1.1.1.4';
 SystemFileSystem = undefined;
 System = undefined
 SystemHtml = undefined;
