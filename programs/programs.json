@@ -7,5 +7,6 @@
     "unuSupreme": "programs/unuSupreme",
     "steffanPack": "programs/steffanPack",
     "liveChat": "programs/liveChat",
-    "MoodLightTS": "programs/MoodLightTS"
+    "MoodLightTS": "programs/MoodLightTS",
+    "Pong": "programs/pong"
 }
