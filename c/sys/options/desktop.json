@@ -1,0 +1,22 @@
+{
+    "all": [
+        {
+            "name": "Explorer",
+            "icon": "",
+            "run": "c/programs/explorer/run.js",
+            "position": [
+                20,
+                20
+            ]
+        },
+        {
+            "name": "Store",
+            "icon": "",
+            "run": "c/programs/store/run.js",
+            "position": [
+                140,
+                20
+            ]
+        }
+    ]
+}

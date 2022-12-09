@@ -126,6 +126,9 @@ class Html {
                 }
             }
         })
+
+        //Desktop
+        this.desktop = new Desktop();
     }
     async updateStartmenu() {
         SystemHtml.loadStartMenu(document.querySelector("#StartMenuPrograms"))
@@ -730,6 +733,116 @@ class WindowHandler {
     }
 }
 
+class Desktop {
+    constructor() {
+        this.init();
+    }
+    async init() {
+        this.desktopIcons = (await System.options.get("desktop"))["all"];
+
+
+        //build desktop
+        var i = 0;
+        for (var x of Object.keys(this.desktopIcons)) {
+            var y = this.desktopIcons[x]
+            var div = this.genDesktopIcon(y["name"], y["icon"], i);
+
+            //position
+            div.style.left = y["position"][0] + "px";
+            div.style.top = y["position"][1] + "px";
+
+            document.querySelector("#Desktop").appendChild(div);
+            i++;
+        }
+
+        this.drag = -1;
+        this.didMove = false;
+        await this.events();
+    }
+
+    async events() {
+        System.eventHandler.addEventHandler("mousedown", (event, thi) => {
+            if (SystemHtml.elementArrayContainsClass(event.composedPath(), "DesktopIcon")) {
+                //get the main DesktopIcon element
+                var el = null;
+                for (var x of event.composedPath()) {
+                    if (x.classList.contains("DesktopIcon")) {
+                        el = x;
+                        break;
+                    }
+                }
+
+
+                thi.drag = parseInt(el.getAttribute("iconId"));
+            }
+        }, this);
+
+        System.eventHandler.addEventHandler("click", (event, thi) => {
+            if (SystemHtml.elementArrayContainsClass(event.composedPath(), "DesktopIcon")) {
+                //get the main DesktopIcon element
+                var el = null;
+                for (var x of event.composedPath()) {
+                    if (x.classList.contains("DesktopIcon")) {
+                        el = x;
+                        break;
+                    }
+                }
+                if (!thi.didMove) {
+                    System.run(thi.desktopIcons[el.getAttribute("iconId")]["run"]);
+                }
+                thi.didMove = false
+            }
+        }, this);
+
+        System.eventHandler.addEventHandler("mouseup", (event, thi) => {
+            if (thi.drag != -1) {
+                var element = document.querySelector("#desktopIcon_" + thi.drag)
+                thi.desktopIcons[thi.drag]["position"] = [parseInt(element.style.left), parseInt(element.style.top)];
+
+                thi.save();
+
+                thi.drag = -1;
+            }
+        }, this);
+
+        System.eventHandler.addEventHandler("mousemove", (event, thi) => {
+            if (thi.drag != -1) {
+                var element = document.querySelector("#desktopIcon_" + thi.drag)
+
+                element.style.top = parseInt(element.style.top) + event.movementY + "px";
+                element.style.left = parseInt(element.style.left) + event.movementX + "px";
+
+                thi.didMove = true;
+            }
+        }, this);
+    }
+
+    async save() {
+        System.options.addValue("desktop", "all", this.desktopIcons, true);
+    }
+
+    genDesktopIcon(name, icon, id) {
+        var div = document.createElement("div");
+        div.className = "DesktopIcon";
+        div.id = "desktopIcon_" + id;
+        div.setAttribute("iconId", id);
+
+        var text = document.createElement("p");
+        text.className = "DesktopIconText";
+        text.innerText = name;
+
+        var img = document.createElement("img");
+        img.className = "DesktopImg";
+        img.src = icon;
+        img.style.width = "100px";
+        img.style.height = "100px";
+
+        div.appendChild(img);
+        div.appendChild(text);
+
+        return div;
+    }
+}
 
 var SystemHtml = new Html();//for "tsc" ///--remove--
 SystemHtml = new Html();

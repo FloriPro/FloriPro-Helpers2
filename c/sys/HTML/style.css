@@ -405,3 +405,18 @@ button[aria-label="Close"]:hover {
 iframe {
     display: block;
 }
+
+/*Desktop*/
+.DesktopIcon {
+    position: fixed;
+}
+
+.DesktopIconText {
+    color: white;
+    background-color: #0000006e;
+    text-align: center;
+}
+
+.DesktopImg {
+    background-color: #ffffffba;
+}
