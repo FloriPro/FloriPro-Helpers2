@@ -29,7 +29,7 @@ class program extends System.program.default {
                 await this.window.parseNewHtml();
                 for (var x of Object.keys(this.howToUse)) {
                     await this.window.addHtmlEventListener("onclick", x, (e) => {
-                        this.specificInfo(this.howToUse[e]);
+                        this.specificInfo(this.howToUse[e[1]]);
                     }, this, x)
                 }
             });

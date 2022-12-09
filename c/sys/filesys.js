@@ -127,16 +127,17 @@ class FileSystemClass {
             //console.log(path + ":\n" + r);
             //await delay(200);
             if (r.startsWith(".od__")) {
-                var l = await SystemHtml.WindowHandler.presets.createLoading("Loading", "Loading file from the internet");
-                l.setNum(0);
+                //var l = await SystemHtml.WindowHandler.presets.createLoading("Loading", "Loading file from the internet");
+                //l.setNum(0);
 
                 var d = r.slice(5)
-                var f = await (await fetch(d));
-                var array = await f.arrayBuffer();
-                var dat = await this.bufferToString(array);
+                //var f = await fetch(d);
+                //var array = await f.arrayBuffer();
+                //var dat = await this.bufferToString(array);
 
+                var dat = await System.network.informationalFetch_Text(d, {}, undefined, "Loading", "Loading file from the Internet...");
 
-                l.stop();
+                //l.stop();
                 r = dat;
             }
 

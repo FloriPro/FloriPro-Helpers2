@@ -240,6 +240,38 @@ class Network {
     fetch(input, init) {
         return fetch(input, init);
     }
+    async informationalFetch_Text(url, opts = {}, onProgress, title = "Downlaoding...", text = "Downloading from " + url) {
+        var w = await SystemHtml.WindowHandler.presets.createLoading(title, text);
+        var p = new Promise(async function (res, rej) {
+            var xhr = new XMLHttpRequest();
+            xhr.open(opts.method || 'get', url);
+            for (var k in opts.headers || {}) {
+                xhr.setRequestHeader(k, opts.headers[k]);
+            }
+            xhr.responseType = "arraybuffer";
+            xhr.onload = (e) => {
+                var uInt8Array = e.target.response;
+                console.log(uInt8Array);
+
+                var data = SystemFileSystem.bufferToString(uInt8Array);
+
+                res(data);
+                w.stop();
+            };
+            xhr.onerror = (...e) => {
+                rej(...e);
+                w.stop();
+            };
+            if (xhr.upload && onProgress) {
+                xhr.upload.onprogress = onProgress; // event.loaded / event.total * 100 ; //event.lengthComputable
+            }
+            xhr.onprogress = (e) => {
+                w.setNum(Math.floor((e.loaded / e.total) * 100))
+            }
+            xhr.send(opts.body);
+        });
+        return await p;
+    }
 }
 class Path {
     constructor(path) {

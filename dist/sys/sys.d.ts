@@ -73,6 +73,7 @@ declare class Network {
      * @returns {Promise<Response>}
      */
     fetch(input: RequestInfo | URL, init: RequestInit): Promise<Response>;
+    informationalFetch_Text(url: any, opts: {}, onProgress: any, title?: string, text?: string): Promise<any>;
 }
 declare class Path {
     constructor(path: any);
