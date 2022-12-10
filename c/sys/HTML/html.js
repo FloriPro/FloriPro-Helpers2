@@ -739,6 +739,14 @@ class Desktop {
     async #init() {
         await this.buildDesktop();
 
+        this.grid = true;
+        if ((await System.options.get("settings"))["alignDeskopIconsToGrid"] != undefined && (await System.options.get("settings"))["alignDeskopIconsToGrid"][0] == false) {
+            this.grid = false;
+        }
+        System.settings.addSettingsUpdater("alignDeskopIconsToGrid", async () => {
+            this.grid = (await System.options.get("settings"))["alignDeskopIconsToGrid"][0]
+        });
+
         this.drag = -1;
         this.didMove = false;
         await this.#events();
@@ -800,8 +808,13 @@ class Desktop {
         System.eventHandler.addEventHandler("mouseup", (event, thi) => {
             if (thi.drag != -1) {
                 var element = document.querySelector("#desktopIcon_" + thi.drag)
-                thi.desktopIcons[thi.drag]["position"] = [parseInt(element.style.left), parseInt(element.style.top)];
 
+                if (thi.grid) {
+                    element.style.left = (Math.round(parseInt(element.style.left) / 120) * 120 + 20) + "px";
+                    element.style.top = (Math.round(parseInt(element.style.top) / (120 + 40)) * (120 + 40) + 20) + "px";
+                }
+                
+                thi.desktopIcons[thi.drag]["position"] = [parseInt(element.style.left), parseInt(element.style.top)];
                 thi.save();
 
                 thi.drag = -1;

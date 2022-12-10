@@ -26,13 +26,17 @@ class program extends System.program.default {
 
     async update() {
         this.window.removeAllEventListeners();
-        (await this.window.getHtmlElement("dElements")).innerHTML = "";
 
         await this.window.addHtmlEventListener("click", "addDElement", async () => {
             var file = await SystemHtml.WindowHandler.presets.createFileSelect("File to run");
-            var icon = await SystemHtml.WindowHandler.presets.createFileSelect("File to display as image");
+            if (file == undefined) {
+                return;
+            }
+            var icon = await SystemHtml.WindowHandler.presets.createFileSelect("File to display as image (cancel for default image)");
             var name = await SystemHtml.WindowHandler.presets.createStringSelect("Name", "Name of the link");
-
+            if (name == "" || name == undefined) {
+                name = "unnamed";
+            }
 
             var d = (await System.options.get("desktop")).all;
             d.push({
@@ -51,6 +55,7 @@ class program extends System.program.default {
     }
 
     async loadStatus() {
+        (await this.window.getHtmlElement("dElements")).innerHTML = "";
         var all = (await System.options.get("desktop")).all
         var dElements = await this.window.getHtmlElement("dElements");
 
@@ -72,7 +77,6 @@ class program extends System.program.default {
             await this.window.addHtmlEventListener("click", i + "_el", (i) => {
                 var e = new editDesktopElement(i[1], this.PATH);
                 e.remove = () => {
-                    console.log(this.editors);
                     //close all other windows
                     for (var x of this.editors) {
                         x.window.remove();

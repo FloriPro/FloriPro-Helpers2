@@ -411,10 +411,18 @@ iframe {
     position: fixed;
 }
 
+.DesktopIcon:hover {
+    background-color: rgba(134, 172, 255, 0.233);
+}
+
 .DesktopIconText {
     color: white;
     background-color: #0000006e;
     text-align: center;
+
+    max-width: 100px;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .DesktopImg {
