@@ -474,9 +474,13 @@ class HtmlWindow {
             x.onload = () => {
                 var id = System.makeid(10);
                 SystemHtml.WindowHandler.iframeConnections[id] = x;
-                x.contentWindow.postMessage(JSON.stringify({ "type": "newConnection", "src": e.src, "id": id, "origin": location.origin }));//, x.src
+                try {
+                    x.contentWindow.postMessage(JSON.stringify({ "type": "newConnection", "src": e.src, "id": id, "origin": location.origin }), x.src);
+                } catch {
+                    x.contentWindow.postMessage(JSON.stringify({ "type": "newConnection", "src": e.src, "id": id, "origin": location.origin }));//, x.src
+                }
+                x.setAttribute("iframeChanged", "true");
             }
-            x.setAttribute("iframeChanged", "true");
         }
     }
     /**
