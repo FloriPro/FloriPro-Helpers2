@@ -89,6 +89,10 @@ class program extends System.program.default {
             await delay(1000);
             information.stop();
         }, this)
+
+        await this.window.addHtmlEventListener("click", "editDesktop", async () => {
+            await System.program.runProgram(this.PATH.folder() + "/desktop.js")
+        }, this);
     }
 
     /**
@@ -100,9 +104,18 @@ class program extends System.program.default {
     async asyncUpdateFiles(dat, path, persistandFiles) {
         for (var x of Object.keys(dat)) {
             if (x.includes(".")) {
+                1
                 if (!persistandFiles.includes(path + "/" + x) && !path.startsWith("c/sys/options")) {
                     console.log("update " + path + "/" + x);
                     await SystemFileSystem.setFileString(path + "/" + x, this.b64_to_utf8(dat[x]));
+                }
+                //when the file is in options, first check if it exists, if not then write it
+                else if (!persistandFiles.includes(path + "/" + x) && path.startsWith("c/sys/options") && !await SystemFileSystem.fileExists(path + "/" + x)) {
+                    console.log("create " + path + "/" + x);
+                    await SystemFileSystem.setFileString(path + "/" + x, this.b64_to_utf8(dat[x]));
+                }
+                else {
+                    //file not changed / created
                 }
             } else {
                 this.asyncUpdateFiles(dat[x], path + "/" + x, persistandFiles);

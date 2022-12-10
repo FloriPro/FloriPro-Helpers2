@@ -2,7 +2,7 @@
     "all": [
         {
             "name": "Explorer",
-            "icon": "",
+            "icon": "c/programs/explorer/logo.webp",
             "run": "c/programs/explorer/run.js",
             "position": [
                 20,
@@ -11,10 +11,19 @@
         },
         {
             "name": "Store",
-            "icon": "",
+            "icon": "c/programs/store/logo.webp",
             "run": "c/programs/store/run.js",
             "position": [
                 140,
+                20
+            ]
+        },
+        {
+            "name": "Settings",
+            "icon": "c/programs/settings/logo.webp",
+            "run": "c/programs/settings/run.js",
+            "position": [
+                260,
                 20
             ]
         }

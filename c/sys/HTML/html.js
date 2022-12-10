@@ -735,17 +735,24 @@ class WindowHandler {
 
 class Desktop {
     constructor() {
-        this.init();
+        this.#init();
     }
-    async init() {
+    async #init() {
+        await this.buildDesktop();
+
+        this.drag = -1;
+        this.didMove = false;
+        await this.#events();
+    }
+
+    async buildDesktop() {
         this.desktopIcons = (await System.options.get("desktop"))["all"];
+        document.querySelector("#Desktop").innerHTML = "";
 
-
-        //build desktop
         var i = 0;
         for (var x of Object.keys(this.desktopIcons)) {
             var y = this.desktopIcons[x]
-            var div = this.genDesktopIcon(y["name"], y["icon"], i);
+            var div = await this.#genDesktopIcon(y["name"], y["icon"], i);
 
             //position
             div.style.left = y["position"][0] + "px";
@@ -755,12 +762,9 @@ class Desktop {
             i++;
         }
 
-        this.drag = -1;
-        this.didMove = false;
-        await this.events();
     }
 
-    async events() {
+    async #events() {
         System.eventHandler.addEventHandler("mousedown", (event, thi) => {
             if (SystemHtml.elementArrayContainsClass(event.composedPath(), "DesktopIcon")) {
                 //get the main DesktopIcon element
@@ -821,7 +825,7 @@ class Desktop {
         System.options.addValue("desktop", "all", this.desktopIcons, true);
     }
 
-    genDesktopIcon(name, icon, id) {
+    async #genDesktopIcon(name, icon, id) {
         var div = document.createElement("div");
         div.className = "DesktopIcon";
         div.id = "desktopIcon_" + id;
@@ -833,7 +837,12 @@ class Desktop {
 
         var img = document.createElement("img");
         img.className = "DesktopImg";
-        img.src = icon;
+
+        if (icon == undefined || icon == "") {
+            img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString("c/sys/imgs/noIco.webp"));
+        } else {
+            img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(icon));
+        }
         img.style.width = "100px";
         img.style.height = "100px";
 

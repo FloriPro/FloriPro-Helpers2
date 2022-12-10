@@ -468,6 +468,7 @@ class systemProgramHandler {
 
 class standardProg {
     constructor() {
+        this.PATH;
         this.id = -1;
     }
     /**

@@ -63,8 +63,8 @@ class FileSystemClass {
         await p.loader(data);
     }
 
-    toImg(str) {
-        return "data:image/png;base64," + btoa(str)
+    toImg(str, fileType = "png") {
+        return "data:image/" + fileType + ";base64," + btoa(str)
     }
     /**
      * sets the String of a file
