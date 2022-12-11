@@ -175,7 +175,6 @@ input {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-
 }
 
 #taskbar-programList p {
@@ -188,6 +187,11 @@ input {
 }
 
 #taskbar-programList .programListElement {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-direction: row;
+
     max-width: 27vw;
     width: fit-content;
 
@@ -197,6 +201,11 @@ input {
     border-bottom: #5bb7ffb8 2px solid;
     cursor: default;
     transition: 0.2s;
+}
+
+#taskbar-programList .programListElement img {
+    width: 29px;
+    height: 29px;
 }
 
 #taskbar-programList .programListElement:hover:not(.selected) {

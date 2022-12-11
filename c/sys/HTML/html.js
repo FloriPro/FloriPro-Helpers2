@@ -387,7 +387,7 @@ class WindowHandler {
                     this.iframeNoClick()
                 }
                 //move
-                else if (event.target.classList.contains("title-bar") || SystemHtml.elementArrayContainsClass(event.composedPath(), "title-bar-text")) {
+                else if (event.target.classList.contains("title-bar") || SystemHtml.elementArrayContainsClass(event.composedPath(), "title-bar-left")) {
                     if (!SystemHtml.WindowHandler.getWindowById(id).size.max) {
                         SystemHtml.WindowHandler.putWindowOnTop(id);
                         SystemHtml.WindowHandler.moving = true;
@@ -676,6 +676,14 @@ class WindowHandler {
         element.style.padding = "";
     }
 
+    /**
+     * 
+     * @param {string} name 
+     * @param {boolean} ontop 
+     * @param {number} id 
+     * @param {HtmlWindow} window 
+     * @returns 
+     */
     createTaskBarProgram(name, ontop, id, window) {
         var programDiv = document.createElement("div");
         programDiv.style.maxWidth = "0";
@@ -692,6 +700,11 @@ class WindowHandler {
         }
         var titleElement = document.createElement("p");
         programDiv.append(titleElement);
+
+        var img = document.createElement("img");
+        programDiv.append(img);
+
+
         this.setTaskbarDivValues(name, ontop, id, window, programDiv);
         return programDiv;
     }
@@ -723,8 +736,27 @@ class WindowHandler {
         titleElement.innerText = name;
 
         programDiv.setAttribute("windowid", id);
-
         programDiv.append(titleElement);
+
+        //image
+        var img = programDiv.querySelector("img");
+        if (window.appearence.logo == null) {
+            img.style.display = "none";
+        } else {
+            if (window.appearence.logoType == "string") {
+                img.style.display = "";
+                var al = async (img, path) => {
+                    img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(path));
+                }
+                al(img, window.appearence.logo);
+            }
+            else if (window.appearence.logoType == "file") {
+                img.style.display = "";
+                img.src = window.appearence.logo;
+            } else {
+                img.style.display = "none";
+            }
+        }
     }
     async focus(id) {
         this.getWindowById(id).appearence.show();
@@ -813,7 +845,7 @@ class Desktop {
                     element.style.left = (Math.round(parseInt(element.style.left) / 120) * 120 + 20) + "px";
                     element.style.top = (Math.round(parseInt(element.style.top) / (120 + 40)) * (120 + 40) + 20) + "px";
                 }
-                
+
                 thi.desktopIcons[thi.drag]["position"] = [parseInt(element.style.left), parseInt(element.style.top)];
                 thi.save();
 

@@ -13,6 +13,8 @@ class program extends System.program.default {
             //onready:
             async () => {
                 //set html
+                await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
+
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
                 this.window.addHtmlEventListener("click", "import", async () => {
                     var i = await SystemHtml.WindowHandler.presets.createStringSelect("import", "Put url for programs here");

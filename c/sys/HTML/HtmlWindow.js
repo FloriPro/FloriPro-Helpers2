@@ -1,4 +1,3 @@
-
 class HtmlWindow {
     #id;
     #sizeX;
@@ -176,8 +175,13 @@ class HtmlWindow {
             }
         }(this);
         this.appearence = new class {
+            #logo;
             constructor(parent) {
                 this.transitionTime = 200;
+                this.logo = null;
+                this.#logo = null;
+                this.logoType = "none";
+
                 /**
                  * @type {HtmlWindow}
                  */
@@ -243,6 +247,41 @@ class HtmlWindow {
                 } else {
                     await this.show();
                 }
+            }
+            async setLogo(src) {
+                this.logoType = "file";
+                this.#logo = src;
+
+                var img = SystemFileSystem.toImg(await SystemFileSystem.getFileString(src));
+                this.parent.getHtml().querySelector(".title-bar-img img").src = img;
+                this.showLogo();
+
+                //update taskbar
+                SystemHtml.WindowHandler.updateTaskBar();
+            }
+            setLogoString(img) {
+                this.logoType = "string";
+                this.#logo = src;
+
+                this.parent.getHtml().querySelector(".title-bar-img img").src = img;
+                this.showLogo();
+
+                //update taskbar
+                SystemHtml.WindowHandler.updateTaskBar();
+            }
+            hideLogo() {
+                this.parent.getHtml().querySelector(".title-bar-img").style.display = "none";
+                this.logo = null;
+
+                //update taskbar
+                SystemHtml.WindowHandler.updateTaskBar();
+            }
+            showLogo() {
+                this.parent.getHtml().querySelector(".title-bar-img").style.display = "";
+                this.logo = this.#logo;
+
+                //update taskbar
+                SystemHtml.WindowHandler.updateTaskBar();
             }
         }(this);
 
