@@ -67,6 +67,9 @@ input {
     display: flex;
     justify-content: space-between;
     padding: 3px 2px 3px 3px;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .title-bar-text {
@@ -77,6 +80,10 @@ input {
     margin-right: 24px;
 
     text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.title-bar-left {
     overflow: hidden;
 }
 
