@@ -743,14 +743,14 @@ class WindowHandler {
         if (window.appearence.logo == null) {
             img.style.display = "none";
         } else {
-            if (window.appearence.logoType == "string") {
+            if (window.appearence.logoType == "file") {
                 img.style.display = "";
                 var al = async (img, path) => {
                     img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(path));
                 }
                 al(img, window.appearence.logo);
             }
-            else if (window.appearence.logoType == "file") {
+            else if (window.appearence.logoType == "string") {
                 img.style.display = "";
                 img.src = window.appearence.logo;
             } else {
@@ -885,7 +885,11 @@ class Desktop {
         if (icon == undefined || icon == "") {
             img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString("c/sys/imgs/noIco.webp"));
         } else {
-            img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(icon));
+            if (await SystemFileSystem.fileExists(icon)) {
+                img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(icon));
+            } else {
+                img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString("c/sys/imgs/noIco.webp"));
+            }
         }
         img.style.width = "100px";
         img.style.height = "100px";
@@ -894,6 +898,28 @@ class Desktop {
         div.appendChild(text);
 
         return div;
+    }
+
+    async existsLink(path) {
+        for (var x of (await System.options.get("desktop")).all) {
+            if (x.run == path) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    async addLink(run, name, icon) {
+        var d = (await System.options.get("desktop")).all;
+        d.push({
+            name: name,
+            icon: icon,
+            run: run,
+            position: [100, 100]
+        })
+        await System.options.addValue("desktop", "all", d, true);
+
+        await this.buildDesktop()
     }
 }
 

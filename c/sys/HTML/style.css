@@ -248,6 +248,10 @@ input {
     background-color: #2c2c2c70;
 }
 
+#taskbar-programList .programListElement.hidden img {
+    filter: brightness(0.5);
+}
+
 #taskbar-programList .programListElement.hidden p {
     color: #7e7e7e;
 }

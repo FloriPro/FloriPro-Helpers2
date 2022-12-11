@@ -9,9 +9,11 @@ class program extends System.program.default {
             //onready:
             async () => {
                 //set html
+                await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
+
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
                 //await this.window.size.htmlSizing();
-                await this.window.size.setSize(300, 300)
+                await this.window.size.setSize(400, 300)
                 await this.window.size.userCanResize(true)
 
                 //add event listeners

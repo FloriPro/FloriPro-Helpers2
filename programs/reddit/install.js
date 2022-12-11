@@ -13,6 +13,11 @@ async function run() {
         console.log("nwe File");
         await SystemFileSystem.setFileString("c/user/reddit/settings.json", '{"limit": "10","sort_time": "all","sort_by": "hot","only_images": false,"save_data": false,"no_nsfw": false,"needs_bool_argument": "","subreddits": "memes"}');
     }
+
+    //desktop shortcut
+    if (!await SystemHtml.desktop.existsLink("c/programs/reddit/run.js")){
+        await SystemHtml.desktop.addLink("c/programs/reddit/run.js", "Reddit", "c/programs/reddit/logo.webp");
+    }
     return true;
 }
 run();
