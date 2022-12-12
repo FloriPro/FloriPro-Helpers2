@@ -90,6 +90,9 @@ class program extends System.program.default {
             this.connection.getChannel("main")
             this.connection.getChannels()
         }
+        this.connection.userUpdate = (users) => {
+            this.gui.displayUsers(users);
+        }
 
 
         this.ws.gui = this.gui;

@@ -6,6 +6,7 @@ class connection {
         this.channelMessages = () => { };
         this.allChannels = () => { };
         this.authFinished = () => { };
+        this.userUpdate = () => { };
 
         this.ws.onmessage = async (event) => {
             console.log(JSON.parse(event.data))
@@ -20,6 +21,8 @@ class connection {
                 SystemHtml.WindowHandler.presets.createInformation("LiveChat | server alert", data["message"])
             } else if (data["type"] == "authOK") {
                 this.authFinished();
+            }else if (data["type"] == "users"){
+                this.userUpdate(data["user"]);
             }
         }
 

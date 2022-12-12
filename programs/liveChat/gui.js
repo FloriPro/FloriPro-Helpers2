@@ -97,6 +97,16 @@ class gui {
 
         this.window.parseNewHtml();
     }
+
+    async displayUsers(users) {
+        var userList = await this.window.getHtmlElement("userList")
+        userList.innerHTML = "";
+        for (var i = 0; i < users.length; i++) {
+            var user = document.createElement("p");
+            user.innerText = users[i];
+            userList.append(user);
+        }
+    }
 }
 
 gui;
