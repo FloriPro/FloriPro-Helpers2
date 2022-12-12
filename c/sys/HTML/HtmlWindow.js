@@ -472,7 +472,8 @@ class HtmlWindow {
     }
 
     /**
-     * 
+     * adds an event listener to an html element.
+     * Important: the events only get called, when the target element clicked has an element attribute, regardless of the attributes value.
      * @param {string} event Html element Event (e.g. onclick) 
      * @param {string} htmlElementTag Html Element "element" tag ('<div element="tagofdoom"></div>': 'tagofdoom') 
      * @param {(variable, id, ?, event)} callback run when the event is triggered
