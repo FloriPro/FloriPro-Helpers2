@@ -1,4 +1,5 @@
 declare class program extends standardProg {
+    init(): Promise<void>;
     button1Clicks: any;
     windowUserCanResize: any;
     windowShowTitle: any;
