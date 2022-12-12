@@ -1,1 +1,1 @@
-{"version":3,"file":"connection.d.ts","sourceRoot":"","sources":["../../../programs/liveChat/connection.js"],"names":[],"mappings":"AAAA;IACI,qBAwBC;IAvBG,QAAY;IAEZ,uBAA2B;IAC3B,4BAAgC;IAChC,wBAA4B;IAC5B,yBAA6B;IAmBjC,+BAOC;IACD,oBAIC;IACD,8CAQC;IACD,kCAQC;IAPG,cAAwB;CAQ/B"}
+{"version":3,"file":"connection.d.ts","sourceRoot":"","sources":["../../../programs/liveChat/connection.js"],"names":[],"mappings":"AAAA;IACI,qBA2BC;IA1BG,QAAY;IAEZ,uBAA2B;IAC3B,4BAAgC;IAChC,wBAA4B;IAC5B,yBAA6B;IAC7B,uBAA2B;IAqB/B,+BAOC;IACD,oBAIC;IACD,8CAQC;IACD,kCAQC;IAPG,cAAwB;CAQ/B"}

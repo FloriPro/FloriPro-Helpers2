@@ -29,5 +29,6 @@ declare class gui {
         message: string;
     }): Promise<void>;
     displayChannels(channels: any): Promise<void>;
+    displayUsers(users: any): Promise<void>;
 }
 //# sourceMappingURL=gui.d.ts.map

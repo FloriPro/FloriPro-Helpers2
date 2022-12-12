@@ -5,6 +5,7 @@ declare class connection {
     channelMessages: () => void;
     allChannels: () => void;
     authFinished: () => void;
+    userUpdate: () => void;
     getChannel(channel: any): void;
     getChannels(): void;
     sendMessage(channel: any, message: any): void;
