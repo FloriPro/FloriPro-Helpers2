@@ -48,8 +48,21 @@ class program extends System.program.default {
 
                 //add event handlers
                 this.window.addHtmlEventListener("click", "send", async () => {
-                    this.connection.sendMessage(this.currentChannel, (await this.window.getHtmlElement("message")).value);
+                    var msg = (await this.window.getHtmlElement("message")).value;
+                    if (msg == "") return;
+                    this.connection.sendMessage(this.currentChannel, msg);
+                    (await this.window.getHtmlElement("message")).value = "";
                 }, this);
+                this.window.addHtmlEventListener("onkeyup", "message", async (_, __, ___, event) => {
+                    //if enter is pressed send the message
+                    if (event.keyCode == 13 && event.shiftKey != true) {
+                        var msg = (await this.window.getHtmlElement("message")).value;
+                        if (msg == "") return;
+                        this.connection.sendMessage(this.currentChannel, msg);
+                        (await this.window.getHtmlElement("message")).value = "";
+                    }
+                }, this);
+
                 this.window.addHtmlEventListener("onclick", "channelList", async (_, __, ___, event) => {
                     console.log(event)
                     this.currentChannel = event.target.innerText;

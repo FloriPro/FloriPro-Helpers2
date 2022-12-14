@@ -15,10 +15,10 @@ class gui {
             return;
         }
         if (connected == true) {
-            (await this.window.getHtmlElement("container")).style.gridTemplateRows = "0px 1fr 50px";
+            (await this.window.getHtmlElement("container")).style.gridTemplateRows = "0px 1fr 80px";
             (await this.window.getHtmlElement("errorMSG")).style.display = "none";
         } else {
-            (await this.window.getHtmlElement("container")).style.gridTemplateRows = "29px 1fr 50px";
+            (await this.window.getHtmlElement("container")).style.gridTemplateRows = "29px 1fr 80px";
             (await this.window.getHtmlElement("errorMSG")).style.display = "";
         }
     }
