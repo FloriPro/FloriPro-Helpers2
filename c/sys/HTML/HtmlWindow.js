@@ -175,11 +175,10 @@ class HtmlWindow {
             }
         }(this);
         this.appearence = new class {
-            #logo;
             constructor(parent) {
                 this.transitionTime = 200;
                 this.logo = null;
-                this.#logo = null;
+                this._logo = null;
                 this.logoType = "none";
 
                 /**
@@ -250,7 +249,7 @@ class HtmlWindow {
             }
             async setLogo(src) {
                 this.logoType = "file";
-                this.#logo = src;
+                this._logo = src;
 
                 var img = SystemFileSystem.toImg(await SystemFileSystem.getFileString(src));
                 this.parent.getHtml().querySelector(".title-bar-img img").src = img;
@@ -261,7 +260,7 @@ class HtmlWindow {
             }
             setLogoString(img) {
                 this.logoType = "string";
-                this.#logo = src;
+                this._logo = src;
 
                 this.parent.getHtml().querySelector(".title-bar-img img").src = img;
                 this.showLogo();
@@ -278,7 +277,7 @@ class HtmlWindow {
             }
             showLogo() {
                 this.parent.getHtml().querySelector(".title-bar-img").style.display = "";
-                this.logo = this.#logo;
+                this.logo = this._logo;
 
                 //update taskbar
                 SystemHtml.WindowHandler.updateTaskBar();

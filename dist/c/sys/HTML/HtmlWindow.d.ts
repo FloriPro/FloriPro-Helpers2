@@ -52,9 +52,9 @@ declare class HtmlWindow {
         showOverflow(): Promise<void>;
     };
     appearence: {
-        "__#74636@#logo": any;
         transitionTime: number;
         logo: any;
+        _logo: any;
         logoType: string;
         /**
          * @type {HtmlWindow}
