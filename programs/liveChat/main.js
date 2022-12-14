@@ -90,9 +90,14 @@ class program extends System.program.default {
             this.end = end;
             this.gui.loadText(messages);
         };
-        this.connection.newMessage = (channel, messages, user) => {
+        this.connection.newMessage = async (channel, messages, user) => {
             if (channel != this.currentChannel) return;
             this.gui.addMessage({ "message": messages, "user": user });
+
+            //if this htmlwindow is not focused or the complete browser send a desktop notification
+            if (document.hasFocus() == false || !this.window.ontop) {
+                System.notification.desktopNotification("LiveChat", user + ": " + messages, SystemFileSystem.toImg(await SystemFileSystem.getFileString(this.PATH.folder() + "/logo.webp")));
+            }
         };
         this.connection.allChannels = (channels) => {
             this.gui.displayChannels(channels);
@@ -107,6 +112,7 @@ class program extends System.program.default {
             this.gui.displayUsers(users);
         }
 
+        System.notification.requestPermission();
 
         this.ws.gui = this.gui;
         this.ws.connection = this.connection;
