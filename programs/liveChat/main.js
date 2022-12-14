@@ -94,8 +94,8 @@ class program extends System.program.default {
             if (channel != this.currentChannel) return;
             this.gui.addMessage({ "message": messages, "user": user });
 
-            //if this htmlwindow is not focused or the complete browser send a desktop notification
-            if (document.hasFocus() == false || !this.window.ontop) {
+            //if this htmlwindow is not focused or not shown or the complete browser send a desktop notification
+            if (document.hasFocus() == false || !this.window.ontop || !this.window.appearence.shown) {
                 System.notification.desktopNotification("LiveChat", user + ": " + messages, SystemFileSystem.toImg(await SystemFileSystem.getFileString(this.PATH.folder() + "/logo.webp")));
             }
         };
