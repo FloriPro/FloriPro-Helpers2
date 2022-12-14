@@ -4,6 +4,7 @@ declare class sys {
     settings: settingsHandler;
     network: Network;
     console: MyConsole;
+    notification: Notifications;
     path: typeof Path;
     SystemFileSystem: FileSystemClass;
     createEvents(): Promise<void>;
@@ -232,6 +233,18 @@ declare class settingsHandler {
      * @returns
      */
     settingUpdated(name: string): void;
+}
+declare class Notifications {
+    /**
+     *
+     * @returns {Promise<false | Notification>} false if it failed, Notification if it worked
+     */
+    desktopNotification(title: any, body: any, icon: any): Promise<false | Notification>;
+    /**
+     *
+     * @returns {Promise<boolean>} true if permission was granted, false if it failed
+     */
+    requestPermission(): Promise<boolean>;
 }
 declare var Class: {
     new (): {};

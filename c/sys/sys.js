@@ -5,6 +5,7 @@ class sys {
         this.settings = new settingsHandler()
         this.network = new Network();
         this.console = new MyConsole();
+        this.notification = new Notifications();
         this.path = Path;
         this.SystemFileSystem = SystemFileSystem;
     }
@@ -683,6 +684,49 @@ class settingsHandler {
         for (var x of this.settingsUpdater[name]) {
             x(name);
         }
+    }
+}
+class Notifications {
+    constructor() {
+
+    }
+    /**
+     * 
+     * @returns {Promise<false | Notification>} false if it failed, Notification if it worked
+     */
+    async desktopNotification(title, body, icon) {
+        if (!window.Notification) {
+            return false;
+        }
+        if (Notification.permission !== 'granted') {
+            var p = await Notification.requestPermission();
+            if (p !== 'granted') {
+                return false;
+            }
+        }
+
+        //notifications were granted
+        var notification = new Notification(title,{
+            body : body,
+            icon : icon
+        });
+        return notification
+    }
+    /**
+     * 
+     * @returns {Promise<boolean>} true if permission was granted, false if it failed
+     */
+    async requestPermission() {
+        if (!window.Notification) {
+            return false;
+        }
+        if (Notification.permission !== 'granted') {
+            var p = await Notification.requestPermission();
+            if (p !== 'granted') {
+                return false;
+            }
+        }
+        return true;
     }
 }
 var Class = class { } //for "tsc" ///--remove--
