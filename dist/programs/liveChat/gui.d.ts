@@ -2,9 +2,11 @@ declare class gui {
     /**
      * gui handler for this live chat program
      * @param {HtmlWindow} window
+     * @param {boolean} isPhone
      */
-    constructor(window: HtmlWindow);
+    constructor(window: HtmlWindow, isPhone: boolean);
     window: HtmlWindow;
+    isPhone: boolean;
     /**
      * show or hide the not connected message
      * @param {boolean} connected
@@ -30,5 +32,7 @@ declare class gui {
     }): Promise<void>;
     displayChannels(channels: any): Promise<void>;
     displayUsers(users: any): Promise<void>;
+    channelList(show: any): Promise<void>;
+    userList(show: any): Promise<void>;
 }
 //# sourceMappingURL=gui.d.ts.map

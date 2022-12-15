@@ -1,10 +1,12 @@
 class gui {
     /**
      * gui handler for this live chat program
-     * @param {HtmlWindow} window 
+     * @param {HtmlWindow} window
+     * @param {boolean} isPhone
      */
-    constructor(window) {
+    constructor(window, isPhone) {
         this.window = window;
+        this.isPhone = isPhone;
     }
     /**
      * show or hide the not connected message
@@ -14,12 +16,20 @@ class gui {
         if (this.window.getHtml() == null) {
             return;
         }
-        if (connected == true) {
-            (await this.window.getHtmlElement("container")).style.gridTemplateRows = "0px 1fr 80px";
-            (await this.window.getHtmlElement("errorMSG")).style.display = "none";
+        if (this.isPhone == false) {
+            if (connected == true) {
+                (await this.window.getHtmlElement("container")).style.gridTemplateRows = "0px 1fr 80px";
+                (await this.window.getHtmlElement("errorMSG")).style.display = "none";
+            } else {
+                (await this.window.getHtmlElement("container")).style.gridTemplateRows = "29px 1fr 80px";
+                (await this.window.getHtmlElement("errorMSG")).style.display = "";
+            }
         } else {
-            (await this.window.getHtmlElement("container")).style.gridTemplateRows = "29px 1fr 80px";
-            (await this.window.getHtmlElement("errorMSG")).style.display = "";
+            if (connected == true) {
+                (await this.window.getHtmlElement("errorMSG")).style.display = "none";
+            } else {
+                (await this.window.getHtmlElement("errorMSG")).style.display = "";
+            }
         }
     }
     async setChatName(name) {
@@ -37,8 +47,12 @@ class gui {
     }
 
     async clearChat() {
-        var chat = await this.window.getHtmlElement("chat")
-        chat.innerHTML = "<p style='color:gray'>loading...</p>";
+        if (this.isPhone == false) {
+            var chat = await this.window.getHtmlElement("chat")
+            chat.innerHTML = "<p style='color:gray'>loading...</p>";
+        } else {
+            (await this.window.getHtmlElement("activeChat")).innerHTML = "<p style='color:gray'>loading...</p>";
+        }
     }
 
     /**
@@ -46,7 +60,11 @@ class gui {
      * @param {Array<{user: string, message: string}>} text
      */
     async loadText(text) {
-        var chat = await this.window.getHtmlElement("chat")
+        if (this.isPhone == false) {
+            var chat = await this.window.getHtmlElement("chat")
+        } else {
+            var chat = await this.window.getHtmlElement("activeChat")
+        }
         chat.innerHTML = "";
         for (var i = 0; i < text.length; i++) {
             var completeMessage = document.createElement("p");
@@ -69,8 +87,11 @@ class gui {
      * @param {{user: string, message: string}} messageDat 
      */
     async addMessage(messageDat) {
-        var chat = await this.window.getHtmlElement("chat")
-
+        if (this.isPhone == false) {
+            var chat = await this.window.getHtmlElement("chat")
+        } else {
+            var chat = await this.window.getHtmlElement("activeChat")
+        }
         var completeMessage = document.createElement("p");
         var username = document.createElement("span");
         username.style.color = "gray"
@@ -105,6 +126,19 @@ class gui {
             var user = document.createElement("p");
             user.innerText = users[i];
             userList.append(user);
+        }
+    }
+
+
+    /* phone specific functions */
+    async channelList(show) {
+        if (this.isPhone) {
+            (await this.window.getHtmlElement("chatSelect")).style.display = show ? "" : "none";
+        }
+    }
+    async userList(show) {
+        if (this.isPhone) {
+            (await this.window.getHtmlElement("usersList")).style.display = show ? "" : "none";
         }
     }
 }

@@ -42,42 +42,96 @@ class program extends System.program.default {
                 //set html
                 await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
 
-                await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
-                await this.window.size.setSize(500, 400)
+                //load pcHtml when on pc and phoneHtml when on phone
+                if (window.innerWidth < 600) {
+                    await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/phoneHtml.html"));
+                    await this.window.size.setSize(300, 500);
+                } else {
+                    await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/pcHtml.html"));
+                    await this.window.size.setSize(600, 400);
+                }
                 this.window.size.userCanResize(true)
 
                 //add event handlers
-                this.window.addHtmlEventListener("click", "send", async () => {
-                    var msg = (await this.window.getHtmlElement("message")).value;
-                    if (msg == "") return;
-                    this.connection.sendMessage(this.currentChannel, msg);
-                    (await this.window.getHtmlElement("message")).value = "";
-                }, this);
-                this.window.addHtmlEventListener("onkeyup", "message", async (_, __, ___, event) => {
-                    //if enter is pressed send the message
-                    if (event.keyCode == 13 && event.shiftKey != true) {
+                if (window.innerWidth >= 600) {
+                    this.window.addHtmlEventListener("click", "send", async () => {
                         var msg = (await this.window.getHtmlElement("message")).value;
                         if (msg == "") return;
                         this.connection.sendMessage(this.currentChannel, msg);
                         (await this.window.getHtmlElement("message")).value = "";
-                    }
-                }, this);
+                    }, this);
+                    this.window.addHtmlEventListener("onkeyup", "message", async (_, __, ___, event) => {
+                        //if enter is pressed send the message
+                        if (event.keyCode == 13 && event.shiftKey != true) {
+                            var msg = (await this.window.getHtmlElement("message")).value;
+                            if (msg == "") return;
+                            this.connection.sendMessage(this.currentChannel, msg);
+                            (await this.window.getHtmlElement("message")).value = "";
+                        }
+                    }, this);
 
-                this.window.addHtmlEventListener("onclick", "channelList", async (_, __, ___, event) => {
-                    console.log(event)
-                    this.currentChannel = event.target.innerText;
-                    this.end = -1;
+                    this.window.addHtmlEventListener("onclick", "channelList", async (_, __, ___, event) => {
+                        console.log(event)
+                        this.currentChannel = event.target.innerText;
+                        this.end = -1;
 
-                    this.gui.clearChat();
-                    this.gui.setChatName(this.currentChannel);
-                    this.connection.getChannel(this.currentChannel);
-                }, this);
+                        this.gui.clearChat();
+                        this.gui.setChatName(this.currentChannel);
+                        this.connection.getChannel(this.currentChannel);
+                    }, this);
+                } else {
+                    //phone open channel list
+                    this.window.addHtmlEventListener("onclick", "openchannelList", async (_, __, ___, event) => {
+                        this.gui.channelList(true)
+                    }, this);
+
+                    //close channel list
+                    this.window.addHtmlEventListener("onclick", "closeChannelList", async (_, __, ___, event) => {
+                        this.gui.channelList(false);
+                    }, this);
+
+                    this.window.addHtmlEventListener("onclick", "openuserList", async (_, __, ___, event) => {
+                        this.gui.userList(true)
+                    }, this);
+                    this.window.addHtmlEventListener("onclick", "closeUserList", async (_, __, ___, event) => {
+                        this.gui.userList(false);
+                    }, this);
+
+                    //select channel
+                    this.window.addHtmlEventListener("onclick", "channelList", async (_, __, ___, event) => {
+                        console.log(event)
+                        this.currentChannel = event.target.innerText;
+                        this.end = -1;
+
+                        this.gui.clearChat();
+                        this.gui.setChatName(this.currentChannel);
+                        this.connection.getChannel(this.currentChannel);
+                    }, this);
+
+                    //send message
+                    this.window.addHtmlEventListener("click", "send", async () => {
+                        var msg = (await this.window.getHtmlElement("message")).value;
+                        if (msg == "") return;
+                        this.connection.sendMessage(this.currentChannel, msg);
+                        (await this.window.getHtmlElement("message")).value = "";
+                    }, this);
+                    this.window.addHtmlEventListener("onkeyup", "message", async (_, __, ___, event) => {
+                        //if enter is pressed send the message
+                        if (event.keyCode == 13 && event.shiftKey != true) {
+                            var msg = (await this.window.getHtmlElement("message")).value;
+                            if (msg == "") return;
+                            this.connection.sendMessage(this.currentChannel, msg);
+                            (await this.window.getHtmlElement("message")).value = "";
+                        }
+                    }, this);
+                    console.warn("not implemented phone mode for events")
+                }
             });
         //load gui
         /**
          * @type {gui}
          */
-        this.gui = new (await System.run(this.PATH.folder() + "/gui.js"))(this.window);
+        this.gui = new (await System.run(this.PATH.folder() + "/gui.js"))(this.window, window.innerWidth < 600);
 
         /**
          * @type {connection}
