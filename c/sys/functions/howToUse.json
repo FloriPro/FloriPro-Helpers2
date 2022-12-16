@@ -1,0 +1,56 @@
+{
+    "Install Programs": [
+        {
+            "type": "header",
+            "text": "Installing Programs"
+        },
+        {
+            "type": "text",
+            "text": "Go to the Start"
+        },
+        {
+            "type": "image",
+            "path": "c/sys/functions/information/openStart.gif"
+        },
+        {
+            "type": "text",
+            "text": "Open 'Store'"
+        },
+        {
+            "type": "image",
+            "path": "c/sys/functions/information/openStore.gif"
+        },
+        {
+            "type": "text",
+            "text": "Click on the Program to install"
+        },
+        {
+            "type": "image",
+            "path": "c/sys/functions/information/installProgram.gif"
+        }
+    ],
+    "Settings": [
+        {
+            "type": "header",
+            "text": "todo"
+        }
+    ],
+    "Windows": [
+        {
+            "type": "header",
+            "text": "todo"
+        }
+    ],
+    "Images": [
+        {
+            "type": "header",
+            "text": "todo"
+        }
+    ],
+    "Text Editor": [
+        {
+            "type": "header",
+            "text": "todo"
+        }
+    ]
+}

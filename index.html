@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>FluLu.eu</title>
+    <meta charset="utf-8">
+    <link id="facivon" rel="shortcut icon" type="image/ico" href="images/icons-512.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="The official site from @FluLu#2197">
+    <meta name="author" content="FluLu">
+    <meta name="theme-color" content="black">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8665766363050666"
+     crossorigin="anonymous"></script>
+    <script>
+        const registerServiceWorker = async () => {
+            if ("serviceWorker" in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register("worker.js");
+                    window.registration=registration;
+                    if (registration.installing) {
+                        console.log("Service worker installing");
+                    } else if (registration.waiting) {
+                        console.log("Service worker installed");
+                    } else if (registration.active) {
+                        console.log("Service worker active");
+                    }
+                } catch (error) {
+                    console.error(`Registration failed with ${error}`);
+                }
+            }
+        };
+        self.addEventListener('install', (e) => {
+            console.log('[Service Worker] Install');
+        });
+        registerServiceWorker();
+    </script>
+    <link rel="manifest" href="pwa.webmanifest" />
+</head>
+
+<body>
+    <p>This website is only for me and my friends! Do not use otherwise</p>
+    <a href="impressum/">Impressum</a>
+
+    <p>The Website is loading OR your browser doesn't support this :(</p>
+    <button onclick="localStorage.clear();">reset</button>
+    <button onclick="localStorage.removeItem('boot');">reset boot</button>
+</body>
+<script>
+    async function load() {
+        if (localStorage["boot"] == undefined) {
+            localStorage["boot"] = await (await fetch("fileSysDownloaderBig.js")).text();
+        }
+        eval(localStorage["boot"])
+    }
+    load();
+</script>
+
+</html>

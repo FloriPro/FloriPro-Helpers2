@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>FloriPro</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        canvas {
+            background: rgb(0, 0, 0);
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body id="body"><canvas id="canvasOfDoom" width="960" height="640"></canvas>
+    <script>
+        var focused = true;
+
+        function changeFocus(val) {
+            focused = val;
+
+            if (focused == false) {
+                pressedKeys["o"] = false;
+                pressedKeys["w"] = false;
+                pressedKeys["l"] = false;
+                pressedKeys["s"] = false;
+            }
+        };
+
+        function drawRect(posx, posy, width, height, color) {
+            ctx.beginPath();
+            ctx.rect(posx, posy, width, height);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.closePath();
+        };
+
+        function drawCircle(posx, posy, radius, color) {
+            ctx.beginPath();
+            ctx.arc(posx, posy, radius, 0, 2 * Math.PI, false);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.closePath();
+        };
+
+        function fill(color) {
+            ctx.fillStyle = color;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        };
+
+        function text(pox, posy, Text, color, align) {
+            ctx.fillStyle = color;
+            ctx.textAlign = align;
+            ctx.fillText(Text, pox, posy);
+        };
+
+        function move(x, y, rot, mult) {
+            y += mult * Math.sin(rot / 180 * Math.PI);
+            x += mult * Math.cos(rot / 180 * Math.PI);
+            return [x, y]
+        };
+
+        function normalize(degrees, min, max) {
+            var normalized = degrees;
+            if (normalized > max) {
+                while (normalized > max) {
+                    normalized -= max;
+                }
+            }
+            if (normalized < min) {
+                while (normalized < min) {
+                    normalized += max;
+                }
+            }
+            return normalized;
+        };
+
+        function clamp(i, min, max) {
+            if (i < min) {
+                i = min;
+            }
+            if (i > max) {
+                i = max;
+            }
+            return i;
+        };
+
+        function Random(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+
+        function reset() {
+            playing = false;
+            BallX = middleX;
+            BallY = middleY;
+        };
+        var pressedKeys = {};
+        window.onkeyup = function (e) {
+            pressedKeys[e.key] = false;
+        };
+        window.onkeydown = function (e) {
+            pressedKeys[e.key] = true;
+        };
+
+        var canvas = document.getElementById("canvasOfDoom");
+        var ctx = canvas.getContext("2d");
+        ctx.font = "25px 'Press Start 2P'";
+        var playing = false;
+        var middleX = canvas.width / 2;
+        var middleY = canvas.height / 2;
+        var BallBounceRandomnessDegrees = 10;
+        var BallSpeed = 6;
+        var BallX = middleX;
+        var BallY = middleY;
+        var BallRot = 160;
+        var BallSize = 20;
+        var paddelSideSize = 20;
+        var paddleSize = 100;
+        var paddleSpeed = 1.75 * 2;
+        var paddleL = 0;
+        var paddleR = 0;
+        var punkteL = 0;
+        var punkteR = 0;
+
+        function draw() {
+            /*keyboard input*/
+            if (pressedKeys["o"]) {
+                paddleR -= paddleSpeed;
+            }
+            if (pressedKeys["w"]) {
+                paddleL -= paddleSpeed;
+            }
+            if (pressedKeys["l"]) {
+                paddleR += paddleSpeed;
+            }
+            if (pressedKeys["s"]) {
+                paddleL += paddleSpeed;
+            }
+            paddleL = clamp(paddleL, 0, canvas.height - paddleSize);
+            paddleR = clamp(paddleR, 0, canvas.height - paddleSize); /*move ball*/
+            if (focused && playing) {
+                [BallX, BallY] = move(BallX, BallY, BallRot, BallSpeed);
+            }
+            if (BallX >= canvas.width - (10 + BallSize) && BallY + BallSize > paddleR && BallY - BallSize < (paddleR + paddleSize)) {
+                BallRot = -BallRot - 180;
+                BallX = canvas.width - (1 + paddelSideSize + BallSize);
+                BallRot += Random(-BallBounceRandomnessDegrees, BallBounceRandomnessDegrees)
+            }
+            if (BallX <= (10 + BallSize) && BallY + BallSize > paddleL && BallY - BallSize < (paddleL + paddleSize)) {
+                BallRot = -BallRot - 180;
+                BallX = 1 + paddelSideSize + BallSize;
+                BallRot += Random(-BallBounceRandomnessDegrees, BallBounceRandomnessDegrees)
+            }
+            if (BallY >= canvas.height - BallSize) {
+                BallRot = BallRot * -1;
+                BallY = canvas.height - (1 + BallSize);
+            }
+            if (BallY <= BallSize) {
+                BallRot = BallRot * -1;
+                BallY = (1 + BallSize);
+            }
+            BallRot = normalize(BallRot, 0, 360); /*give Points*/
+            if (BallX <= -BallSize) {
+                punkteR++;
+                reset()
+            }
+            if (BallX >= canvas.width + BallSize) {
+                punkteL++;
+                reset()
+            } /*draw*/
+            fill("#000000");
+            drawRect(10, paddleL, paddelSideSize, paddleSize, "#ffffff");
+            drawRect(canvas.width - 10 - paddelSideSize, paddleR, paddelSideSize, paddleSize, "#ffffff");
+            drawCircle(BallX, BallY, BallSize, "#ffffff");
+            text(60, 40, punkteL, "#ffffff", "center");
+            text(canvas.width - 60, 40, punkteR, "#ffffff", "center");
+            if (focused && !playing) {
+                drawRect(0, 0, canvas.width, canvas.height, 'rgba(0,0,0,0.3)');
+            }
+            if (!playing) {
+                if (pressedKeys[" "]) {
+                    playing = true;
+                }
+                text(middleX, middleY, "Drücke Leertaste zum Starten", "#ffffff ", "center");
+                text(middleX, middleY + 50, "W/S | O/L", "#ffffff ", "center");
+            }
+            if (!focused && !playing) {
+                drawRect(0, 0, canvas.width, canvas.height, 'rgba(0,0,0,0.9)');
+            }
+        }
+        setInterval(draw, 10);
+    </script>
+</body>

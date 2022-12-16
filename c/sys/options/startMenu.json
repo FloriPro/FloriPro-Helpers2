@@ -1,0 +1,7 @@
+{
+    "explorer": "c/programs/explorer/run.js",
+    "Text Editor": "c/programs/textEditor/run.js",
+    "Store": "c/programs/store/run.js",
+    "reset": "c/sys/functions/reset.js",
+    "_comment": "depreciated!"
+}

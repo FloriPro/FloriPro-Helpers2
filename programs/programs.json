@@ -1,0 +1,12 @@
+{
+    "imageViewer": "programs/imageViewer",
+    "reddit": "programs/reddit",
+    "redditApi": "programs/redditApi",
+    "testScript": "programs/testScript",
+    "jShell": "programs/jShell",
+    "unuSupreme": "programs/unuSupreme",
+    "steffanPack": "programs/steffanPack",
+    "liveChat": "programs/liveChat",
+    "MoodLightTS": "programs/MoodLightTS",
+    "Pong": "programs/pong"
+}

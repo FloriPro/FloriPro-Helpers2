@@ -1,0 +1,456 @@
+#all {
+    background: url("") center center / cover no-repeat;
+    box-sizing: border-box;
+
+    bottom: 0;
+    display: block;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+}
+
+.disable-select {
+    user-select: none;
+    /* supported by Chrome and Opera */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+}
+
+*[tooltip]:hover::after {
+    content: attr(tooltip);
+    position: fixed;
+    left: 35px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.699);
+    border-radius: 2px;
+}
+
+input {
+    outline: none;
+}
+
+.window {
+    opacity: 1;
+    background: transparent;
+    padding: 12px;
+    cursor: nw-resize;
+}
+
+.windowInline {
+    cursor: default;
+    padding: 0px;
+    box-shadow: 0px 0px 30px #00000024;
+}
+
+.content {
+    overflow: auto;
+    background-color: white;
+
+    /*border-bottom-left-radius: 5px;*/
+    /*border-bottom-right-radius: 5px;*/
+}
+
+.title-bar {
+    /*border-top-left-radius: 5px;*/
+    /*border-top-right-radius: 5px;*/
+
+    background: white;
+    cursor: move;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 2px 3px 3px;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.title-bar-text {
+    white-space: nowrap;
+    font-weight: unset;
+    color: black;
+    letter-spacing: 0;
+    margin-right: 24px;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.title-bar-left {
+    overflow: hidden;
+}
+
+.title-bar-text span {
+    font-size: 30px;
+}
+
+.title-bar-controls {
+    display: flex;
+}
+
+.title-bar-controls button {
+    background-color: white;
+    color: black;
+    padding: 0;
+    display: block;
+    min-width: 16px;
+    min-height: 14px;
+    border: 0px;
+    margin: 0px;
+}
+
+.title-bar-controls button:active {
+    padding: 0;
+}
+
+.title-bar-controls button:focus {
+    outline: none;
+}
+
+.title-bar-controls button[aria-label="Minimize"] {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='6' height='2' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23000' d='M0 0h6v2H0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: bottom 3px left 4px;
+    width: 30px;
+    height: 30px;
+}
+
+.title-bar-controls button[aria-label="Maximize"] {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='9' height='9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9 0H0v9h9V0zM8 2H1v6h7V2z' fill='%23000'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: top 2px left 3px;
+    width: 30px;
+    height: 30px;
+}
+
+.title-bar-controls button[aria-label="Restore"] {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='8' height='9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23000' d='M2 0h6v2H2zM7 2h1v4H7zM2 2h1v1H2zM6 5h1v1H6zM0 3h6v2H0zM5 5h1v4H5zM0 5h1v4H0zM1 8h4v1H1z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: top 2px left 3px;
+    width: 30px;
+    height: 30px;
+}
+
+.title-bar-controls button[aria-label="Help"] {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='6' height='9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23000' d='M0 1h2v2H0zM1 0h4v1H1zM4 1h2v2H4zM3 3h2v1H3zM2 4h2v2H2zM2 7h2v2H2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: top 2px left 5px;
+    width: 30px;
+    height: 30px;
+}
+
+.title-bar-controls button[aria-label="Close"] {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='8' height='7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0V0z' fill='%23000'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: top 3px left 4px;
+    width: 30px;
+    height: 30px;
+}
+
+
+.window-layer .window .title-bar .title-bar-controls button[aria-label=Minimize] {
+    background-position: bottom 4px left 4px;
+}
+
+#taskbar {
+    background: rgb(29 29 29 / 67%);
+    backdrop-filter: blur(11px);
+    -webkit-backdrop-filter: blur(11px);
+    /* border-top: 1px solid #fff; */
+    bottom: 0;
+    color: #000;
+    display: flex;
+    flex: 1;
+    left: 0;
+    /* outline: 1px solid #dfdfdf; */
+    padding: 0px;
+    position: fixed;
+    right: 0;
+    z-index: 5000;
+    height: 35px;
+    transition: 0.2s;
+}
+
+#taskbar-programList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+#taskbar-programList p {
+    color: white;
+    transition: 0.1s;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#taskbar-programList .programListElement {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-direction: row;
+
+    max-width: 27vw;
+    width: fit-content;
+
+    color: white;
+    margin-right: 7px;
+    background-color: transparent;
+    border-bottom: #5bb7ffb8 2px solid;
+    cursor: default;
+    transition: 0.2s;
+}
+
+#taskbar-programList .programListElement img {
+    width: 29px;
+    height: 29px;
+}
+
+#taskbar-programList .programListElement:hover:not(.selected) {
+    background-color: #3a3a3a70;
+    /*border-bottom-width: 3px;*/
+    padding-left: 3px !important;
+    margin-left: -3px !important;
+    padding-right: 3px !important;
+    margin-right: calc(-3px + 7px) !important;
+}
+
+#taskbar-programList .programListElement.selected:hover {
+    background-color: #3a3a3a70;
+    padding-left: 4px !important;
+    margin-left: -4px !important;
+    padding-right: 4px !important;
+    margin-right: calc(-4px + 7px) !important;
+}
+
+
+#taskbar-programList .programListElement.selected {
+    background-color: #58585870;
+
+    padding-left: 2px;
+    margin-left: -2px;
+    padding-right: 2px;
+    margin-right: calc(-2px + 7px);
+}
+
+#taskbar-programList .programListElement.selected:hover {
+    background-color: #69696970;
+}
+
+#taskbar-programList .programListElement.hidden {
+    border-bottom-color: #4386b9b8;
+    background-color: #22222270;
+}
+
+#taskbar-programList .programListElement.hidden:hover {
+    background-color: #2c2c2c70;
+}
+
+#taskbar-programList .programListElement.hidden img {
+    filter: brightness(0.5);
+}
+
+#taskbar-programList .programListElement.hidden p {
+    color: #7e7e7e;
+}
+
+p {
+    margin: 0px;
+}
+
+#StartMenu {
+    background: rgb(29, 29, 29);
+    background-color: rgb(29, 29, 29);
+    /* box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff; */
+    display: inline-block;
+    display: flex;
+    height: 400px;
+    opacity: 0;
+    left: 0;
+    list-style: none;
+    margin: 0;
+    padding: 2px;
+    position: absolute;
+    bottom: 35px;
+    overflow: hidden;
+    vertical-align: top;
+
+    transition: 400ms;
+}
+
+.StartMenuSelector {
+    cursor: pointer;
+    color: white;
+}
+
+div {
+    border: 0;
+    font-size: 300%;
+    font: inherit;
+    margin: 0;
+    padding: 0;
+    vertical-align: baseline;
+}
+
+button {
+    /* align-items: center; */
+    display: flex;
+    /* flex-direction: row; */
+    line-height: 21px;
+
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+
+    margin: 1px;
+
+    cursor: pointer;
+    background: rgb(247, 247, 247);
+    border: white;
+    color: black;
+    /* box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px grey, inset 2px 2px #dfdfdf;*/
+}
+
+button:hover {
+    background-color: rgb(174, 202, 255);
+}
+
+button[aria-label="Close"]:hover {
+    background-color: rgb(255, 112, 112);
+}
+
+* {
+    -webkit-font-smoothing: subpixel-antialiased;
+    font-size: 25px;
+    font-weight: unset;
+    font-family: Arial, Helvetica, sans-serif;
+    zoom: 1.00;
+}
+
+#startMenuButton:hover {
+    background: rgba(255, 255, 255, 0.219);
+}
+
+#startMenuButton {
+    transition: 0.2s;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    font-size: 50px;
+    padding: 0px;
+    margin: 0px;
+    background: transparent;
+    margin-right: 5px;
+
+    align-content: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#startMenuButton span:hover {
+    background: rgba(255, 255, 255, 0.219);
+    height: 33px;
+    width: 33px;
+}
+
+#startMenuButton span {
+    /*transition: 0.2s;*/
+    font-size: 60px;
+    color: white;
+    height: 35px;
+    width: 35px;
+
+}
+
+.consoleOutput {
+    background: rgb(5, 10, 51);
+    color: white;
+    height: 465px;
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.consoleInput {
+    background: rgb(5, 10, 51);
+    color: white;
+    border: 0px;
+}
+
+.consoleLog {
+    color: white;
+}
+
+.consoleInformation {
+    color: gray;
+}
+
+.consoleWarn {
+    color: rgb(222, 167, 0);
+}
+
+.consoleError {
+    color: rgb(255, 0, 0);
+}
+
+.contextmenu {
+    position: absolute;
+    background-color: white;
+    box-shadow: rgb(0 0 0) 0px 0px 20px -5px;
+}
+
+.contextmenubutton {
+    background-color: transparent;
+}
+
+.contextmenubutton:hover {
+    background-color: #00000029;
+}
+
+.StartMenuFastButton {
+    justify-content: center;
+}
+
+iframe {
+    display: block;
+}
+
+/*Desktop*/
+.DesktopIcon {
+    position: fixed;
+}
+
+.DesktopIcon:hover {
+    background-color: rgba(134, 172, 255, 0.233);
+}
+
+.DesktopIconText {
+    color: white;
+    background-color: #0000006e;
+    text-align: center;
+
+    max-width: 100px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.DesktopImg {
+    /*background-color: #ffffffba;*/
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}

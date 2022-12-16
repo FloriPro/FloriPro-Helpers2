@@ -1,0 +1,31 @@
+{
+    "all": [
+        {
+            "name": "Explorer",
+            "icon": "c/programs/explorer/logo.webp",
+            "run": "c/programs/explorer/run.js",
+            "position": [
+                20,
+                20
+            ]
+        },
+        {
+            "name": "Store",
+            "icon": "c/programs/store/logo.webp",
+            "run": "c/programs/store/run.js",
+            "position": [
+                140,
+                20
+            ]
+        },
+        {
+            "name": "Settings",
+            "icon": "c/programs/settings/logo.webp",
+            "run": "c/programs/settings/run.js",
+            "position": [
+                260,
+                20
+            ]
+        }
+    ]
+}
