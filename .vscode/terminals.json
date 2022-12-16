@@ -1,0 +1,46 @@
+{
+    "autorun": true,
+    "autokill": true,
+    "terminals": [
+        {
+            "name": "buildMain",
+            "description": "starts the build process for all files under c/",
+            "open": false,
+            "focus": false,
+            "commands": [
+                "python .\\generateFileSystemJson.py"
+            ],
+            "recycle": true
+        },
+        {
+            "name": "buildPrograms",
+            "description": "starts the build process for all files under programs/",
+            "open": false,
+            "focus": false,
+            "commands": [
+                "python .\\generateProgramJson.py"
+            ],
+            "recycle": true
+        },
+        {
+            "name": "TypeScript",
+            "description": "Starts the typescript compiler",
+            "open": false,
+            "focus": false,
+            "commands": [
+                ".\\node_modules\\.bin\\tsc.cmd"
+            ],
+            "recycle": true
+        },
+        {
+            "name": "Server",
+            "description": "Starts a http server",
+            "open": false,
+            "focus": false,
+            "commands": [
+                "python -m http.server 80"
+            ],
+            "recycle": true
+        }
+    ]
+}

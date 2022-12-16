@@ -1,0 +1,17 @@
+{
+    "explorer": {
+        "name": "Explorer",
+        "path": "c/programs/explorer/main.js",
+        "run": "c/programs/explorer/run.js"
+    },
+    "textEditor": {
+        "name": "Text Editor",
+        "path": "c/programs/textEditor/main.js",
+        "run": "c/programs/textEditor/run.js"
+    },
+    "store": {
+        "name": "Store",
+        "path": "c/programs/store/main.js",
+        "run": "c/programs/store/run.js"
+    }
+}

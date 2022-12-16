@@ -1,0 +1,30 @@
+{
+    "backgroundImage": [
+        "c/user/backgrounds/background1.jpg",
+        "file"
+    ],
+    "resetWithoutQuestion": [
+        false,
+        "bool"
+    ],
+    "startupDisclaimer": [
+        true,
+        "bool"
+    ],
+    "long click for rightclick": [
+        false,
+        "bool"
+    ],
+    "analytics": [
+        true,
+        "bool"
+    ],
+    "ip-spende": [
+        false,
+        "bool"
+    ],
+    "alignDeskopIconsToGrid": [
+        true,
+        "bool"
+    ]
+}

@@ -1,0 +1,83 @@
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: 20% 1fr 20%;
+        grid-template-rows: 29px 1fr 80px;
+        gap: 0px 28px;
+        grid-auto-flow: row;
+        grid-template-areas:
+            "errorMSG errorMSG errorMSG"
+            "chatSelect CurrentChat Users"
+            "chatSelect input Users";
+        background-color: #15151d;
+        height: 100%;
+    }
+
+    .el {
+        background-color: #2a2a36;
+        border-radius: 40px;
+        padding: 10px;
+        color: white;
+    }
+
+    .chatSelect {
+        grid-area: chatSelect;
+    }
+
+    .CurrentChat {
+        grid-area: CurrentChat;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+    }
+
+    .errorMSG {
+        grid-area: errorMSG;
+    }
+
+    .Users {
+        grid-area: Users;
+    }
+
+    .input {
+        display: flex;
+        grid-area: input;
+    }
+
+    .chat {
+        overflow-y: scroll;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+</style>
+
+<!--Version for PC-->
+<div class="container" element="container">
+    <div class="errorMSG" element="errorMSG">
+        <p style="color:red;background:white">not connected!</p>
+    </div>
+    <div class="chatSelect el" element="chats">
+        <p style="font-weight: bold;">Chats:</p>
+        <div element="channelList">
+            <p>loading...</p>
+        </div>
+    </div>
+    <div class="CurrentChat el" element="currentChat">
+        <p style="font-weight: bold;"><span element="chatName">[chatName]</span>:</p>
+        <div element="chat" class="chat">
+
+        </div>
+    </div>
+    <div class="Users el" element="users">
+        <p style="font-weight: bold;">Users:</p>
+        <div element="userList">
+            <p>loading...</p>
+        </div>
+    </div>
+    <div class="input el" element="input">
+        <input placeholder="yourText" element="message" style="width: 100%; border-radius: 30px;">
+        <button element="send">send</button>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+{
+    "touchend": "mouseup",
+    "touchstart": "mousedown",
+    "touchmove": "mousemove"
+}

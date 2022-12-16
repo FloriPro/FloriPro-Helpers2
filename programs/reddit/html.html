@@ -1,0 +1,95 @@
+<style>
+    .redditComment:hover {
+        /*background-color: aquamarine;*/
+        border-left: 5px dotted #0000ff;
+    }
+
+    .redditComment {
+        border-left: 5px dotted #C3C3C5;
+    }
+</style>
+
+<div element="settings">
+    <input type="text" placeholder="subreddits (a,b,c)" element="subredditSelect" value="memes">
+    <br>
+    <lable for="sort_time">sort_time</lable>
+    <select element="variable" name="sort_time">
+        <option value="all">all</option>
+        <option value="year">year</option>
+        <option value="month">month</option>
+        <option value="week">week</option>
+        <option value="day">day</option>
+        <option value="hour">hour</option>
+    </select>
+    <br>
+
+    <lable for="sort_by">sort_by</lable>
+    <select element="variable" name="sort_by">
+        <option value="hot">hot</option>
+        <option value="new">new</option>
+        <option value="top">top</option>
+        <option value="rising">rising</option>
+    </select>
+    <br>
+
+    <input name="needs_bool_argument" class="variable"
+        placeholder="very optional | needs_bool_argument=true (split with ',')">
+    <br>
+
+    <lable for="only_images">only_images</lable>
+    <input element="variable" name="only_images" type="checkbox">
+    <br>
+
+    <lable for="save_data">save_data</lable>
+    <input element="variable" name="save_data" type="checkbox">
+    <br>
+
+
+    <input element="variable" name="limit" placeholder="number: limit" value="10">
+    <br>
+
+    <button element="selectSubreddits">Ok</button>
+
+    <hr>
+    <button element="setWindowmax">max</button>
+    <button element="setWindownormal">normal</button>
+    <hr>
+    <p style="font-size: small;">This is only a viewer <i style="font-size: small;">FOR</i> reddit!</p>
+</div>
+<div element="post">
+    <a target="_blank" element="link"></a>
+    <button element="openReddit">full</button>
+    <h1 element="title" style="font-weight: bold;">Title</h1>
+    <p element="text">Text</p>
+
+    <button element='openVid' style="display: none;">open video</button>
+    <div element="img" style="max-width: 500px;"></div>
+
+    <button element="next" style="
+    position: absolute;
+    bottom: 10px;
+    height: 50px;
+    font-size: 50px;
+    background-color: antiquewhite;
+    display: flex;
+    align-items: center;
+    right: 10px;
+    ">next</button>
+    <button element="back" style="
+    position: absolute;
+    bottom: 10px;
+    height: 50px;
+    font-size: 50px;
+    background-color: antiquewhite;
+    display: flex;
+    align-items: center;
+    left: 10px;
+    ">back</button>
+    <br>
+    <button element="comments">comments</button>
+    <hr>
+    <button element="setWindowmax2">max</button>
+    <button element="setWindownormal2">normal</button>
+    <button element="openSettings" style="float: left; padding-bottom: 58px;">settings</button>
+    <br>
+</div>

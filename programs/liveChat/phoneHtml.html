@@ -1,0 +1,128 @@
+<!--chat gui for phone-->
+
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 25px 1fr 80px;
+        gap: 18px 0px;
+        height: 100%;
+        grid-auto-flow: row;
+        grid-template-areas:
+            "menu"
+            "chat"
+            "input";
+        background-color: #15151d;
+        color: white;
+    }
+
+    .input {
+        grid-area: input;
+        display: flex;
+    }
+
+    .allChat {
+        height: 100%;
+    }
+
+    .menu {
+        grid-area: menu;
+    }
+
+    .errorMSG {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        width: 40%;
+        height: 100px;
+        background-color: #ffffff00;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .chatSelect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        width: 80%;
+        height: calc(100% - 100px);
+        background-color: #000000b6;
+        color: white;
+    }
+
+    .usersList {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        width: 80%;
+        height: calc(100% - 100px);
+        background-color: #000000b6;
+        color: white;
+    }
+
+    .activeChat {
+        overflow-y: scroll;
+        display: flex;
+        flex-direction: column-reverse;
+        max-height: inherit;
+    }
+
+    .chat {
+        grid-area: chat;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+</style>
+<div class="errorMSG" element="errorMSG">
+    <p style="color:red;background:white">not connected!</p>
+</div>
+
+<div class="allChat">
+    <div class="container">
+        <div class="menu">
+            <div style="display: flex;justify-content: space-between;flex-wrap: nowrap;">
+                <button element="openchannelList">&#9776;</button>
+                <button element="openuserList">&#9776;</button>
+            </div>
+        </div>
+        <div class="chat">
+            <p style="font-weight: bold;"><span element="chatName">[chatName]</span>:</p>
+            <div element="activeChat" class="activeChat">
+
+            </div>
+        </div>
+        <div class="input" element="input">
+            <input placeholder="yourText" element="message" style="width: 100%; border-radius: 30px;">
+            <button element="send">send</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="chatSelect" style="display: none;" element="chatSelect">
+    <button element="closeChannelList">X</button>
+    <p style="font-weight: bold;">Chats:</p>
+    <div element="channelList">
+        <p>loading...</p>
+    </div>
+</div>
+<div class="usersList" style="display: none;" element="usersList">
+    <button element="closeUserList">X</button>
+    <p style="font-weight: bold;">Users:</p>
+    <div element="userList">
+        <p>loading...</p>
+    </div>
+</div>
