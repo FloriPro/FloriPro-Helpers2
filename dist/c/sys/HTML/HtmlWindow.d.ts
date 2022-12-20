@@ -76,6 +76,7 @@ declare class HtmlWindow {
     };
     canUserResize: boolean;
     /**
+     * gets called when the window is closed. return false to prevent closing
      * @returns {boolean | Promise<boolean>}
      */
     close: () => boolean | Promise<boolean>;

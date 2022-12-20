@@ -8,5 +8,6 @@
     "steffanPack": "programs/steffanPack",
     "liveChat": "programs/liveChat",
     "MoodLightTS": "programs/MoodLightTS",
-    "Pong": "programs/pong"
+    "Pong": "programs/pong",
+    "Vote": "programs/vote"
 }

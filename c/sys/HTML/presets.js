@@ -510,7 +510,7 @@ class informationPreset {
             //onready:
             async () => {
                 //set html
-                await this.window.setContent('<p element="text"></p><button element="ok">Ok</button>');
+                await this.window.setContent('<p element="text"></p><button element="ok">Ok</button><button element="copy">Copy</button>');
 
                 (await this.window.getHtmlElement("text")).innerText = text;
 
@@ -530,6 +530,14 @@ class informationPreset {
                 await this.window.addHtmlEventListener("onclick", "ok", async () => {
                     //read data
                     this.returnFunction(true);
+
+                    //close and return
+                    this.window.remove()
+                }, this);
+
+                await this.window.addHtmlEventListener("onclick", "copy", async () => {
+                    //read data
+                    await navigator.clipboard.writeText(text);
 
                     //close and return
                     this.window.remove()

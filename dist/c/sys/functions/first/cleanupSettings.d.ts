@@ -14,6 +14,7 @@ declare function run(): Promise<boolean>;
 declare function run(): Promise<boolean>;
 declare function run(): Promise<boolean>;
 declare function run(): Promise<boolean>;
+declare function run(): Promise<boolean>;
 /**
  *
  * @param {string} path without "c/" at the start!

@@ -298,6 +298,7 @@ class HtmlWindow {
 
         this.#id = id;
         /**
+         * gets called when the window is closed. return false to prevent closing
          * @returns {boolean | Promise<boolean>}
          */
         this.close = () => {

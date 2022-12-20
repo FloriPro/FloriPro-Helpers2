@@ -17,4 +17,5 @@ declare function run(): Promise<boolean>;
 declare function run(): Promise<boolean>;
 declare function run(): Promise<boolean>;
 declare function run(): Promise<boolean>;
+declare function run(): Promise<boolean>;
 //# sourceMappingURL=analytics.d.ts.map

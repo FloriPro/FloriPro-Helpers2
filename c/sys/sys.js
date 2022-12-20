@@ -17,7 +17,7 @@ class sys {
      * run a javascript file
      */
     async run(path) {
-        var dec = `var PATH=new System.path('${path}');`;
+        var dec = `var PATH=new System.path('${path}');\n`;
         try {
             return eval(dec + "\n" + await SystemFileSystem.getFileString(path));
         } catch (e) {
