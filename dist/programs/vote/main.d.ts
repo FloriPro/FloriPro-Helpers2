@@ -7,12 +7,19 @@ declare class program extends standardProg {
     anychartContainerId: string;
     passw: string;
     voteId: any;
+    /**
+     * @type {n}
+     */
+    network: n;
     anyReady(): void;
     anychart: any;
     reload(): Promise<void>;
     loadData(data: any): Promise<void>;
     currentType: any;
-    update(): Promise<void>;
+    /**
+     * gets called when the data of the current chart gets changed
+     */
+    update(data: any): Promise<void>;
     /**
      * @param {string} type bar
      * @param {string} label "# of Votes"
