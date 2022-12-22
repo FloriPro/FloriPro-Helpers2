@@ -4,10 +4,15 @@ declare class program extends standardProg {
      * @type {HtmlWindow}
      */
     window: HtmlWindow;
+    anychartContainerId: string;
     passw: string;
     voteId: any;
+    anyReady(): void;
+    anychart: any;
     reload(): Promise<void>;
     loadData(data: any): Promise<void>;
+    currentType: any;
+    update(): Promise<void>;
     /**
      * @param {string} type bar
      * @param {string} label "# of Votes"

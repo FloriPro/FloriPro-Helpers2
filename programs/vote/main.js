@@ -14,24 +14,43 @@ class program extends System.program.default {
                 await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
 
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
-                await this.window.size.setInnerSize(400, 400);
+                await this.window.size.setInnerSize(410, 410);
                 this.window.size.userCanResize(true);
+
+                //set random id for container
+                this.anychartContainerId = System.makeid(10);
+                (await this.window.getHtmlElement("container")).id = this.anychartContainerId;
 
                 //load chart.js if not allready loaded
                 if (window.chartAllreadyInitialized == undefined) {
                     await System.run("c/programs/vote/chart.js");
-                    eval(await SystemFileSystem.getFileString("c/programs/vote/wordcloud.js"));
+                    eval(await SystemFileSystem.getFileString("c/programs/vote/wordcloud.js")); //deprecated
+
+                    //load anychart
+                    await System.run("c/programs/vote/anychart/js/anychart-base.min.js");
+                    await System.run("c/programs/vote/anychart/js/anychart-exports.min.js");
+                    await System.run("c/programs/vote/anychart/js/anychart-tag-cloud.min.js");
+                    await System.run("c/programs/vote/anychart/js/anychart-ui.min.js");
+
+                    anychart.onDocumentReady(this.anyReady.bind(this));
+
+                    //load anychart css
+                    var css = document.createElement("style");
+                    css.innerHTML = await SystemFileSystem.getFileString("c/programs/vote/anychart/css/anychart-ui.min.css");
+                    document.head.appendChild(css);
+
                     window.chartAllreadyInitialized = true;
                 }
 
                 //relaod chart rightclick button
-                (await this.window.getHtmlElement("myChart")).contextscript = (att) => {
+                (await this.window.getHtmlElement("out")).contextscript = (att) => {
                     return {
                         "reload": () => {
                             this.reload();
                         },
                         "back": async () => {
                             (await this.window.getHtmlElement("myChart")).style.display = "none";
+                            (await this.window.getHtmlElement("container")).style.display = "none";
                             (await this.window.getHtmlElement("loader")).style.display = "";
                         }
                     }
@@ -98,6 +117,16 @@ class program extends System.program.default {
         }
     }
 
+    anyReady() {
+        console.warn("ready")
+        this.anychart = anychart.tagCloud();
+        this.anychart.title("Loading...");
+        this.anychart.container(this.anychartContainerId);
+        this.anychart.textSpacing(3);
+        this.anychart.mode("spiral");
+        this.anychart.angles([0]);
+    }
+
     //reload the chart
     async reload() {
         //get data from api
@@ -114,25 +143,23 @@ class program extends System.program.default {
     }
     async loadData(data) {
         var showType = data.type;//wordcloud/chart
+        this.currentType = showType;
         if (showType == "wordcloud") {
             var taglist = data.taglist;
-            //taglist dict to list
+
             var taglist2 = [];
             for (var i in taglist) {
-                taglist2.push([i, taglist[i]]);
+                taglist2.push({ x: i, value: taglist[i] });
             }
-            console.log(taglist2);
-            WordCloud(await this.window.getHtmlElement("myChart"), {
-                list: taglist2,
-                gridSize: 2,
-                weightFactor: 3,
-                hover: window.drawBox,
-                backgroundColor: '#001f00',
-                color: '#f0f0c0',
-            });
-            const ctx = await this.window.getHtmlElement("myChart");
-            ctx.style.display = "";
+            this.anychart.data(taglist2);
+
+            //update title
+            this.anychart.title(data.title + " | " + data.description);
+
+            //show anychart container
+            (await this.window.getHtmlElement("container")).style.display = "";
             (await this.window.getHtmlElement("loader")).style.display = "none";
+            this.anychart.draw();
         } else {
             var type = data.showType;
             var label = data.title;
@@ -150,6 +177,10 @@ class program extends System.program.default {
             //load chart
             await this.load(type, label, labels, d, beginAtZero);
         }
+    }
+
+    async update() {
+
     }
 
 

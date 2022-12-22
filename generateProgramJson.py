@@ -5,6 +5,9 @@ import base64
 import time
 from jsmin import jsmin
 
+with open("programMinify.json") as f:
+    tominify = json.loads(f.read())
+    f.close()
 
 def path_to_dict(path):
     if os.path.isdir(path):
@@ -29,6 +32,9 @@ def path_to_dict(path):
                     if "///--remove--" not in x:
                         v2 += x+"\n"
                 v2 = v2.encode("utf-8")
+            
+            if filename in tominify:
+                v2 = jsmin(v2.decode("utf-8")).encode("utf-8")
             #v2 = jsmin(v.decode("utf-8")).encode("utf-8")
         d = base64.b64encode(v2).decode('ascii')
     return d
