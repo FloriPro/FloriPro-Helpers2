@@ -47,6 +47,7 @@ before = {}
 
 for prog in ds:
     before[prog] = ""
+
 while True:
     for prog in ds:
         if not prog.endswith(".json"):

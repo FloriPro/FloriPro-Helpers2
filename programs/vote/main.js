@@ -21,22 +21,17 @@ class program extends System.program.default {
                 this.anychartContainerId = System.makeid(10);
                 (await this.window.getHtmlElement("container")).id = this.anychartContainerId;
 
-                //load chart.js if not allready loaded
-                if (window.chartAllreadyInitialized == undefined) {
-                    await System.run("c/programs/vote/chart.js");
-                    eval(await SystemFileSystem.getFileString("c/programs/vote/wordcloud.js")); //DEPRECATED
+                /////////Load libs/////////////////////
+                //load anychart js lib
+                await System.getLib("anychart") // returns the global anychart object, so i dont need it, because i can use the global one :)
+                this.anyReady();
 
-                    //load anychart js
-                    eval((await System.network.fetch("https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js").then((res) => res.text())).replaceAll("contextmenu", "context_menu")) // load it and remove the contextmenu eventlisteners
-                    eval(await System.network.fetch("https://cdn.anychart.com/releases/8.11.0/js/anychart-tag-cloud.min.js").then((res) => res.text()));
-                    //load anychart css
-                    var css = document.createElement("style");
-                    css.innerHTML = await System.network.fetch("https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css").then((res) => res.text());
-                    document.head.appendChild(css);
-                    anychart.onDocumentReady(this.anyReady.bind(this));
-                    
-                    window.chartAllreadyInitialized = true;
-                }
+                //load qr code js
+                await System.getLib("qrious");
+
+                //load chart js
+                await System.getLib("chartjs");
+                ///////////////////////////////////////
 
                 //relaod chart rightclick button
                 (await this.window.getHtmlElement("out")).contextscript = (att) => {
@@ -71,6 +66,7 @@ class program extends System.program.default {
                     xhr.onload = function () {
                         var data = this.responseText;
                         SystemHtml.WindowHandler.presets.createInformation("WordCloud link", "https://vote.flulu.eu/" + data);
+                        new qrCode("https://vote.flulu.eu/" + data, this.thi.PATH);
                     }
 
                     xhr.onabort = function () {
@@ -131,16 +127,12 @@ class program extends System.program.default {
     }
 
     anyReady() {
-        console.warn("ready")
         this.anychart = anychart.tagCloud();
-        //this.anychart.title("Loading...");
+        this.anychart.title("Loading...");
         this.anychart.angles([0])
         this.anychart.textSpacing(3);
         this.anychart.mode("spiral");
         this.anychart.container(this.anychartContainerId);
-        //this.anychart.textSpacing(0);
-        //this.anychart.mode("spiral");
-        //this.anychart.angles([0]);
     }
 
     //reload the chart
@@ -299,6 +291,7 @@ class create {
                 xhr.onload = function () {
                     var data = this.responseText;
                     SystemHtml.WindowHandler.presets.createInformation("Vote link", "https://vote.flulu.eu/" + data);
+                    new qrCode("https://vote.flulu.eu/" + data, this.thi.PATH);
 
                     this.thi.window.makeClose();
                 }
@@ -311,6 +304,40 @@ class create {
                     (await this.thi.window.getHtmlElement("all")).style.display = "";
                 }
             }, this);
+        });
+    }
+}
+
+class qrCode {
+    constructor(url, path) {
+        this.url = url;
+        this.PATH = path;
+        this.load();
+    }
+    async load() {
+        /**
+         * @type {HtmlWindow}
+         */
+        this.window = await SystemHtml.WindowHandler.createWindow("QR Code", async () => {
+            await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
+            await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/qr.html"));
+            await this.window.size.setInnerSize(400, 400);
+            this.window.size.userCanResize(true);
+
+            var qr = new QRious({
+                element: await this.window.getHtmlElement("qr"),
+                value: this.url
+            });
+            qr.size = 1000;
+
+            //right click qrcode to get url
+            (await this.window.getHtmlElement("qr")).contextscript = () => {
+                return {
+                    "Get URL": () => {
+                        SystemHtml.WindowHandler.presets.createInformation("URL", this.url);
+                    }
+                }
+            }
         });
     }
 }

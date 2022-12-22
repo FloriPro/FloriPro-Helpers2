@@ -1,0 +1,6 @@
+{
+    "anychart": "libs/anychart.json",
+    "chartjs": "libs/chartjs.json",
+    "qrious": "libs/qrious.json",
+    "redditApi": "libs/redditApi.json"
+}

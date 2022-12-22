@@ -3,6 +3,7 @@
     "include": [
         "./c/**/*.js",
         "./programs/**/*.js",
+        "./libs/**/*.js",
     ],
     "compilerOptions": {
         "watch": true,

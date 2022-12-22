@@ -11,8 +11,11 @@ declare class sys {
     eventHandler: eventHandler;
     /**
      * run a javascript file
+     * @param {string} path path to the file
+     * @param {boolean} noPath if true, the path variable will not inserted at the beginning of the file
+     * @returns {Promise<any>} the return value of the file
      */
-    run(path: any): Promise<any>;
+    run(path: string, noPath?: boolean): Promise<any>;
     /**
      * gives a random alphanumeric string
      * @param {number} length
@@ -100,6 +103,13 @@ declare class systemProgramHandler {
     default: typeof standardProg;
     intervalHandlers: {};
     /**
+     * Install a libary
+     * @param {string} name name of the libary
+     * @param {boolean} overwrite overwrite the libary if it exists
+     */
+    libInstall(name: string, overwrite: boolean): Promise<boolean>;
+    /**
+     * checks if a program/libary is installed
      * @param {string} name name of the program/libary
      * @returns {Promise<boolean>} true if the program/libary exists, false otherwise
      */
@@ -131,8 +141,11 @@ declare class systemProgramHandler {
      * @param {string} data package
      * @param {boolean} display show prograss in a window
      * @param {loadingPreset} displayWindow the window to display the progress
+     * @param {boolean} showInstallInfo show the install info in the window
+     * @param {string} name name of the package (needed for libs)
+     * @param {boolean | undefined} isLib true, if the package is a libary
      */
-    installPackage(data: string, display: boolean, displayWindow: loadingPreset, showInstallInfo: any, name: any): Promise<void>;
+    installPackage(data: string, display: boolean, displayWindow: loadingPreset, showInstallInfo: boolean, name: string, isLib: boolean | undefined): Promise<void>;
     /**
      * finds a free id for a now program
      * @returns {number}
@@ -153,6 +166,10 @@ declare class systemProgramHandler {
     handleInterval(callback: any, programId: any, variable: any): void;
 }
 declare class standardProg {
+    /**
+     * @type {Path}
+     */
+    PATH: Path;
     id: number;
     /**
      * gets called, when the system has initialized the program

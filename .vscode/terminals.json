@@ -23,6 +23,16 @@
             "recycle": true
         },
         {
+            "name": "buildLibs",
+            "description": "starts the build process for all files under libs/",
+            "open": false,
+            "focus": false,
+            "commands": [
+                "python .\\generateLibsJson.py"
+            ],
+            "recycle": true
+        },
+        {
             "name": "TypeScript",
             "description": "Starts the typescript compiler",
             "open": false,

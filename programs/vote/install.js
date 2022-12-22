@@ -7,6 +7,14 @@ async function run() {
         await SystemHtml.desktop.addLink("c/programs/vote/run.js", "Vote", "c/programs/vote/logo.webp");
     }
 
+    //install libs
+    //* anychart
+    //* qrcodejs
+    //* chartjs
+    await System.program.libInstall("anychart");
+    await System.program.libInstall("qrious");
+    await System.program.libInstall("chartjs");
+
     return true;
 }
 run();

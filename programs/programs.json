@@ -1,7 +1,6 @@
 {
     "imageViewer": "programs/imageViewer",
     "reddit": "programs/reddit",
-    "redditApi": "programs/redditApi",
     "testScript": "programs/testScript",
     "jShell": "programs/jShell",
     "unuSupreme": "programs/unuSupreme",

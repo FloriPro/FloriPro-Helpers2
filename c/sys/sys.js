@@ -15,9 +15,17 @@ class sys {
     }
     /**
      * run a javascript file
+     * @param {string} path path to the file
+     * @param {boolean} noPath if true, the path variable will not inserted at the beginning of the file
+     * @returns {Promise<any>} the return value of the file
      */
-    async run(path) {
-        var dec = `var PATH=new System.path('${path}');\n`;
+    async run(path, noPath = false) {
+        if (noPath == false) {
+            var dec = `var PATH=new System.path('${path}');\n`;
+        } else {
+            var dec = "";
+        }
+
         try {
             return eval(dec + "\n" + await SystemFileSystem.getFileString(path));
         } catch (e) {
@@ -66,7 +74,12 @@ class sys {
             console.warn("Could not find lib");
             return class { };
         }
-        var lib = System.run(path);
+        try {
+            var lib = System.run(path);
+        } catch (e) {
+            console.error(e);
+            return class { };
+        }
         return lib;
     }
 }
@@ -305,7 +318,36 @@ class systemProgramHandler {
         this.default = standardProg;
         this.intervalHandlers = {};
     }
+
     /**
+     * Install a libary
+     * @param {string} name name of the libary
+     * @param {boolean} overwrite overwrite the libary if it exists
+     */
+    async libInstall(name, overwrite) {
+        //check if libary is already installed
+        if (await System.program.installed(name) && overwrite != true) {
+            return false;
+        }
+
+        //get libary path from online libs.json file
+        var libs = JSON.parse(await (await System.network.fetch("libs/libs.json")).text());
+        if (!Object.keys(libs).includes(name)) {
+            console.error("Libary " + name + " not found");
+        }
+        var path = libs[name];
+
+        var l = await SystemHtml.WindowHandler.presets.createLoading("Installing Libary " + name, "Downloading " + name);
+        await System.program.installPackage(await (await System.network.fetch(path)).text(), true, l, false, name, true);
+
+        //add libary to libs option
+        await System.options.addValue("libs", name, "c/libs/" + name + "/run.js");
+
+        return true;
+    }
+
+    /**
+     * checks if a program/libary is installed
      * @param {string} name name of the program/libary
      * @returns {Promise<boolean>} true if the program/libary exists, false otherwise
      */
@@ -365,7 +407,6 @@ class systemProgramHandler {
      * @return {Promise<boolean>} was the package installed successfully
      */
     async easyPackageInstall(name, overwrite) {
-
         if (await System.program.installed(name) && overwrite != true) {
             return false;
         }
@@ -379,9 +420,12 @@ class systemProgramHandler {
      * @param {string} data package
      * @param {boolean} display show prograss in a window
      * @param {loadingPreset} displayWindow the window to display the progress
+     * @param {boolean} showInstallInfo show the install info in the window
+     * @param {string} name name of the package (needed for libs)
+     * @param {boolean | undefined} isLib true, if the package is a libary
      */
-    async installPackage(data, display, displayWindow, showInstallInfo, name) {
-        if (name == undefined) { name = "?"; }
+    async installPackage(data, display, displayWindow, showInstallInfo, name, isLib) {
+        if (name == undefined) { name = "unknown"; }
 
         await displayWindow.setNum(25);
         await displayWindow.setText("Installing " + name);
@@ -393,12 +437,18 @@ class systemProgramHandler {
         var pdata = JSON.parse(data);
         await SystemFileSystem.unpackPackage(pdata);
         if (display == true) await displayWindow.setNum(50);
-        var location = await SystemFileSystem.getFileString("c/_temp/installLocation.dat");
+        if (isLib == true) {
+            var location = "c/libs/" + name;
+        } else {
+            var location = await SystemFileSystem.getFileString("c/_temp/installLocation.dat");
+        }
         await SystemFileSystem.moveInFolder("c/_temp", location);
         await delay(100);
         console.log("running install " + name);
         if (display == true) await displayWindow.setNum(75);
-        var ret = await (await System.run(location + "/install.js"));
+        if (isLib != true) {
+            var ret = await (await System.run(location + "/install.js"));
+        }
 
         if (showInstallInfo == true) {
             if (ret) {
@@ -469,6 +519,9 @@ class systemProgramHandler {
 
 class standardProg {
     constructor() {
+        /**
+         * @type {Path}
+         */
         this.PATH;
         this.id = -1;
     }
@@ -706,9 +759,9 @@ class Notifications {
         }
 
         //notifications were granted
-        var notification = new Notification(title,{
-            body : body,
-            icon : icon
+        var notification = new Notification(title, {
+            body: body,
+            icon: icon
         });
         return notification
     }

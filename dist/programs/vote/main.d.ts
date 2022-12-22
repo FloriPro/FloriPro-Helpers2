@@ -39,4 +39,14 @@ declare class create {
      */
     window: HtmlWindow;
 }
+declare class qrCode {
+    constructor(url: any, path: any);
+    url: any;
+    PATH: any;
+    load(): Promise<void>;
+    /**
+     * @type {HtmlWindow}
+     */
+    window: HtmlWindow;
+}
 //# sourceMappingURL=main.d.ts.map
