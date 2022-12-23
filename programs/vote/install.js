@@ -15,6 +15,14 @@ async function run() {
     await System.program.libInstall("qrious");
     await System.program.libInstall("chartjs");
 
+    //add c/user/vote/polls.json to persistandFiles.json file
+    var persistantFiles = await SystemFileSystem.getFileJson("c/persistandFiles.json");
+    if (!persistantFiles.includes("c/user/vote/polls.json")) {
+        persistantFiles.push("c/user/vote/polls.json");
+        await SystemFileSystem.setFileString("c/persistandFiles.json", JSON.stringify(persistantFiles));
+    }
+
+
     return true;
 }
 run();

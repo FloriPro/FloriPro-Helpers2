@@ -5,7 +5,7 @@ declare class program extends standardProg {
      */
     window: HtmlWindow;
     anychartContainerId: string;
-    passw: string;
+    passw: any;
     voteId: any;
     /**
      * @type {n}
@@ -29,9 +29,12 @@ declare class program extends standardProg {
      */
     load(type: string, label: string, labels: string[], data: number[], beginAtZero: boolean): Promise<void>;
     currentChart: any;
+    loadOldCharts(): Promise<void>;
+    addChart(voteId: any, title: any, password: any, type: any): Promise<void>;
 }
 declare class create {
-    constructor(path: any);
+    constructor(path: any, parent: any);
+    parent: any;
     PATH: any;
     load(): Promise<void>;
     /**

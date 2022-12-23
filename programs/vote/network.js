@@ -3,6 +3,7 @@ class n {
         this.create();
         this.onupdate = (data) => { };
         this.tries = 0;
+        this.currentPoll = null;
     }
 
     create() {
@@ -16,6 +17,10 @@ class n {
         this.ws.onopen = () => {
             this.tries = 0;
             console.log("ws open");
+
+            if (this.currentPoll != null) {
+                this.setPoll(this.currentPoll);
+            }
         }
 
         //reload on ws close
@@ -23,7 +28,7 @@ class n {
             if (err.wasClean) {
                 console.log("ws closed");
             } else {
-                if (this.tries < 5) {
+                if (this.tries < 5000) {
                     setTimeout(() => {
                         this.tries++;
                         this.create();
@@ -40,6 +45,7 @@ class n {
 
     //set poll to listen to
     setPoll(pollId) {
+        this.currentPoll = pollId;
         //send to server
         this.send(JSON.stringify({
             type: "setPoll",
@@ -49,6 +55,7 @@ class n {
 
     //cancel listening to poll
     cancelPoll() {
+        this.currentPoll = null;
         //send to server
         this.send(JSON.stringify({
             type: "cancelPoll"
