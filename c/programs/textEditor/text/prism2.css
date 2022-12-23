@@ -7,6 +7,10 @@
   width: calc(100% - 61px);
 }
 
+#highlighting {
+  -webkit-text-size-adjust: none;
+}
+
 #editing,
 #highlighting,
 #highlighting * {

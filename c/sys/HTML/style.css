@@ -330,9 +330,13 @@ button[aria-label="Close"]:hover {
 }
 
 p,
+span,
+code,
 button,
 input,
-label {
+lable,
+select,
+textarea {
     font-size: 25px;
 }
 
