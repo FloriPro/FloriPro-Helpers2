@@ -8,5 +8,6 @@
     "liveChat": "programs/liveChat",
     "MoodLightTS": "programs/MoodLightTS",
     "Pong": "programs/pong",
-    "Vote": "programs/vote"
+    "Vote": "programs/vote",
+    "wordcloud": "programs/wordcloud"
 }

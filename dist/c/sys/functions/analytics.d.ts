@@ -17,6 +17,7 @@ declare function run(): Promise<boolean>;
 declare function run(): Promise<boolean>;
 declare function run(): Promise<boolean>;
 declare function run(): Promise<boolean>;
+declare function run(): Promise<boolean>;
 declare function run(): Promise<any>;
 declare function run(): Promise<any>;
 declare function run(): Promise<any>;
