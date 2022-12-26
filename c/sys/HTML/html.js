@@ -352,7 +352,7 @@ class WindowHandler {
          */
         this.presets = new (await System.run("c/sys/HTML/presets.js"))();
 
-        System.eventHandler.addEventHandler("mousemove", (event, a) => {
+        System.eventHandler.addEventHandler("mousemove", async (event, a) => {
             if (SystemHtml.WindowHandler.moving == true) {
                 /**
                  * @type {HtmlWindow}
@@ -365,54 +365,11 @@ class WindowHandler {
                     var x = parseInt(element.style.left) + event.movementX;
                     wind.setPosition(x, y);
                 }
+
                 if (event.shiftKey == true) {
-                    //middle
-                    if (event.pageY < window.innerHeight * 0.6 && event.pageY > window.innerHeight * 0.4 && event.pageX < window.innerWidth * 0.6 && event.pageX > window.innerWidth * 0.4) {
-                        wind.size.setMax();
-                    } else {
-                        wind.size.notMax();
-                    }
-
-                    //left
-                    if (event.pageX < window.innerWidth * 0.5) {
-                        //top
-                        if (event.pageY < window.innerHeight * 0.4) {
-                            wind.setPosition(0, 0);
-                            wind.size.setSize(window.innerWidth * 0.5 - 12, window.innerHeight * 0.5 - 12);
-                        }
-                        //middle
-                        else if (event.pageY < window.innerHeight * 0.6) {
-                            wind.setPosition(0, 0);
-                            wind.size.setSize(window.innerWidth * 0.5 - 12, window.innerHeight - 59);
-                        }
-                        //bottom
-                        else {
-                            wind.setPosition(0, window.innerHeight * 0.5);
-                            wind.size.setSize(window.innerWidth * 0.5 - 12, (window.innerHeight * 0.5) - 59);
-                        }
-                    }
-
-                    //right
-                    else {
-                        //top
-                        if (event.pageY < window.innerHeight * 0.4) {
-                            wind.setPosition(window.innerWidth * 0.5, 0);
-                            wind.size.setSize(window.innerWidth * 0.5 - 24, window.innerHeight * 0.5 - 12);
-                        }
-                        //middle
-                        else if (event.pageY < window.innerHeight * 0.6) {
-                            wind.setPosition(window.innerWidth * 0.5, 0);
-                            wind.size.setSize(window.innerWidth * 0.5 - 24, window.innerHeight - 59);
-                        }
-                        //bottom
-                        else {
-                            wind.setPosition(window.innerWidth * 0.5, window.innerHeight * 0.5);
-                            wind.size.setSize(window.innerWidth * 0.5 - 24, (window.innerHeight * 0.5) - 59);
-                        }
-                    }
-
-                    //set mouse icon
-                    document.body.style.cursor = "move";
+                    await this.windowShiftKeyOverlay(wind, event, true);
+                } else {
+                    this.windowShiftKeyOverlay(wind, event, false);
                 }
             }
             else if (SystemHtml.WindowHandler.resize == true) {
@@ -465,20 +422,25 @@ class WindowHandler {
                 var y = parseInt(element.style.top) + event.movementY;
                 var x = parseInt(element.style.left) + event.movementX;
 
-
-
                 if (x < +175 - currentwindow.size.getSize()[0]) { x = +175 - currentwindow.size.getSize()[0]; }
                 if (y < -10) { y = -10; }
 
                 if (x > window.innerWidth - 150) { x = window.innerWidth - 150 };
                 if (y > window.innerHeight - 50 - 35) { y = window.innerHeight - 50 - 35 };
-                currentwindow.setPosition(x, y);
+
+
+                if (event.shiftKey == true) {
+                    this.setWindowShiftKey(currentwindow, event, x, y)
+                } else {
+                    currentwindow.setPosition(x, y);
+                }
+                document.querySelector("#moveWindowOverlay").style.display = "none";
 
                 SystemHtml.WindowHandler.moving = false;
                 SystemHtml.WindowHandler.movingFullscreen = false;
                 document.body.style.cursor = "default";
 
-
+                //reactivate iframes
                 var ifr = document.querySelectorAll("iframe");
                 for (var iframe of ifr) {
                     iframe.style.pointerEvents = "";
@@ -581,6 +543,144 @@ class WindowHandler {
             }
         });
     }
+
+    /**
+     * 
+     * @param {HtmlWindow} wind 
+     * @param {*} event 
+     * @param {*} show 
+     * @returns 
+     */
+    async windowShiftKeyOverlay(wind, event, show) {
+        function setPosition(x, y) {
+            el.style.left = (x + 12) + "px";
+            el.style.top = (y + 12) + "px";
+        }
+        function setSize(w, h) {
+            el.style.width = w + "px";
+            el.style.height = h + "px";
+        }
+
+        var el = document.querySelector("#moveWindowOverlay");
+        if (show == false) {
+            if (el.style.display != "none") {
+                el.style.display = "none";
+                el.style.transition = "none";
+            }
+            return
+        }
+
+        if (el.style.display != "block") {
+            el.style.display = "block";
+            el.style.opacity = "0";
+            if (wind.size.max) {
+                setPosition(-12, -12);
+                setSize(window.innerWidth, window.innerHeight - 35);
+            } else {
+                setPosition(wind.getPosition()[0], wind.getPosition()[1])
+                setSize(wind.size.getSize()[0], wind.size.getSize()[1])
+            }
+
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    el.style.transition = "0.5s";
+                    el.style.opacity = "1";
+                }, 10);
+            });
+        }
+
+        if (event.pageY < window.innerHeight * 0.6 && event.pageY > window.innerHeight * 0.4 && event.pageX < window.innerWidth * 0.6 && event.pageX > window.innerWidth * 0.4) {
+            setPosition(-12, -12);
+            setSize(window.innerWidth, window.innerHeight - 35);
+            return;
+        }
+
+
+        if (event.pageX < window.innerWidth * 0.5) {
+            //top
+            if (event.pageY < window.innerHeight * 0.4) {
+                setPosition(0, 0);
+                setSize(window.innerWidth * 0.5 - 12, window.innerHeight * 0.5 - 12);
+            }
+            //middle
+            else if (event.pageY < window.innerHeight * 0.6) {
+                setPosition(0, 0);
+                setSize(window.innerWidth * 0.5 - 12, window.innerHeight - 59);
+            }
+            //bottom
+            else {
+                setPosition(0, window.innerHeight * 0.5);
+                setSize(window.innerWidth * 0.5 - 12, (window.innerHeight * 0.5) - 59);
+            }
+        }
+
+        //right
+        else {
+            //top
+            if (event.pageY < window.innerHeight * 0.4) {
+                setPosition(window.innerWidth * 0.5, 0);
+                setSize(window.innerWidth * 0.5 - 24, window.innerHeight * 0.5 - 12);
+            }
+            //middle
+            else if (event.pageY < window.innerHeight * 0.6) {
+                setPosition(window.innerWidth * 0.5, 0);
+                setSize(window.innerWidth * 0.5 - 24, window.innerHeight - 59);
+            }
+            //bottom
+            else {
+                setPosition(window.innerWidth * 0.5, window.innerHeight * 0.5);
+                setSize(window.innerWidth * 0.5 - 24, (window.innerHeight * 0.5) - 59);
+            }
+        }
+    }
+
+    setWindowShiftKey(wind, event, x, y) {
+        //middle
+        if (event.pageY < window.innerHeight * 0.6 && event.pageY > window.innerHeight * 0.4 && event.pageX < window.innerWidth * 0.6 && event.pageX > window.innerWidth * 0.4) {
+            wind.size.setMax();
+        } else {
+            wind.size.notMax();
+        }
+
+        //left
+        if (event.pageX < window.innerWidth * 0.5) {
+            //top
+            if (event.pageY < window.innerHeight * 0.4) {
+                wind.setPosition(0, 0);
+                wind.size.setSize(window.innerWidth * 0.5 - 12, window.innerHeight * 0.5 - 12);
+            }
+            //middle
+            else if (event.pageY < window.innerHeight * 0.6) {
+                wind.setPosition(0, 0);
+                wind.size.setSize(window.innerWidth * 0.5 - 12, window.innerHeight - 59);
+            }
+            //bottom
+            else {
+                wind.setPosition(0, window.innerHeight * 0.5);
+                wind.size.setSize(window.innerWidth * 0.5 - 12, (window.innerHeight * 0.5) - 59);
+            }
+        }
+
+        //right
+        else {
+            //top
+            if (event.pageY < window.innerHeight * 0.4) {
+                wind.setPosition(window.innerWidth * 0.5, 0);
+                wind.size.setSize(window.innerWidth * 0.5 - 24, window.innerHeight * 0.5 - 12);
+            }
+            //middle
+            else if (event.pageY < window.innerHeight * 0.6) {
+                wind.setPosition(window.innerWidth * 0.5, 0);
+                wind.size.setSize(window.innerWidth * 0.5 - 24, window.innerHeight - 59);
+            }
+            //bottom
+            else {
+                wind.setPosition(window.innerWidth * 0.5, window.innerHeight * 0.5);
+                wind.size.setSize(window.innerWidth * 0.5 - 24, (window.innerHeight * 0.5) - 59);
+            }
+        }
+    }
+
     iframeNoClick() {
         var ifr = document.querySelectorAll("iframe");
         for (var iframe of ifr) {

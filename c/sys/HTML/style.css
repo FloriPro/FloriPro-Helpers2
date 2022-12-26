@@ -154,6 +154,16 @@ input {
     height: 30px;
 }
 
+#moveWindowOverlay {
+    z-index: 5000;
+    background-color: rgba(66, 66, 66, 0.486);
+    width: 100px;
+    height: 100px;
+    position: fixed;
+    pointer-events: none;
+    display: none;
+}
+
 
 .window-layer .window .title-bar .title-bar-controls button[aria-label=Minimize] {
     background-position: bottom 4px left 4px;

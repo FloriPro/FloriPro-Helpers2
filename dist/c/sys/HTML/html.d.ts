@@ -43,6 +43,15 @@ declare class WindowHandler {
      * @type {presets}
      */
     presets: presets;
+    /**
+     *
+     * @param {HtmlWindow} wind
+     * @param {*} event
+     * @param {*} show
+     * @returns
+     */
+    windowShiftKeyOverlay(wind: HtmlWindow, event: any, show: any): Promise<void>;
+    setWindowShiftKey(wind: any, event: any, x: any, y: any): void;
     iframeNoClick(): void;
     removeWindow(id: any): void;
     /**
