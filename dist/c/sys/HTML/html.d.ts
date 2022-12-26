@@ -32,6 +32,7 @@ declare class WindowHandler {
     iframeConnections: {};
     windowsCreated: number;
     moving: boolean;
+    movingFullscreen: boolean;
     usedWindowId: any[];
     /** @type {{[id: number]: HtmlWindow}} */
     windows: {

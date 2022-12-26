@@ -339,6 +339,8 @@ class WindowHandler {
         this.windowsCreated = 1;
 
         this.moving = false;
+        this.movingFullscreen = false;
+
         this.usedWindowId = [];
         /** @type {{[id: number]: HtmlWindow}} */
         this.windows = {};
@@ -355,12 +357,63 @@ class WindowHandler {
                 /**
                  * @type {HtmlWindow}
                  */
-                var window = a[0].getWindowById(this.movingWindowId);
-                var element = window.getHtml();
+                var wind = a[0].getWindowById(this.movingWindowId);
+                if (SystemHtml.WindowHandler.movingFullscreen == false) {
+                    var element = wind.getHtml();
 
-                var y = parseInt(element.style.top) + event.movementY;
-                var x = parseInt(element.style.left) + event.movementX;
-                window.setPosition(x, y);
+                    var y = parseInt(element.style.top) + event.movementY;
+                    var x = parseInt(element.style.left) + event.movementX;
+                    wind.setPosition(x, y);
+                }
+                if (event.shiftKey == true) {
+                    //middle
+                    if (event.pageY < window.innerHeight * 0.6 && event.pageY > window.innerHeight * 0.4 && event.pageX < window.innerWidth * 0.6 && event.pageX > window.innerWidth * 0.4) {
+                        wind.size.setMax();
+                    } else {
+                        wind.size.notMax();
+                    }
+
+                    //left
+                    if (event.pageX < window.innerWidth * 0.5) {
+                        //top
+                        if (event.pageY < window.innerHeight * 0.4) {
+                            wind.setPosition(0, 0);
+                            wind.size.setSize(window.innerWidth * 0.5 - 12, window.innerHeight * 0.5 - 12);
+                        }
+                        //middle
+                        else if (event.pageY < window.innerHeight * 0.6) {
+                            wind.setPosition(0, 0);
+                            wind.size.setSize(window.innerWidth * 0.5 - 12, window.innerHeight - 59);
+                        }
+                        //bottom
+                        else {
+                            wind.setPosition(0, window.innerHeight * 0.5);
+                            wind.size.setSize(window.innerWidth * 0.5 - 12, (window.innerHeight * 0.5) - 59);
+                        }
+                    }
+
+                    //right
+                    else {
+                        //top
+                        if (event.pageY < window.innerHeight * 0.4) {
+                            wind.setPosition(window.innerWidth * 0.5, 0);
+                            wind.size.setSize(window.innerWidth * 0.5 - 24, window.innerHeight * 0.5 - 12);
+                        }
+                        //middle
+                        else if (event.pageY < window.innerHeight * 0.6) {
+                            wind.setPosition(window.innerWidth * 0.5, 0);
+                            wind.size.setSize(window.innerWidth * 0.5 - 24, window.innerHeight - 59);
+                        }
+                        //bottom
+                        else {
+                            wind.setPosition(window.innerWidth * 0.5, window.innerHeight * 0.5);
+                            wind.size.setSize(window.innerWidth * 0.5 - 24, (window.innerHeight * 0.5) - 59);
+                        }
+                    }
+
+                    //set mouse icon
+                    document.body.style.cursor = "move";
+                }
             }
             else if (SystemHtml.WindowHandler.resize == true) {
                 var element = a[0].getWindowById(this.resizeWindowId).addWindowSize(event.movementX, event.movementY);
@@ -388,14 +441,15 @@ class WindowHandler {
                 }
                 //move
                 else if (event.target.classList.contains("title-bar") || SystemHtml.elementArrayContainsClass(event.composedPath(), "title-bar-left")) {
-                    if (!SystemHtml.WindowHandler.getWindowById(id).size.max) {
-                        SystemHtml.WindowHandler.putWindowOnTop(id);
-                        SystemHtml.WindowHandler.moving = true;
-                        SystemHtml.WindowHandler.movingWindowId = id;
+                    SystemHtml.WindowHandler.putWindowOnTop(id);
+                    SystemHtml.WindowHandler.moving = true;
 
-                        //iframs not clickable
-                        this.iframeNoClick()
-                    }
+                    SystemHtml.WindowHandler.movingFullscreen = SystemHtml.WindowHandler.getWindowById(id).size.max
+
+                    SystemHtml.WindowHandler.movingWindowId = id;
+
+                    //iframs not clickable
+                    this.iframeNoClick()
                 }
             }
         });
@@ -421,6 +475,8 @@ class WindowHandler {
                 currentwindow.setPosition(x, y);
 
                 SystemHtml.WindowHandler.moving = false;
+                SystemHtml.WindowHandler.movingFullscreen = false;
+                document.body.style.cursor = "default";
 
 
                 var ifr = document.querySelectorAll("iframe");
@@ -476,6 +532,31 @@ class WindowHandler {
                 if (SystemHtml.WindowHandler.windows[id] != undefined && SystemHtml.WindowHandler.windows[id].size.max == true) {
                     SystemHtml.WindowHandler.windows[id].size.updateMax();
                 }
+            }
+        });
+        System.eventHandler.addEventHandler("keydown", (event, args) => {
+            //alt + Enter
+            if (event.altKey && event.key == "Enter") {
+                var k = Object.keys(this.windowLayering)
+
+                if (k.length == 1) {
+                    this.focus(k[0]);
+                    return;
+                }
+
+                if (k.length <= 1) {
+                    return;
+                }
+
+                var id = this.windowLayering[k[k.length - 2]];
+                if (this.windows[id] == undefined) {
+                    return;
+                }
+
+                this.focus(id);
+
+                event.preventDefault();
+                return true;
             }
         });
 

@@ -44,7 +44,7 @@ input {
 }
 
 .windowInline {
-    cursor: default;
+    cursor: auto;
     padding: 0px;
     box-shadow: 0px 0px 30px #00000024;
 }
