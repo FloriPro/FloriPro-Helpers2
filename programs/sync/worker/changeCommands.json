@@ -1,0 +1,5 @@
+{
+    "c/sys/options/desktop.json": "SystemHtml.desktop.buildDesktop();System.settings.settingUpdated();",
+    "c/sys/options/programs.json": "SystemHtml.updateStartmenu();System.settings.settingUpdated();",
+    "c/sys/options/settings.json": "System.settings.settingUpdated()"
+}

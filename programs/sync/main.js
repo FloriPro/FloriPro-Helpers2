@@ -28,6 +28,8 @@ class program extends System.program.default {
                     (await this.window.getHtmlElement("relogin")).style.display = "none";
                     new authWindow(this);
                 }, this);
+
+                this.workerListener({ type: "actionUpdate" });
             });
         this.window.close = () => {
             System.program.connect.send("syncWorker", { type: "unlistener", listener: this.wl })
@@ -59,7 +61,13 @@ class program extends System.program.default {
             for (var x of c) {
                 var p = document.createElement("p");
                 p.innerText = x[0];
-                p.style.backgroundColor = x[1] == true ? "lime" : "red";
+                if (x[1] == true) {
+                    p.style.background = "lime";
+                } else {
+                    //p.style.background = "linear-gradient(90deg, rgba(181,0,0,1) 0%, rgb(255 255 255) 42%, rgba(255,0,0,1) 100%)";
+                    p.style.background = "linear-gradient(90deg, rgb(255, 0, 0), rgb(255, 255, 255), rgb(255, 0, 0), rgb(255, 255, 255)) 0% 0% / 300%";
+                    p.style.animation = "gradient 1s linear infinite";
+                }
                 el.prepend(p);
             }
         }

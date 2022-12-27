@@ -105,7 +105,13 @@ class syncWorkerProgram extends System.program.default {
         else if (data.type == "getFile") {
             this.sync.waitingForAnswer.pop(data.path);
             await SystemFileSystem.setFileString(data.path, data.data, false);
-        } else if (data.type == "accnowledge") {
+
+            var c = await SystemFileSystem.getFileJson("c/programs/sync/worker/changeCommands.json")
+            if (Object.keys(c).includes(data.path)) {
+                eval(c[data.path])
+            }
+        }
+        else if (data.type == "accnowledge") {
             this.sync.waitingForAnswer.pop(data.path);
         }
     }
@@ -131,6 +137,7 @@ class syncWorkerProgram extends System.program.default {
             this.workerListener.splice(this.workerListener.indexOf(data.listener), 1)
         }
         else if (data.type == "actions") {
+            if (this.connection == undefined) return [];
             return this.connection.actions;
         }
 

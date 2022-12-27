@@ -23,6 +23,9 @@ class syncWorkerConnection {
             if (d.type == "getFile") {
                 this.changeAction(d.path, true)
             }
+            if (d.type == "accnowledge") {
+                this.changeAction(d.path, true)
+            }
 
 
             this.onmessage(event);
@@ -40,6 +43,8 @@ class syncWorkerConnection {
             this.addAction(["getFilesHash", false]);
         } else if (data.type == "getFile") {
             this.addAction([data.data, false]);
+        } else if (data.type == "change") {
+            this.addAction([data.path, false]);
         }
 
         this.connection.send(JSON.stringify(data));

@@ -102,9 +102,8 @@ class syncSyncer {
             var hash = hashes[path];
             if (SystemFileSystem.fileExists(path) == false) {
                 needsUpdateFiles.push(path);
-                continue;
             }
-            if (hash != md5(await SystemFileSystem.getFileString(path, true))) {
+            else if (hash != md5(await SystemFileSystem.getFileString(path, true))) {
                 needsUpdateFiles.push(path);
             }
 
