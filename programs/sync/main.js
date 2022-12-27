@@ -14,7 +14,7 @@ class program extends System.program.default {
                 await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
 
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
-                await this.window.size.setInnerSize(230, 50);
+                await this.window.size.setInnerSize(300, 500);
                 this.window.size.userCanResize(true);
 
                 var status = await System.program.connect.send("syncWorker", { type: "status" });
@@ -50,6 +50,18 @@ class program extends System.program.default {
             var status = data.status;
             (await this.window.getHtmlElement("status")).innerText = status;
             this.handleStatus(status);
+        } else if (data.type = "actionUpdate") {
+            console.log("actionUpdate");
+            var el = await this.window.getHtmlElement("actions");
+            var c = await System.program.connect.send("syncWorker", { type: "actions" });
+
+            el.innerHTML = "";
+            for (var x of c) {
+                var p = document.createElement("p");
+                p.innerText = x[0];
+                p.style.backgroundColor = x[1] == true ? "lime" : "red";
+                el.prepend(p);
+            }
         }
     }
 }

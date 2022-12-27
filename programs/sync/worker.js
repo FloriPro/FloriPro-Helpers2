@@ -75,6 +75,11 @@ class syncWorkerProgram extends System.program.default {
             };
         }
         this.connection.onmessage = this.msg.bind(this);
+        this.connection.actionUpdate = () => {
+            this.workerListener.forEach((listener) => {
+                listener({ type: "actionUpdate" });
+            });
+        }
     }
 
     async msg(event) {
@@ -124,6 +129,9 @@ class syncWorkerProgram extends System.program.default {
         }
         else if (data.type == "unlistener") {
             this.workerListener.splice(this.workerListener.indexOf(data.listener), 1)
+        }
+        else if (data.type == "actions") {
+            return this.connection.actions;
         }
 
         return "unknown message";

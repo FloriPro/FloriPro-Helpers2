@@ -26,7 +26,7 @@ declare class syncWorkerProgram extends standardProg {
      */
     connection: syncWorkerConnection;
     msg(event: any): Promise<void>;
-    message(data: any): Promise<string>;
+    message(data: any): Promise<string | any[]>;
     finish(): void;
     loading(): void;
 }
