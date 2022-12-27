@@ -927,7 +927,11 @@ class WindowHandler {
             if (window.appearence.logoType == "file") {
                 img.style.display = "";
                 var al = async (img, path) => {
-                    img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(path));
+                    if (await SystemFileSystem.fileExists(path)) {
+                        img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(path));
+                    } else {
+                        img.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString("c/sys/imgs/noIco.webp"));
+                    }
                 }
                 al(img, window.appearence.logo);
             }

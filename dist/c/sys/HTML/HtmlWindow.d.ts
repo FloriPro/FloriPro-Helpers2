@@ -62,13 +62,40 @@ declare class HtmlWindow {
         parent: HtmlWindow;
         title: boolean;
         shown: boolean;
-        showTitle(yn: any): void;
+        /**
+         * show the title bar
+         * @param {boolean} yn
+         */
+        showTitle(yn: boolean): void;
+        /**
+         * minimize the window
+         */
         minimize(): Promise<void>;
+        /**
+         * show the window
+         */
         show(): Promise<void>;
+        /**
+         * toggle between minimize and show
+         */
         toggleMinimize(): Promise<void>;
-        setLogo(src: any): Promise<void>;
-        setLogoString(img: any): void;
+        /**
+         * sets the icon on the top left of the window
+         * @param {string} src path to the image file
+         */
+        setLogo(src: string): Promise<void>;
+        /**
+         * sets the icon on the top left of the window
+         * @param {string} img decoded image string
+         */
+        setLogoString(img: string): void;
+        /**
+         * hides the logo
+         */
         hideLogo(): void;
+        /**
+         * shows the logo
+         */
         showLogo(): void;
     };
     iframeConn: {

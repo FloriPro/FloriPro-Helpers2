@@ -316,6 +316,34 @@ class systemProgramHandler {
     constructor() {
         this.programRegister = {};
         this.default = standardProg;
+        this.connect = new class {
+            constructor(parent) {
+                this.parent = parent;
+            }
+
+            /**
+             * send a message to a publicly registered program
+             * @param {string} name 
+             * @param {*} message 
+             * @returns {Promise<boolean | any>}
+             */
+            async send(name, message) {
+                if (this.parent.publicPrograms[name]) {
+                    return await this.parent.publicPrograms[name](message);
+                }
+                return false;
+            }
+
+            /**
+             * 
+             * @param {string} name 
+             * @returns {boolean}
+             */
+            listenerExists(name) {
+                return !!this.parent.publicPrograms[name];
+            }
+        }(this);
+        this.publicPrograms = {};
         this.intervalHandlers = {};
     }
 
@@ -515,6 +543,20 @@ class systemProgramHandler {
         System.program.programRegister[programId].x = callback
         System.program.programRegister[programId].x(variable);
     }
+
+    /**
+     * 
+     * @param {(message:*)=>{}} message 
+     * @param {string} name 
+     * @returns {Promise<boolean>} true, if it succeded to add. False if it allready existed
+     */
+    async addPublicListener(message, name) {
+        if (this.publicPrograms[name] != undefined) {
+            return false;
+        }
+
+        this.publicPrograms[name] = message;
+    }
 }
 
 class standardProg {
@@ -546,8 +588,25 @@ class standardProg {
 
     }
 
+    /**
+     * adds a interval that gets called with the given variable every interval. The interval gets stopped when the program stops.
+     * @param {(variable: *)=>{}} callback 
+     * @param {number} interval ms
+     * @param {*} variable 
+     * @returns {number} interval id
+     */
     setInterval(callback, interval, variable) {
         return System.program.setInterval(callback, interval, variable, this.id);
+    }
+
+    /**
+     * 
+     * @param {(message:*)=>{}} message 
+     * @param {string} name 
+     * @returns {Promise<boolean>} true, if it succeded to add. False if it allready existed
+     */
+    async setPublicListener(message, name) {
+        return await System.program.addPublicListener(message, name);
     }
 }
 

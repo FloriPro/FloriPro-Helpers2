@@ -2,5 +2,6 @@
     "anychart": "libs/anychart.json",
     "chartjs": "libs/chartjs.json",
     "qrious": "libs/qrious.json",
-    "redditApi": "libs/redditApi.json"
+    "redditApi": "libs/redditApi.json",
+    "md5": "libs/md5.json"
 }

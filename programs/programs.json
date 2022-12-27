@@ -9,5 +9,6 @@
     "MoodLightTS": "programs/MoodLightTS",
     "Pong": "programs/pong",
     "Vote": "programs/vote",
-    "wordcloud": "programs/wordcloud"
+    "wordcloud": "programs/wordcloud",
+    "sync": "programs/sync"
 }

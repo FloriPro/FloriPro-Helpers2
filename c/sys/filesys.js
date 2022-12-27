@@ -4,6 +4,33 @@ class FileSystemClass {
     constructor() {
         this.PositionalFileSystem = PositionalFileSystem;
         this.realLocalStorage = localStorage;
+        this.FileSystemTable = FileSystemTable;
+        this.changes = new class {
+            constructor(parent) {
+                this.parent = parent;
+                /**
+                 * @type {Array<(path,type)=>{}>}
+                 */
+                this.changeListeners = [];
+            }
+            /**
+             * @param {(path,dat)=>{}} listener 
+             */
+            addListener(listener) {
+                this.changeListeners.push(listener);
+            }
+            /**
+             * @param {(path,type)=>{}} listener
+             */
+            removeListener(listener) {
+                this.changeListeners.splice(this.changeListeners.indexOf(listener), 1);
+            }
+            send(path, type) {
+                for (var x of SystemFileSystem.changes.changeListeners) {
+                    x(path, type);
+                }
+            }
+        }(this);
         //setTimeout(this.removeLocalStorage, 1)
 
         //load save files
@@ -79,9 +106,14 @@ class FileSystemClass {
             console.error("could not create file")
             console.log(fastFileLookup[path]);
         }
-        this.realLocalStorage.setItem(fastFileLookup[path], dat);
-        //this.ramFiles[path] = undefined;
 
+        var oldDat = this.realLocalStorage[fastFileLookup[path]];
+
+        if (oldDat != dat) {
+            //dispatch change event
+            setTimeout(this.changes.send, 1, path, "change");
+        }
+        this.realLocalStorage.setItem(fastFileLookup[path], dat);
     }
     async createFile(path) {
         var folder = path.split("/").slice(0, -1).join("/");
@@ -118,15 +150,16 @@ class FileSystemClass {
     /**
      * returns the content of a file
      * @param {string} path 
+     * @param {?boolean} raw load online data files
      * @returns {Promise<string>}
      */
-    async getFileString(path) {
+    async getFileString(path, raw = false) {
         var dat = ""
         if (this.ramFiles == undefined || this.ramFiles[path] == undefined) {
             var r = await this.localFileLoad(path);
             //console.log(path + ":\n" + r);
             //await delay(200);
-            if (r.startsWith(".od__")) {
+            if (r.startsWith(".od__") && !raw) {
                 //var l = await SystemHtml.WindowHandler.presets.createLoading("Loading", "Loading file from the internet");
                 //l.setNum(0);
 
@@ -224,7 +257,7 @@ class FileSystemClass {
     /**
      * 
      * @param {string} path 
-     * @returns {string[]} list of files
+     * @returns {Promise<string[]>} list of files
      */
     async getFiles(path) {
         var f = await this.getTablePos(path, "c", FileSystemTable);
@@ -233,7 +266,7 @@ class FileSystemClass {
     /**
      * 
      * @param {string} path 
-     * @returns {string[]} list of folders
+     * @returns {Promise<string[]>} list of folders
      */
     async getFolders(path) {
         var f = await this.getTablePos(path, "c", FileSystemTable);
@@ -251,14 +284,22 @@ class FileSystemClass {
         if (path.endsWith("/")) {
             path = path.slice(0, -1);
         }
-        if (dat == undefined) { return undefined; }
-        if (p == path) {
-            return dat;
-        } else {
-            var n = path.replace(p + "/", "").split("/")[0]
-            return this.getTablePos(path, p + "/" + n, dat["folder"][n])
+        if (path.startsWith("c")) {
+            path = path.slice(1);
         }
+
+        for (var x of path.split("/")) {
+            if (x == "") {
+                continue;
+            }
+            if (dat["folder"][x] == undefined) {
+                return undefined;
+            }
+            dat = dat["folder"][x];
+        }
+        return dat;
     }
+
 
     /**
      * removes a file
@@ -268,12 +309,24 @@ class FileSystemClass {
         if (!Object.keys(fastFileLookup).includes(path)) {
             return
         }
+        if (path.startsWith("c/")) {
+            path = path.slice(2);
+        }
+        if (path.startsWith("c")) {
+            path = path.slice(1);
+        }
         var folder = path.split("/").slice(0, -1).join("/");
+
         var f = await this.getTablePos(folder, "c", FileSystemTable);
 
         this.realLocalStorage.removeItem(fastFileLookup[path]);
-        //this.ramFiles[path] = undefined;
         delete f["files"][path.split("/")[path.split("/").length - 1]]
+
+        path = "c/" + path;
+
+        this.changes.send(path, "delete");
+
+        this.realLocalStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
 
         loadFastLookup(FileSystemTable, "c")
     }
@@ -285,6 +338,8 @@ class FileSystemClass {
         var folder = path.split("/").slice(0, -1).join("/");
         var f = await this.getTablePos(folder, "c", FileSystemTable);
         delete f["folder"][path.split("/")[path.split("/").length - 1]] //this also removes the files in the folder
+
+        this.realLocalStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
 
         loadFastLookup(FileSystemTable, "c");
     }

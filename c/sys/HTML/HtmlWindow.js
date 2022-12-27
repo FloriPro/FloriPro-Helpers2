@@ -188,6 +188,10 @@ class HtmlWindow {
                 this.title = true;
                 this.shown = false;
             }
+            /**
+             * show the title bar
+             * @param {boolean} yn 
+             */
             showTitle(yn) {
                 this.title = yn;
                 var h = this.parent.getHtml();
@@ -199,6 +203,9 @@ class HtmlWindow {
                     h.querySelector(".contentBody").style.height = "calc(100% - 0px)";
                 }
             }
+            /**
+             * minimize the window
+             */
             async minimize() {
                 var h = this.parent.getHtml();
 
@@ -219,6 +226,9 @@ class HtmlWindow {
 
                 h.style.display = "none";
             }
+            /**
+             * show the window
+             */
             async show() {
                 if (this.shown != true) {
                     this.shown = true;
@@ -240,6 +250,9 @@ class HtmlWindow {
                     this.parent.animationHandler.finishedAnimation();
                 }
             }
+            /**
+             * toggle between minimize and show
+             */
             async toggleMinimize() {
                 if (this.show) {
                     await this.minimize();
@@ -247,9 +260,17 @@ class HtmlWindow {
                     await this.show();
                 }
             }
+            /**
+             * sets the icon on the top left of the window
+             * @param {string} src path to the image file
+             */
             async setLogo(src) {
                 this.logoType = "file";
                 this._logo = src;
+
+                if (!await SystemFileSystem.fileExists(src)) {
+                    src = "c/sys/imgs/noIco.webp";
+                }
 
                 var img = SystemFileSystem.toImg(await SystemFileSystem.getFileString(src));
                 this.parent.getHtml().querySelector(".title-bar-img img").src = img;
@@ -258,6 +279,10 @@ class HtmlWindow {
                 //update taskbar
                 SystemHtml.WindowHandler.updateTaskBar();
             }
+            /**
+             * sets the icon on the top left of the window
+             * @param {string} img decoded image string
+             */
             setLogoString(img) {
                 this.logoType = "string";
                 this._logo = src;
@@ -268,6 +293,9 @@ class HtmlWindow {
                 //update taskbar
                 SystemHtml.WindowHandler.updateTaskBar();
             }
+            /**
+             * hides the logo
+             */
             hideLogo() {
                 this.parent.getHtml().querySelector(".title-bar-img").style.display = "none";
                 this.logo = null;
@@ -275,6 +303,9 @@ class HtmlWindow {
                 //update taskbar
                 SystemHtml.WindowHandler.updateTaskBar();
             }
+            /**
+             * shows the logo
+             */
             showLogo() {
                 this.parent.getHtml().querySelector(".title-bar-img").style.display = "";
                 this.logo = this._logo;
@@ -289,7 +320,7 @@ class HtmlWindow {
             constructor(parent) {
                 this.parent = parent;
             }
-
+            //TODO: add iframe connection
         }(this);
 
         this.#sizeX = 200;

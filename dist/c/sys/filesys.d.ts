@@ -1,6 +1,23 @@
 declare class FileSystemClass {
     PositionalFileSystem: typeof PositionalFileSystem;
     realLocalStorage: Storage;
+    FileSystemTable: any;
+    changes: {
+        parent: any;
+        /**
+         * @type {Array<(path,type)=>{}>}
+         */
+        changeListeners: ((path: any, type: any) => {})[];
+        /**
+         * @param {(path,dat)=>{}} listener
+         */
+        addListener(listener: (path: any, dat: any) => {}): void;
+        /**
+         * @param {(path,type)=>{}} listener
+         */
+        removeListener(listener: (path: any, type: any) => {}): void;
+        send(path: any, type: any): void;
+    };
     reset(): Promise<void>;
     removeLocalStorage(): Promise<void>;
     /**
@@ -21,9 +38,10 @@ declare class FileSystemClass {
     /**
      * returns the content of a file
      * @param {string} path
+     * @param {?boolean} raw load online data files
      * @returns {Promise<string>}
      */
-    getFileString(path: string): Promise<string>;
+    getFileString(path: string, raw?: boolean | null): Promise<string>;
     bufferToString(buf: any): Promise<string>;
     /**
      * returns the json parsed content of a file
@@ -53,15 +71,15 @@ declare class FileSystemClass {
     /**
      *
      * @param {string} path
-     * @returns {string[]} list of files
+     * @returns {Promise<string[]>} list of files
      */
-    getFiles(path: string): string[];
+    getFiles(path: string): Promise<string[]>;
     /**
      *
      * @param {string} path
-     * @returns {string[]} list of folders
+     * @returns {Promise<string[]>} list of folders
      */
-    getFolders(path: string): string[];
+    getFolders(path: string): Promise<string[]>;
     /**
      *
      * @param {string} path

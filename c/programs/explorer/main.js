@@ -15,7 +15,7 @@ class program extends System.program.default {
             async () => {
                 //set html
                 await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
-                
+
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
                 await this.window.size.setSize(410, 400);
                 this.window.size.userCanResize(true);
@@ -121,7 +121,7 @@ class program extends System.program.default {
     async newFile() {
         var fileName = await SystemHtml.WindowHandler.presets.createStringSelect("File Name", "Please put in the new File name");
         if (fileName == undefined) { return }
-        SystemFileSystem.createFile(this.path + "/" + fileName)
+        await SystemFileSystem.setFileString(this.path + "/" + fileName, "")
         await this.create();
     }
     async newFolder() {
@@ -131,7 +131,7 @@ class program extends System.program.default {
         await this.create();
     }
     async removeF(event) {
-        console.warn("todo: removeF");
+        SystemFileSystem.removeFolder(event.target.getAttribute("path"))
         System.program.get(parseInt(event.target.getAttribute("program"))).create();
     }
     async renameF(event) {

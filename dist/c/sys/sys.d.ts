@@ -101,6 +101,23 @@ declare class Path {
 declare class systemProgramHandler {
     programRegister: {};
     default: typeof standardProg;
+    connect: {
+        parent: any;
+        /**
+         * send a message to a publicly registered program
+         * @param {string} name
+         * @param {*} message
+         * @returns {Promise<boolean | any>}
+         */
+        send(name: string, message: any): Promise<boolean | any>;
+        /**
+         *
+         * @param {string} name
+         * @returns {boolean}
+         */
+        listenerExists(name: string): boolean;
+    };
+    publicPrograms: {};
     intervalHandlers: {};
     /**
      * Install a libary
@@ -164,6 +181,13 @@ declare class systemProgramHandler {
     get(id: number): standardProg;
     setInterval(callback: any, interval: any, variable: any, programId: any): void;
     handleInterval(callback: any, programId: any, variable: any): void;
+    /**
+     *
+     * @param {(message:*)=>{}} message
+     * @param {string} name
+     * @returns {Promise<boolean>} true, if it succeded to add. False if it allready existed
+     */
+    addPublicListener(message: (message: any) => {}, name: string): Promise<boolean>;
 }
 declare class standardProg {
     /**
@@ -184,7 +208,21 @@ declare class standardProg {
      * called when program gets killed
      */
     isStopping(): void;
-    setInterval(callback: any, interval: any, variable: any): void;
+    /**
+     * adds a interval that gets called with the given variable every interval. The interval gets stopped when the program stops.
+     * @param {(variable: *)=>{}} callback
+     * @param {number} interval ms
+     * @param {*} variable
+     * @returns {number} interval id
+     */
+    setInterval(callback: (variable: any) => {}, interval: number, variable: any): number;
+    /**
+     *
+     * @param {(message:*)=>{}} message
+     * @param {string} name
+     * @returns {Promise<boolean>} true, if it succeded to add. False if it allready existed
+     */
+    setPublicListener(message: (message: any) => {}, name: string): Promise<boolean>;
 }
 declare class options {
     /**
