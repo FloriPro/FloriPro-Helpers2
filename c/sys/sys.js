@@ -790,6 +790,16 @@ class settingsHandler {
      * @returns 
      */
     settingUpdated(name) {
+        if (name == undefined) {
+            //when there is no name, it means that all settings have been updated or we don't know what setting has been updated
+            for (var x in this.settingsUpdater) {
+                this.settingUpdated(x);
+            }
+
+            //better also check if we have any json files, that have old/missing keys
+            System.run("c/sys/functions/first/cleanupSettings.js");
+        }
+
         if (this.settingsUpdater[name] == undefined) {
             return;
         }
