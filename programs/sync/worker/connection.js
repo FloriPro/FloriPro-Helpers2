@@ -77,7 +77,7 @@ class syncWorkerConnection {
                 return;
             }
         }
-        console.error("Action not found");
+        addAction([action, status]);
         return;
     }
 

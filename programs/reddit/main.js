@@ -190,7 +190,9 @@ class program extends System.program.default {
         this.img.innerHTML = "";
 
         this.permalink = n.data.permalink;
-        this.allreadyRead.push(md5(n.data.permalink))
+        if (!this.allreadyRead.includes(md5(n.data.permalink))) {
+            this.allreadyRead.push(md5(n.data.permalink))
+        }
         this.updateAllreadyRead();
 
         this.title.innerText = n.Title();
