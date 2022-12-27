@@ -19,6 +19,7 @@ declare class syncWorkerProgram extends standardProg {
      * @type {string}
      */
     get status(): string;
+    checkws(): void;
     start(register?: boolean): Promise<void>;
     options: any;
     /**

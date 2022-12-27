@@ -28,6 +28,8 @@ class syncWorkerProgram extends System.program.default {
             return;
         }
 
+        this.setInterval(this.checkws.bind(this), 1000);
+
         this.start();
     }
 
@@ -52,6 +54,13 @@ class syncWorkerProgram extends System.program.default {
         return this.abstractStatus;
     }
 
+    checkws() {
+        if (this.connection == undefined) return;
+        if (this.connection.connection.readyState == this.connection.connection.CLOSED) {
+            this.start();
+        }
+    }
+
     async start(register = false) {
         this.status = "offline";
         this.options = await SystemFileSystem.getFileJson("c/user/sync/options.json")
@@ -60,9 +69,6 @@ class syncWorkerProgram extends System.program.default {
          * @type {syncWorkerConnection}
          */
         this.connection = new (await System.run(this.PATH.folder() + "/worker/connection.js"))(this.url)
-        this.connection.onerror = async (event) => {
-            this.connection = new (await System.run(this.PATH.folder() + "/worker/connection.js"))(this.url)
-        }
         if (register) {
             this.connection.onopen = async (event) => {
                 this.status = "authWait";
@@ -110,6 +116,9 @@ class syncWorkerProgram extends System.program.default {
             if (Object.keys(c).includes(data.path)) {
                 eval(c[data.path])
             }
+        }
+        else if (data.type == "delete") {
+            await SystemFileSystem.removeFile(data.path);
         }
         else if (data.type == "accnowledge") {
             this.sync.waitingForAnswer.pop(data.path);

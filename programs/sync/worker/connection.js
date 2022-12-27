@@ -26,6 +26,9 @@ class syncWorkerConnection {
             if (d.type == "accnowledge") {
                 this.changeAction(d.path, true)
             }
+            if (d.type == "delete"){
+                this.addAction(d.path, true)
+            }
 
 
             this.onmessage(event);
@@ -44,6 +47,8 @@ class syncWorkerConnection {
         } else if (data.type == "getFile") {
             this.addAction([data.data, false]);
         } else if (data.type == "change") {
+            this.addAction([data.path, false]);
+        } else if (data.type == "delete") {
             this.addAction([data.path, false]);
         }
 
