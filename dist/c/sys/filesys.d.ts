@@ -31,7 +31,7 @@ declare class FileSystemClass {
      * @param {string} path
      * @param {string} dat
      */
-    setFileString(path: string, dat: string): Promise<void>;
+    setFileString(path: string, dat: string, dispatchEvent?: boolean): Promise<void>;
     createFile(path: any): Promise<boolean>;
     createFolder(path: any, name: any): Promise<void>;
     fileExists(path: any): Promise<boolean>;

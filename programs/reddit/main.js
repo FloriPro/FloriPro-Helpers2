@@ -147,7 +147,7 @@ class program extends System.program.default {
 
         var maxIt = 50;
         var i = 0;
-        while (this.allreadyRead.includes(n.data.permalink)) {
+        while (this.allreadyRead.includes(md5(n.data.permalink)) || n.data.permalink == "_") {
             n = await this.redditApi.next();
             i++;
             if (i >= maxIt) {
@@ -190,7 +190,7 @@ class program extends System.program.default {
         this.img.innerHTML = "";
 
         this.permalink = n.data.permalink;
-        this.allreadyRead.push(n.data.permalink)
+        this.allreadyRead.push(md5(n.data.permalink))
         this.updateAllreadyRead();
 
         this.title.innerText = n.Title();

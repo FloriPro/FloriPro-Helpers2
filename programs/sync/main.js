@@ -68,7 +68,7 @@ class authWindow {
 
                 await this.window.setContent(await SystemFileSystem.getFileString(this.parent.PATH.folder() + "/auth.html"));
                 await this.window.size.setInnerSize(500, 400);
-                this.window.size.userCanResize(false);
+                this.window.size.userCanResize(true);
 
                 (await this.window.getHtmlElement("submit")).onclick = async () => {
                     var username = (await this.window.getHtmlElement("username")).value;

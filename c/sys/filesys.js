@@ -98,7 +98,7 @@ class FileSystemClass {
      * @param {string} path 
      * @param {string} dat 
      */
-    async setFileString(path, dat) {
+    async setFileString(path, dat, dispatchEvent = true) {
         if (!Object.keys(fastFileLookup).includes(path)) {
             await this.createFile(path);
         }
@@ -109,7 +109,7 @@ class FileSystemClass {
 
         var oldDat = this.realLocalStorage[fastFileLookup[path]];
 
-        if (oldDat != dat) {
+        if (oldDat != dat && dispatchEvent) {
             //dispatch change event
             setTimeout(this.changes.send, 1, path, "change");
         }
