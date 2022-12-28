@@ -13,6 +13,7 @@ class syncWorkerProgram extends System.program.default {
          * @type {syncSyncer}
          */
         this.sync = new (await System.run(this.PATH.folder() + "/worker/sync.js"))(this);
+        this.pic = new (await System.run(this.PATH.folder() + "/worker/statuspic.js"))(this);
 
         this.abstractStatus = "offline";
         this.workerListener = []
@@ -38,6 +39,7 @@ class syncWorkerProgram extends System.program.default {
         this.workerListener.forEach((listener) => {
             listener({ type: "status", status: status });
         });
+        this.pic.setStatus(status);
         this.abstractStatus = status;
     }
     /**

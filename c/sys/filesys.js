@@ -145,7 +145,13 @@ class FileSystemClass {
         loadFastLookup(FileSystemTable, "c")
     }
     async fileExists(path) {
-        return fastFileLookup[path] != undefined;
+        var x = fastFileLookup[path] != undefined;
+        if (x) {
+            if (this.realLocalStorage[fastFileLookup[path]] == undefined) {
+                x = false;
+            }
+        }
+        return x;
     }
     /**
      * returns the content of a file

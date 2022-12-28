@@ -4,6 +4,7 @@ declare class syncWorkerProgram extends standardProg {
      * @type {syncSyncer}
      */
     sync: syncSyncer;
+    pic: any;
     abstractStatus: any;
     workerListener: any[];
     url: string;
