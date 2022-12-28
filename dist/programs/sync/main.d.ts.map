@@ -1,1 +1,1 @@
-{"version":3,"file":"main.d.ts","sourceRoot":"","sources":["../../../programs/sync/main.js"],"names":[],"mappings":"AAAA;IAKI,sBAiCC;IAhCG;;OAEG;IACH,QAFU,UAAU,CAyBd;IATE,QAAwC;IAiBpD,yCAQC;IACD,yCAwBC;CACJ;AAED;IACI,yBAGC;IAFG,YAAoB;IAGxB,sBA2BC;IA1BG,YAyBM;CAEb"}
+{"version":3,"file":"main.d.ts","sourceRoot":"","sources":["../../../programs/sync/main.js"],"names":[],"mappings":"AAAA;IAKI,sBAiCC;IAhCG;;OAEG;IACH,QAFU,UAAU,CAyBd;IATE,QAAwC;IAiBpD,yCAQC;IACD,yCAuBC;CACJ;AAED;IACI,yBAGC;IAFG,YAAoB;IAGxB,sBA2BC;IA1BG,YAyBM;CAEb"}

@@ -58,9 +58,14 @@ class syncWorkerProgram extends System.program.default {
         return this.abstractStatus;
     }
 
-    checkws() {
+    async checkws() {
         if (this.connection == undefined) return;
-        if (this.connection.connection.readyState == this.connection.connection.CLOSED) {
+        if (this.connection.connection.readyState == this.connection.connection.CLOSED || this.connection.connection.readyState == this.connection.connection.CLOSING) {
+            //is offline!
+            if (!await SystemFileSystem.fileExists("c/programs/sync/lastOffline.txt")) {
+                SystemFileSystem.setFileString("c/programs/sync/lastOffline.txt", (Date.now() / 1000) + "") //save first offline time in seconds in utc time
+            }
+
             this.start();
         }
     }
@@ -121,7 +126,7 @@ class syncWorkerProgram extends System.program.default {
             if (Object.keys(c).includes(data.path)) {
                 eval(c[data.path])
             }
-            
+
             this.sync.waitingForAnswer.pop(data.path);
         }
         else if (data.type == "delete") {

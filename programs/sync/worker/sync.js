@@ -4,7 +4,7 @@ class syncSyncer {
      * @param {syncWorkerProgram} parent 
      */
     constructor(parent) {
-        console.log(parent)
+        this.hasListener = false;
         /**
          * @type {syncWorkerProgram}
          */
@@ -67,6 +67,7 @@ class syncSyncer {
     }
 
     async createListener() {
+        this.hasListener = true;
         SystemFileSystem.changes.addListener(this.changeListener.bind(this));
     }
 
@@ -94,18 +95,32 @@ class syncSyncer {
      * @param {{string:string}} hashes 
      */
     async updateFiles(hashes) {
+        if (await SystemFileSystem.fileExists("c/programs/sync/lastOffline.txt")) {
+            var lastonline = parseInt(await SystemFileSystem.getFileString("c/programs/sync/lastOffline.txt"))
+        }else{
+            var lastonline = -1;
+        }
+        console.log(lastonline);
+
         var needsUpdateFiles = [];
         var untrackedFiles = await this.getUserFiles();
 
         for (var path of Object.keys(hashes)) {
             this.waitingForAnswer.pop(path);
-            var hash = hashes[path];
+            var hash = hashes[path]["hash"];
 
             if (!await SystemFileSystem.fileExists(path)) {
                 needsUpdateFiles.push(path);
             }
             else if (hash != md5(await SystemFileSystem.getFileString(path, true))) {
-                needsUpdateFiles.push(path);
+                //check if file was changed before last offline
+                if (hashes[path]["time"] > lastonline) {
+                    needsUpdateFiles.push(path);
+                }else{
+                    //update the server because the user changed the file, whilest offline
+                    this.waitingForAnswer.push(path);
+                    this.parent.connection.send({ type: "change", path: path, data: await SystemFileSystem.getFileString(path, true) });
+                }
             }
 
             //remove elment from untrackedFiles
@@ -127,7 +142,14 @@ class syncSyncer {
             this.parent.connection.send({ type: "getFile", data: path });
         }
 
-        this.createListener();
+        if (!this.hasListener) {
+            this.createListener();
+        }
+
+        //all files on the server and localy are up to date, this means we are now *fully* online and synced
+        if (await SystemFileSystem.fileExists("c/programs/sync/lastOffline.txt")) {
+            SystemFileSystem.removeFile("c/programs/sync/lastOffline.txt")
+        }
     }
 }
 syncSyncer;

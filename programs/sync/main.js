@@ -53,7 +53,6 @@ class program extends System.program.default {
             (await this.window.getHtmlElement("status")).innerText = status;
             this.handleStatus(status);
         } else if (data.type = "actionUpdate") {
-            console.log("actionUpdate");
             var el = await this.window.getHtmlElement("actions");
             var c = await System.program.connect.send("syncWorker", { type: "actions" });
 

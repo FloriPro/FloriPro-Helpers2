@@ -4,6 +4,7 @@ declare class syncSyncer {
      * @param {syncWorkerProgram} parent
      */
     constructor(parent: syncWorkerProgram);
+    hasListener: boolean;
     /**
      * @type {syncWorkerProgram}
      */
