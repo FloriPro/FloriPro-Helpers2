@@ -10,7 +10,7 @@ class statusPic {
             this.statusPic.style.zIndex = "1000";
 
             var img = document.createElement("img");
-            img.src = SystemFileSystem.toImg(SystemFileSystem.getFile("c/programs/sync/worker/statuspic/offline.webp"));
+            img.src = SystemFileSystem.toImg(SystemFileSystem.getFileString("c/programs/sync/worker/statuspic/offline.webp"));
             img.style.width = "20px";
             img.style.height = "20px";
 

@@ -77,7 +77,7 @@ class syncWorkerConnection {
                 return;
             }
         }
-        addAction([action, status]);
+        this.addAction([action, status]);
         return;
     }
 

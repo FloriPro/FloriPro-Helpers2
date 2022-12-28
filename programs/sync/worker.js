@@ -9,6 +9,8 @@ class syncWorkerProgram extends System.program.default {
         //load md5
         await System.getLib("md5");
 
+        this.immuneFiles = await SystemFileSystem.getFileJson("c/programs/sync/worker/immuneFiles.json")
+
         /**
          * @type {syncSyncer}
          */
@@ -111,13 +113,16 @@ class syncWorkerProgram extends System.program.default {
             this.sync.updateFiles(data.data);
         }
         else if (data.type == "getFile") {
-            this.sync.waitingForAnswer.pop(data.path);
-            await SystemFileSystem.setFileString(data.path, data.data, false);
+            if (!this.immuneFiles.includes(data.path)) {
+                await SystemFileSystem.setFileString(data.path, data.data, false);
+            }
 
             var c = await SystemFileSystem.getFileJson("c/programs/sync/worker/changeCommands.json")
             if (Object.keys(c).includes(data.path)) {
                 eval(c[data.path])
             }
+            
+            this.sync.waitingForAnswer.pop(data.path);
         }
         else if (data.type == "delete") {
             await SystemFileSystem.removeFile(data.path);

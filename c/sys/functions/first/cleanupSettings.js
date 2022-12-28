@@ -37,6 +37,9 @@ async function run() {
  * @return {Promise<[string, string]>}
  */
 async function getFiles(path) {
+    if (window.originalFileSystem == undefined) {
+        return [];
+    }
     var ogDat = originalFileSystem;
     for (var y of path.split("/")) {
         ogDat = ogDat[y];

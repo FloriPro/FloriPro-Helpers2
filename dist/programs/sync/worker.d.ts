@@ -1,5 +1,6 @@
 declare class syncWorkerProgram extends standardProg {
     init(): Promise<void>;
+    immuneFiles: any;
     /**
      * @type {syncSyncer}
      */
