@@ -4,6 +4,7 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
+        await System.getLib("md5");
 
         this.currentPost = undefined;
         this.past = []
