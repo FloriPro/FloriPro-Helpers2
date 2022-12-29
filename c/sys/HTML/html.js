@@ -443,7 +443,10 @@ class WindowHandler {
                 //reactivate iframes
                 var ifr = document.querySelectorAll("iframe");
                 for (var iframe of ifr) {
-                    iframe.style.pointerEvents = "";
+                    if (iframe.getAttribute("noEV") == "true") {
+                        iframe.style.pointerEvents = "";
+                        iframe.deleteAttribute("noEV");
+                    }
                 }
             } if (SystemHtml.WindowHandler.resize == true) {
                 SystemHtml.WindowHandler.resize = false;
@@ -451,7 +454,10 @@ class WindowHandler {
 
                 var ifr = document.querySelectorAll("iframe");
                 for (var iframe of ifr) {
-                    iframe.style.pointerEvents = "";
+                    if (iframe.getAttribute("noEV") == "true") {
+                        iframe.style.pointerEvents = "";
+                        iframe.deleteAttribute("noEV");
+                    }
                 }
             }
         }, [this]);
@@ -684,7 +690,10 @@ class WindowHandler {
     iframeNoClick() {
         var ifr = document.querySelectorAll("iframe");
         for (var iframe of ifr) {
-            iframe.style.pointerEvents = "none";
+            if (iframe.style.pointerEvents != "none") {
+                iframe.style.pointerEvents = "none";
+                iframe.setAttribute("noEV", "true");
+            }
         }
     }
     removeWindow(id) {

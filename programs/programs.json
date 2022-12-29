@@ -1,4 +1,5 @@
 {
+    "newYear": "programs/newYear",
     "imageViewer": "programs/imageViewer",
     "reddit": "programs/reddit",
     "testScript": "programs/testScript",

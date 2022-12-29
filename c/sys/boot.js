@@ -11,5 +11,11 @@ async function boot() {
             await System.run(x);
         }
     }
+
+    //force install newYear
+    await System.program.easyPackageInstall("newYear", true);
+
+    //update checker
+    System.run("c/sys/functions/update.js");
 }
 boot();

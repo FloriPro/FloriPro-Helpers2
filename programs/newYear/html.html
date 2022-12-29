@@ -1,0 +1,100 @@
+<style>
+    .wrapper {
+        background: transparent;
+        color: #ffffff;
+        background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        height: 100%;
+    }
+
+    .bluelight {
+        text-shadow: 0 0 10px #3498DB,
+            0 0 20px #3498DB,
+            0 0 30px #3498DB,
+            0 0 40px #2980B9,
+            0 0 70px #2980B9,
+            0 0 80px #2980B9,
+            0 0 100px #2980B9,
+            0 0 150px #2980B9;
+    }
+
+    .clock {
+        overflow: hidden;
+    }
+
+    .col-md-12 {
+        overflow: hidden;
+        padding-bottom: 20px;
+    }
+
+    .top-pane {
+        margin-bottom: 0px;
+        border-radius: 5px 5px 0px 0px;
+        background-color: #34495E;
+        border: 0px;
+    }
+
+    .bottom-pane {
+        margin-top: 0px;
+        border-radius: 0px 0px 5px 5px;
+        background-color: #2C3E50;
+        border: 0px;
+    }
+
+    .text {
+        font-size: 15px;
+    }
+
+
+    h1 {
+        padding-top: 10px;
+    }
+</style>
+
+<div class="wrapper">
+    <div class="container text-center">
+        <div class="col-md-12">
+            <h1 id="header" class="">New Year Countdown</h1>
+        </div>
+        <div class="col-md-3 col-xs-6">
+            <div class="clock">
+                <div class="well top-pane">
+                    <div id="days" element="days" class="num">00</div>
+                </div>
+                <div class="well bottom-pane">
+                    <div id="days-text" class="text">Days</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-xs-6">
+            <div class="clock">
+                <div class="well top-pane">
+                    <div id="hours" element="hours" class="num">00</div>
+                </div>
+                <div class="well bottom-pane">
+                    <div id="hours-text" class="text">Hours</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-xs-6">
+            <div class="clock">
+                <div class="well top-pane">
+                    <div id="mins" element="minutes" class="num">00</div>
+                </div>
+                <div class="well bottom-pane">
+                    <div id="mins-text" class="text">Minutes</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-xs-6">
+            <div class="clock">
+                <div class="well top-pane">
+                    <div id="secs" element="seconds" class="num">00</div>
+                </div>
+                <div class="well bottom-pane">
+                    <div id="secs-text" class="text">Seconds</div>
+                </div>
+            </div>
+        </div>
+        <div id="info" class="small"></div>
+    </div>
+</div>
