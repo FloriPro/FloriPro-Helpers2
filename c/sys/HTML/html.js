@@ -445,7 +445,7 @@ class WindowHandler {
                 for (var iframe of ifr) {
                     if (iframe.getAttribute("noEV") == "true") {
                         iframe.style.pointerEvents = "";
-                        iframe.deleteAttribute("noEV");
+                        iframe.removeAttribute("noEV");
                     }
                 }
             } if (SystemHtml.WindowHandler.resize == true) {
@@ -456,7 +456,7 @@ class WindowHandler {
                 for (var iframe of ifr) {
                     if (iframe.getAttribute("noEV") == "true") {
                         iframe.style.pointerEvents = "";
-                        iframe.deleteAttribute("noEV");
+                        iframe.removeAttribute("noEV");
                     }
                 }
             }
