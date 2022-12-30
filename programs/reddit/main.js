@@ -181,6 +181,10 @@ class program extends System.program.default {
         }
     }
 
+    /**
+     * 
+     * @param {post} n 
+     */
     load(n) {
         this.currentPost = n;
 
@@ -202,24 +206,39 @@ class program extends System.program.default {
         this.link.innerText = "reddit.com";
         this.link.href = "https://www.reddit.com" + n.data.permalink;
 
-        for (var x of n.Image()) {
+        for (var x of n.composedImage()) {
+            var div = document.createElement("div");
+
             var i = document.createElement("img");
-            var iLoader = document.createElement("p");
-            iLoader.style.position = "absoulute"
-            iLoader.innerText = "loading Image:";
-            iLoader.style.color = "gray";
-
-            i.loader = iLoader;
-            i.onload = (event) => {
-                event.composedPath()[0].loader.remove();
-            }
-
-            i.src = x;
+            i.src = x["compressed"];
             i.style.maxWidth = this.maxWidth;
             i.style.width = "100%";
             i.setAttribute("element", "oneImg")
-            this.img.append(iLoader);
-            this.img.append(i);
+            i.classList.add("im1");
+
+            var i2 = document.createElement("img");
+            i2.src = x["full"];
+            i2.style.display = "none";
+
+            i2.style.maxWidth = this.maxWidth;
+            i2.style.width = "100%";
+            i2.setAttribute("element", "oneImg")
+
+            i2.onload = (event) => {
+                event.composedPath()[0].style.display = "";
+                event.composedPath()[1].querySelector("p").remove();
+                event.composedPath()[1].querySelector(".im1").remove();
+            }
+
+            var p = document.createElement("p");
+            p.innerText = "loading Image";
+            p.style.color = "gray";
+
+            div.append(p);
+            div.append(i);
+            div.append(i2);
+
+            this.img.append(div);
         }
         this.window.parseNewHtml();
 

@@ -112,6 +112,38 @@ class post {
         this.saveData = false
     }
 
+    composedImage() {
+        var imgs = [];
+        if ("media_metadata" in this.data) {
+            for (x in this.data["media_metadata"]) {
+                var d = {
+                    "full": this.data["media_metadata"][x]["s"]["u"],
+                    "compressed": this.data["media_metadata"][x]["p"][0]["u"]
+                };
+                imgs.push(d)
+            }
+        }
+
+        if ("preview" in this.data) {
+            for (var x in this.data["preview"]["images"]) {
+                var a = this.data["preview"]["images"][x]["resolutions"];
+
+                var d = {
+                    "full": a[a.length - 1]["url"],
+                    "compressed": a[0]["url"]
+                };
+
+                if ("url" in this.data) {
+                    d["full"] = this.data["url"];
+                }
+
+                imgs.push(d);
+            }
+        }
+
+        return imgs;
+    }
+
     Image() {
         var imgs = [];
         if ("media_metadata" in this.data) {
