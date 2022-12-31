@@ -117,7 +117,7 @@ class syncSyncer {
                 if (hashes[path]["time"] > lastonline) {
                     needsUpdateFiles.push(path);
                 }else{
-                    //update the server because the user changed the file, whilest offline
+                    //update the server because the user changed the file, whilest offline, but the file on the server has not changed
                     this.waitingForAnswer.push(path);
                     this.parent.connection.send({ type: "change", path: path, data: await SystemFileSystem.getFileString(path, true) });
                 }

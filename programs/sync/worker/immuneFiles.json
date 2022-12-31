@@ -1,4 +1,4 @@
 [
-    "c/options/libs.json",
-    "c/options/programs.json"
+    "c/sys/options/libs.json",
+    "c/sys/options/programs.json"
 ]
