@@ -64,13 +64,13 @@ class program extends System.program.default {
 
                 var typ = document.createElement("div");
                 if (x[2]) {
-                    typ.innerText = "⬆";
+                    typ.innerText = "↑";
                     typ.style.backgroundColor = "orange";
                 } else if (x[2] == false) {
-                    typ.innerText = "⬇";
+                    typ.innerText = "↓";
                     typ.style.backgroundColor = "blue";
                 }else{
-                    typ.innerText = "⬆⬇";
+                    typ.innerText = "⇅";
                     typ.style.backgroundColor = "green";
                 }
                 typ.style.color = "white";
