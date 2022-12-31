@@ -147,6 +147,21 @@ class editDesktopElement {
             this.el.name = await SystemHtml.WindowHandler.presets.createStringSelect("new name", "new name for desktop element");
             this.save();
         }, this);
+        this.window.addHtmlEventListener("click", "changeImage", async () => {
+            console.log("changeImage")
+            this.el.icon = await SystemHtml.WindowHandler.presets.createFileSelect("new icon");
+            this.save();
+        }, this);
+        this.window.addHtmlEventListener("click", "changeRun", async () => {
+            console.log("changeRun")
+            this.el.run = await SystemHtml.WindowHandler.presets.createFileSelect("new run");
+            this.save();
+        }, this);
+        this.window.addHtmlEventListener("click", "resetPosition", async () => {
+            console.log("resetPosition")
+            this.el.position = [100, 100];
+            this.save();
+        }, this);
     }
 
     async save() {
