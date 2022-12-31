@@ -1,6 +1,6 @@
 declare class program extends standardProg {
     init(): Promise<void>;
-    currentPost: any;
+    currentPost: post;
     past: any[];
     pastId: number;
     permalink: any;
@@ -23,7 +23,11 @@ declare class program extends standardProg {
     displaySettings(): Promise<void>;
     next(): Promise<void>;
     back(): void;
-    load(n: any): void;
+    /**
+     *
+     * @param {post} n
+     */
+    load(n: post): void;
     updateAllreadyRead(): Promise<void>;
     openVideo(): void;
     postDebug(): void;

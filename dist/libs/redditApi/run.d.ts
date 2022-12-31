@@ -38,6 +38,10 @@ declare class post {
     constructor(data: any);
     data: any;
     saveData: boolean;
+    composedImage(): {
+        full: any;
+        compressed: any;
+    }[];
     Image(): any[];
     ImageFull(): any[];
     Author(): any;
