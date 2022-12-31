@@ -95,6 +95,9 @@ class syncWorkerProgram extends System.program.default {
                 listener({ type: "actionUpdate" });
             });
         }
+        this.connection.wrongTime = () => {
+            SystemHtml.WindowHandler.presets.createInformation("Time offset!", "Your time on your computer is not correct. Please resync your time with an internet time server and try again.");
+        }
     }
 
     async msg(event) {

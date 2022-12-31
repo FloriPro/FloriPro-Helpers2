@@ -59,15 +59,25 @@ class program extends System.program.default {
             el.innerHTML = "";
             for (var x of c) {
                 var p = document.createElement("p");
+                p.style.display = "flex";
                 p.innerText = x[0];
 
-                var typ = document.createElement("span");
-                if (x[2]){
+                var typ = document.createElement("div");
+                if (x[2]) {
                     typ.innerText = "⬆";
-                } else {
+                    typ.style.backgroundColor = "orange";
+                } else if (x[2] == false) {
                     typ.innerText = "⬇";
+                    typ.style.backgroundColor = "blue";
+                }else{
+                    typ.innerText = "⬆⬇";
+                    typ.style.backgroundColor = "green";
                 }
+                typ.style.color = "white";
+                typ.style.width = "fit-content";
                 p.prepend(typ)
+
+
                 if (x[1] == true) {
                     p.style.background = "lime";
                 } else {

@@ -7,6 +7,7 @@ declare class syncWorkerConnection {
     onerror: () => void;
     onclose: () => void;
     onsend: () => void;
+    wrongTime: () => void;
     url: any;
     connection: WebSocket;
     send(data: any): void;

@@ -9,14 +9,33 @@ class syncWorkerConnection {
         this.onerror = function () { };
         this.onclose = function () { };
         this.onsend = function () { };
+        this.wrongTime = function () { };
 
         this.url = url;
         this.connection = new WebSocket(url);
         this.connection.onopen = function (event) {
             this.onopen(event);
+
+            this.connection.send(JSON.stringify({ type: "checkTime", time: (Date.now() / 1000) }));
+            this.addAction(["checkTime", false, null]);
         }.bind(this);
         this.connection.onmessage = function (event) {
             var d = JSON.parse(event.data);
+
+            if (d.type == "checkTime") {
+                if (d.data == "ok") {
+                    this.changeAction("checkTime", true, null);
+                } else if (d.data == "error") {
+                    this.wrongTime();
+                } else {
+                    if (d.data == undefined) {
+                        d.data = "no errror message";
+                    }
+                    SystemHtml.WindowHandler.presets.createInformation("Error!", "An error occured while checking the time. Please try again later. (Error: '" + d.data + "')")
+                }
+            }
+
+
             if (d.type == "getFilesHash") {
                 this.changeAction("getFilesHash", true, false);
             }
@@ -26,7 +45,7 @@ class syncWorkerConnection {
             if (d.type == "accnowledge") {
                 this.changeAction(d.path, true, true)
             }
-            if (d.type == "delete"){
+            if (d.type == "delete") {
                 this.addAction([d.path, true, false])
             }
 
