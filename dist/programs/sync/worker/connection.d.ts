@@ -11,7 +11,7 @@ declare class syncWorkerConnection {
     connection: WebSocket;
     send(data: any): void;
     addAction(action: any): void;
-    changeAction(action: any, status: any): void;
+    changeAction(action: any, status: any, up: any): void;
     /**
      * @returns {boolean} true if the connection is open
      */

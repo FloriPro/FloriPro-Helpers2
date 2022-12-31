@@ -60,6 +60,14 @@ class program extends System.program.default {
             for (var x of c) {
                 var p = document.createElement("p");
                 p.innerText = x[0];
+
+                var typ = document.createElement("span");
+                if (x[2]){
+                    typ.innerText = "⬆";
+                } else {
+                    typ.innerText = "⬇";
+                }
+                p.prepend(typ)
                 if (x[1] == true) {
                     p.style.background = "lime";
                 } else {

@@ -18,16 +18,16 @@ class syncWorkerConnection {
         this.connection.onmessage = function (event) {
             var d = JSON.parse(event.data);
             if (d.type == "getFilesHash") {
-                this.changeAction("getFilesHash", true);
+                this.changeAction("getFilesHash", true, false);
             }
             if (d.type == "getFile") {
-                this.changeAction(d.path, true)
+                this.changeAction(d.path, true, false)
             }
             if (d.type == "accnowledge") {
-                this.changeAction(d.path, true)
+                this.changeAction(d.path, true, true)
             }
             if (d.type == "delete"){
-                this.addAction(d.path, true)
+                this.addAction([d.path, true, false])
             }
 
 
@@ -43,13 +43,13 @@ class syncWorkerConnection {
     send(data) {
         this.onsend(data);
         if (data.type == "getFilesHash") {
-            this.addAction(["getFilesHash", false]);
+            this.addAction(["getFilesHash", false, false]);
         } else if (data.type == "getFile") {
-            this.addAction([data.data, false]);
+            this.addAction([data.data, false, false]);
         } else if (data.type == "change") {
-            this.addAction([data.path, false]);
+            this.addAction([data.path, false, true]);
         } else if (data.type == "delete") {
-            this.addAction([data.path, false]);
+            this.addAction([data.path, false, true]);
         }
 
         this.connection.send(JSON.stringify(data));
@@ -69,15 +69,15 @@ class syncWorkerConnection {
             }
         }
     }
-    changeAction(action, status) {
+    changeAction(action, status, up) {
         this.actionUpdate();
         for (var i = 0; i < this.actions.length; i++) {
-            if (this.actions[i][0] == action && this.actions[i][1] != status) {
+            if (this.actions[i][0] == action && this.actions[i][1] != status && this.actions[i][2] == up) {
                 this.actions[i][1] = status;
                 return;
             }
         }
-        this.addAction([action, status]);
+        this.addAction([action, status, up]);
         return;
     }
 
