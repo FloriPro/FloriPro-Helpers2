@@ -1014,7 +1014,7 @@ class Desktop {
             }
         }, this);
 
-        System.eventHandler.addEventHandler("click", (event, thi) => {
+        System.eventHandler.addEventHandler("click", async (event, thi) => {
             if (SystemHtml.elementArrayContainsClass(event.composedPath(), "DesktopIcon")) {
                 //get the main DesktopIcon element
                 var el = null;
@@ -1025,7 +1025,31 @@ class Desktop {
                     }
                 }
                 if (!thi.didMove) {
-                    System.run(thi.desktopIcons[el.getAttribute("iconId")]["run"]);
+                    var path = thi.desktopIcons[el.getAttribute("iconId")]["run"];
+                    if (await SystemFileSystem.fileExists(path)) {
+                        System.run(path);
+                    } else {
+                        if (!path.startsWith("c/programs/")) {
+                            SystemHtml.WindowHandler.presets.createInformation("Error", "The file '" + path + "' does not exist!")
+                            return
+                        }
+                        var name = path.split("/")[2];
+                        if (!await SystemHtml.WindowHandler.presets.createConfirm("Error", "The program '" + name + "' does not seem exist! Would you like to install it?")) {
+                            return;
+                        }
+
+                        if (!await System.program.easyPackageInstall(name, true)) {
+                            SystemHtml.WindowHandler.presets.createInformation("Error", "The program '" + name + "' could not be installed!")
+                            return
+                        }
+
+                        if (await SystemFileSystem.fileExists(path)) {
+                            this.buildDesktop();
+                            System.run(path);
+                        } else {
+                            SystemHtml.WindowHandler.presets.createInformation("Error", "The program '" + name + "' did not link to this Connection!")
+                        }
+                    }
                 }
                 thi.didMove = false
             }
