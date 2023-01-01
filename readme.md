@@ -38,8 +38,11 @@ this happens, because the website downloads all the files and stores them in the
 
 You can make this process faster by pressing "**Ctrl + R**" and click on "**reset everything**".
 
+## [Documentation](docs/HowTo/index.md)
+
 ### Global Variables
 There are some global variables that are used in the OS. These are:
 * [**System**](/docs/system.md)
 * [**SystemHtml**](/docs/systemHtml.md)
 * [**SystemFileSystem**](/docs/systemFileSystem.md)
+

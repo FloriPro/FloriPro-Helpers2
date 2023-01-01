@@ -183,7 +183,7 @@ declare class HtmlWindow {
      * @param {ThisType} t the class to run the callback function in
      * @param {*} variable one variable passed in the callback function
      */
-    addHtmlEventListener(event: string, htmlElementTag: string, callback: (variable: any, id: any, unknown: any, event: any) => any, t: ThisType<any>, variable: any): Promise<void>;
+    addHtmlEventListener(event: string, htmlElementTag: string, callback: (variable: any, id: any, ?: any, event: any) => any, t: ThisType<any>, variable: any): Promise<void>;
     /**
      * removes **ALL** event listeners on *this* window
      */

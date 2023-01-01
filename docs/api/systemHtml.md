@@ -1,5 +1,5 @@
 # SystemHtml
-[documentation File](../dist/c/sys/HTML/html.d.ts)
+[documentation File](../../dist/c/sys/HTML/html.d.ts)
 
 ## Introduction
 This is the HTML part of the OS. It has to do with everything the user interacts with. It is the Desktop, the Taskbar, the Windows, the Context Menus, etc.
