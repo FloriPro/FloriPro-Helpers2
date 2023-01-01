@@ -13,6 +13,7 @@
   - [Working with the window content](#working-with-the-window-content)
     - [Adding content](#adding-content)
     - [Events](#events)
+      - [Removing Event Listeners](#removing-event-listeners)
   - [Main Window Functions](#main-window-functions)
 
 # Windows
@@ -192,7 +193,69 @@ class myWindow {
 
 ### Events
 
-_TODO_
+Events can be added to the window by using `window.addHtmlEventListener(<name>, <element>, <function>, <ThisType | undefined>, <variables | undefined>)`. The name is the html onEvent event (like "onclick"). The function gets called, when the event is triggered. The element parameter refers to the html element tag (`<p element="idk"></p>`). The last two are optional. Variables can be anything that will be passed to the function. ThisType is the class to execute the function in.
+
+> **Warnimg**
+> On older versions ThisType needs to be set.
+
+```html
+<div element="container">
+    <p element="change">Off</p>
+    <button element="button">Change</button>
+</div>
+```
+
+```js
+class myWindow {
+    constructor() {
+        this.init();
+    }
+
+    async init() {
+        this.window = await SystemHtml.WindowHandler.createWindow("Window Title", async () => {
+            //load the html from a file to improve the readability
+            this.window.setContent(await SystemFileSystem.getFileString("c/path/to/the/above/html/file2.html"));
+
+            //add event listener for the button
+            this.window.addHtmlEventListener("onclick", "button", async () => {
+                //get the element
+                var change = await this.window.getHtmlElement("change");
+
+                //set the text of it
+                change.innerText = "On";
+            });
+        });
+    }
+}
+```
+
+> **Note**
+> Events will also trigger, if a child element actualy gets it.
+> _Example_:
+>
+> ```html
+> <div element="something">
+>     <p element="text">click me</p>
+> </div>
+> ```
+>
+> If you add an event listener to the div, it will also trigger, if you click the p element.
+
+You can also add variables to the event handler. This can be done by adding a second argument to the `window.addHtmlEventListener(<name>, <element>, <function>, <variables>)`. The variables will be passed to the function as the first argument.
+
+Arguments of the event function _(weird shit, just saying)_:
+
+1. `[<function>, <variable>]` - A array that contains the function, that is being executed, and the passed variable
+2. `id` - The id of the window that contained the event listener
+3. `variable` - only the variable
+4. `event` - the original event
+
+#### Removing Event Listeners
+
+> **Warning**
+> Currently only all events from a window can be removed. This can be done by calling `window.removeAllEventListeners()`. This will remove all event listeners from the window.
+
+This is work in progress. More functionality will be added in the future.
 
 ## Main Window Functions
 
