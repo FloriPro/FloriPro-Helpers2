@@ -209,8 +209,12 @@ class Html {
                         eventType = eventType.replace("on", "");
 
                         for (var element of this.htmlEventList[name][eventType]) {
-                            this.htmlEventListThis[name].x = element[0];
-                            this.htmlEventListThis[name].x(element, id, element[1], event);
+                            if (this.htmlEventListThis[name] == undefined) {
+                                element[0](element, id, element[1], event);
+                            } else {
+                                this.htmlEventListThis[name].x = element[0];
+                                this.htmlEventListThis[name].x(element, id, element[1], event);
+                            }
                         }
                     }
                 }

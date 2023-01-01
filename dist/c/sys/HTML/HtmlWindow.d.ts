@@ -180,10 +180,10 @@ declare class HtmlWindow {
      * @param {string} event Html element Event (e.g. onclick)
      * @param {string} htmlElementTag Html Element "element" tag ('<div element="tagofdoom"></div>': 'tagofdoom')
      * @param {(variable, id, ?, event)} callback run when the event is triggered
-     * @param {ThisType} t the class to run the callback function in
+     * @param {ThisType | undefined} t the class to run the callback function in
      * @param {*} variable one variable passed in the callback function
      */
-    addHtmlEventListener(event: string, htmlElementTag: string, callback: (variable: any, id: any, ?: any, event: any) => any, t: ThisType<any>, variable: any): Promise<void>;
+    addHtmlEventListener(event: string, htmlElementTag: string, callback: (variable: any, id: any, ?: any, event: any) => any, t: ThisType<any> | undefined, variable: any): Promise<void>;
     /**
      * removes **ALL** event listeners on *this* window
      */
