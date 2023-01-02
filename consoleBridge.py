@@ -4,6 +4,19 @@ from simple_websocket_server import WebSocketServer, WebSocket
 from colorama import Fore, Back, Style
 import json
 import traceback
+import matplotlib.pyplot as plt
+import threading
+
+# set it to some thing like "heap_" to plot the number after "heap_" (e.g. "heap_100" will plot 100)
+PLOT = "heap_"
+
+if (PLOT != None):
+    def startPlot():
+        plt.ylabel('Bridge Log')
+        plt.show()
+    currentHeap = [0, 100]
+    t = threading.Thread(target=startPlot, daemon=True)
+    t.start()
 
 
 class Player(WebSocket):
@@ -13,6 +26,14 @@ class Player(WebSocket):
             d = data["data"]
             if type(json.loads(d)) == str:
                 d = json.loads(d)
+
+            # check for plotting
+            if (PLOT != None):
+                if d.startswith(PLOT):
+                    p = int(d.replace(PLOT, ""))
+                    plot(p)
+                    return
+
             if data["type"] == "debug":
                 print(Back.BLACK+Fore.LIGHTBLACK_EX+d+Fore.RESET+Back.RESET)
             elif data["type"] == "info":
@@ -36,6 +57,16 @@ class Player(WebSocket):
 
     def handle_close(self):
         print(self.address, 'closed')
+
+
+def plot(heap):
+    global currentHeap
+    currentHeap.append(heap)
+    if len(currentHeap) > 200:
+        currentHeap.pop(0)
+    plt.clf()
+    plt.plot(currentHeap)
+    plt.show()
 
 
 server = WebSocketServer('0.0.0.0', 8000, Player)
