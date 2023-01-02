@@ -16,6 +16,9 @@ class program extends System.program.default {
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
                 await this.window.size.setInnerSize(300, 500);
                 this.window.size.userCanResize(true);
+                
+                //wait for the worker to be ready
+                await delay(100);
 
                 var status = await System.program.connect.send("syncWorker", { type: "status" });
                 (await this.window.getHtmlElement("status")).innerText = status;
@@ -29,7 +32,7 @@ class program extends System.program.default {
                     new authWindow(this);
                 }, this);
 
-                this.workerListener({ type: "actionUpdate" });
+                await this.workerListener({ type: "actionUpdate" });
             });
         this.window.close = () => {
             System.program.connect.send("syncWorker", { type: "unlistener", listener: this.wl })
