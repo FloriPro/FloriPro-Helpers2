@@ -11,5 +11,6 @@
     "Pong": "programs/pong",
     "Vote": "programs/vote",
     "wordcloud": "programs/wordcloud",
-    "sync": "programs/sync"
+    "sync": "programs/sync",
+    "thereTime": "programs/thereTime"
 }
