@@ -4,6 +4,8 @@ class syncSyncer {
      * @param {syncWorkerProgram} parent 
      */
     constructor(parent) {
+        this.init();
+
         this.hasListener = false;
         /**
          * @type {syncWorkerProgram}
@@ -35,6 +37,11 @@ class syncSyncer {
             }
         }
     }
+
+    async init() {
+        this.immuneFiles = await SystemFileSystem.getFileJson("c/programs/sync/worker/immuneFiles.json");
+    }
+
     /**
      * 
      * @param {?string} path 
@@ -81,6 +88,9 @@ class syncSyncer {
         if (!path.startsWith("c/user") && !path.startsWith("c/sys/options")) {
             return;
         }
+        if (this.immuneFiles.includes(path)) {
+            return;
+        }
         this.waitingForAnswer.push(path);
         if (type == "delete") {
             this.parent.connection.send({ type: "delete", path: path });
@@ -97,7 +107,7 @@ class syncSyncer {
     async updateFiles(hashes) {
         if (await SystemFileSystem.fileExists("c/programs/sync/lastOffline.txt")) {
             var lastonline = parseInt(await SystemFileSystem.getFileString("c/programs/sync/lastOffline.txt"))
-        }else{
+        } else {
             var lastonline = -1;
         }
         console.log(lastonline);
@@ -116,7 +126,7 @@ class syncSyncer {
                 //check if file was changed before last offline
                 if (hashes[path]["time"] > lastonline) {
                     needsUpdateFiles.push(path);
-                }else{
+                } else {
                     //update the server because the user changed the file, whilest offline, but the file on the server has not changed
                     this.waitingForAnswer.push(path);
                     this.parent.connection.send({ type: "change", path: path, data: await SystemFileSystem.getFileString(path, true) });
@@ -132,12 +142,18 @@ class syncSyncer {
 
         //send untraqcked files
         for (var path of untrackedFiles) {
+            if (this.immuneFiles.includes(path)) {
+                continue;
+            }
             this.waitingForAnswer.push(path);
             this.parent.connection.send({ type: "change", path: path, data: await SystemFileSystem.getFileString(path, true) });
         }
 
         //get files that need update
         for (var path of needsUpdateFiles) {
+            if (this.immuneFiles.includes(path)) {
+                continue;
+            }
             this.waitingForAnswer.push(path);
             this.parent.connection.send({ type: "getFile", data: path });
         }

@@ -16,6 +16,8 @@ class program extends System.program.default {
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
                 await this.window.size.setInnerSize(410, 410);
                 this.window.size.userCanResize(true);
+                
+                this.loadOldCharts();
 
                 //set random id for container
                 this.anychartContainerId = System.makeid(10);
@@ -188,8 +190,6 @@ class program extends System.program.default {
                     data = JSON.parse(data);
                     this.loadData(data);
                 }, this);
-
-                this.loadOldCharts();
             });
         this.window.close = () => {
             this.stop()

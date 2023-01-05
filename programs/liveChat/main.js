@@ -11,12 +11,12 @@ class program extends System.program.default {
 
             //authenticate with server
             //check if username is allready set
-            if (!await SystemFileSystem.fileExists(this.PATH.folder() + "/username.txt")) {
+            if (!await SystemFileSystem.fileExists("c/user/liveChat/username.txt")) {
                 this.userName = await SystemHtml.WindowHandler.presets.createStringSelect("LiveChat | username", "Please enter your username");
-                await SystemFileSystem.setFileString(this.PATH.folder() + "/username.txt", this.userName);
+                await SystemFileSystem.setFileString("c/user/liveChat/username.txt", this.userName);
                 this.connection.authenticate(this.userName);
             } else {
-                this.userName = await SystemFileSystem.getFileString(this.PATH.folder() + "/username.txt");
+                this.userName = await SystemFileSystem.getFileString("c/user/liveChat/username.txt");
                 this.connection.authenticate(this.userName);
             }
         }
