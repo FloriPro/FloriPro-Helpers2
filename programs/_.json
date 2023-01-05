@@ -48,7 +48,7 @@
         "path": "programs/wordcloud.json"
     },
     "sync": {
-        "version": "0.0",
+        "version": "0.1",
         "path": "programs/sync.json"
     },
     "thereTime": {
