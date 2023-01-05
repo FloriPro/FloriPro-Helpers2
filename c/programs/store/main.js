@@ -50,7 +50,7 @@ class program extends System.program.default {
         for (var x of Object.keys(data)) {
             var but = document.createElement("button");
             but.setAttribute("element", "button_" + x);
-            but.innerText = x;
+            but.innerText = data[x]["displayname"];
             programdiv.append(but)
             this.window.parseNewHtml();
             this.window.addHtmlEventListener("click", "button_" + x, this.installProgram, this, data[x]);
