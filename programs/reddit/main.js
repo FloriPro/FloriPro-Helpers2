@@ -23,6 +23,9 @@ class program extends System.program.default {
         this.redditApi.vars = await SystemFileSystem.getFileJson("c/user/reddit/settings.json")
 
 
+        /**
+         * @type {HtmlWindow}
+         */
         this.window = await SystemHtml.WindowHandler.createWindow("Reddit",
             //onready:
             async () => {
@@ -238,7 +241,13 @@ class program extends System.program.default {
             div.append(i);
             div.append(i2);
 
+            
             this.img.append(div);
+        }
+        if (n.nsfw()){
+            this.img.style.filter = "blur(20px)";
+        }else{
+            this.img.style.filter = "";
         }
         this.window.parseNewHtml();
 

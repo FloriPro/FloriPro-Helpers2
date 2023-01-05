@@ -12,7 +12,7 @@
         "path": "libs/qrious.json"
     },
     "redditApi": {
-        "version": "0.0",
+        "version": "0.1",
         "path": "libs/redditApi.json"
     },
     "md5": {

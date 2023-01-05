@@ -58,11 +58,20 @@ declare class post {
         type: string;
         dat: any;
     };
-    loadCommentEasy(dat: any): {
+    /**
+     * array of comments containing replies, which in each it self is an array of comments containing replies, and so on
+     * @param {Array} dat
+     * @returns
+     */
+    loadCommentEasy(dat: any[]): {
         author: string;
         body_html: string;
         body: string;
         replies: any[];
     }[];
+    /**
+     * @returns {boolean} if the post is over 18 or not
+     */
+    nsfw(): boolean;
 }
 //# sourceMappingURL=run.d.ts.map

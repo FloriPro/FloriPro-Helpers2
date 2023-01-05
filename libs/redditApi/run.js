@@ -226,6 +226,11 @@ class post {
         }
         return null;
     }
+    /**
+     * array of comments containing replies, which in each it self is an array of comments containing replies, and so on
+     * @param {Array} dat
+     * @returns 
+     */
     loadCommentEasy(dat) {
         var out = [];
         for (var x of dat) {
@@ -244,6 +249,12 @@ class post {
         return out;
     }
 
+    /**
+     * @returns {boolean} if the post is over 18 or not
+     */
+    nsfw() {
+        return this.data["over_18"];
+    }
 }
 
 

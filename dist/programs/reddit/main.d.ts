@@ -11,14 +11,17 @@ declare class program extends standardProg {
      * @type {reddit}
      */
     redditApi: reddit;
-    window: any;
-    settings: any;
-    post: any;
-    title: any;
-    text: any;
-    img: any;
-    link: any;
-    openVid: any;
+    /**
+     * @type {HtmlWindow}
+     */
+    window: HtmlWindow;
+    settings: HTMLElement;
+    post: HTMLElement;
+    title: HTMLElement;
+    text: HTMLElement;
+    img: HTMLElement;
+    link: HTMLElement;
+    openVid: HTMLElement;
     loadSettings(): Promise<void>;
     displaySettings(): Promise<void>;
     next(): Promise<void>;
