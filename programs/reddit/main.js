@@ -6,6 +6,8 @@ class program extends System.program.default {
     async init() {
         await System.getLib("md5");
 
+        this.previousMax = undefined;
+
         this.currentPost = undefined;
         this.past = []
         this.pastId = -1;
@@ -54,10 +56,10 @@ class program extends System.program.default {
                 await this.window.addHtmlEventListener("click", "back", this.back, this);
                 await this.window.addHtmlEventListener("click", "img", this.imgFullscreen, this);
 
-                await this.window.addHtmlEventListener("click", "setWindownormal", () => { this.window.size.notMax() }, this);
-                await this.window.addHtmlEventListener("click", "setWindowmax", () => { this.window.size.setfullMax() }, this);
-                await this.window.addHtmlEventListener("click", "setWindownormal2", () => { this.window.size.notMax() }, this);
-                await this.window.addHtmlEventListener("click", "setWindowmax2", () => { this.window.size.setfullMax() }, this);
+                await this.window.addHtmlEventListener("click", "setWindownormal", this.sizeNormal, this);
+                await this.window.addHtmlEventListener("click", "setWindowmax", this.sizeMax, this);
+                await this.window.addHtmlEventListener("click", "setWindownormal2", this.sizeNormal, this);
+                await this.window.addHtmlEventListener("click", "setWindowmax2", this.sizeMax, this);
                 //await this.window.addHtmlEventListener("click", "postDebug", this.postDebug, this);
                 await this.window.addHtmlEventListener("click", "openVid", this.openVideo, this);
                 await this.window.addHtmlEventListener("click", "openSettings", () => {
@@ -78,6 +80,21 @@ class program extends System.program.default {
             return true
         }
     }
+
+    sizeNormal() {
+        if (this.previousMax) {
+            this.window.size.setMax();
+            return
+        }
+        this.window.size.notMax()
+    }
+    sizeMax() {
+        if (!this.window.size.fullMax) {
+            this.previousMax = this.window.size.max;
+        }
+        this.window.size.setfullMax();
+    }
+
     async loadSettings() {
         this.redditApi.setSubreddits((await this.window.getHtmlElement("subredditSelect")).value.split(","));
 
@@ -241,12 +258,12 @@ class program extends System.program.default {
             div.append(i);
             div.append(i2);
 
-            
+
             this.img.append(div);
         }
-        if (n.nsfw()){
+        if (n.nsfw()) {
             this.img.style.filter = "blur(20px)";
-        }else{
+        } else {
             this.img.style.filter = "";
         }
         this.window.parseNewHtml();

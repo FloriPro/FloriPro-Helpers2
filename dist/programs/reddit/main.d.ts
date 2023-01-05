@@ -1,5 +1,6 @@
 declare class program extends standardProg {
     init(): Promise<void>;
+    previousMax: boolean;
     currentPost: post;
     past: any[];
     pastId: number;
@@ -22,6 +23,8 @@ declare class program extends standardProg {
     img: HTMLElement;
     link: HTMLElement;
     openVid: HTMLElement;
+    sizeNormal(): void;
+    sizeMax(): void;
     loadSettings(): Promise<void>;
     displaySettings(): Promise<void>;
     next(): Promise<void>;
