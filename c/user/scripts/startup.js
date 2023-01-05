@@ -10,8 +10,9 @@ async function run() {
     if (toInstall != null) {
         for (var toInstall of toInstall.split(",")) {
             if (!await System.program.installed(toInstall)) {
-                var l = await SystemHtml.WindowHandler.presets.createLoading("Installing " + toInstall, "Downloading " + toInstall);
-                await System.program.installPackage(await (await System.network.fetch(`programs/${toInstall}.json`)).text(), true, l, false, toInstall);
+                await System.program.easyPackageInstall(toInstall, true);
+                //var l = await SystemHtml.WindowHandler.presets.createLoading("Installing " + toInstall, "Downloading " + toInstall);
+                //await System.program.installPackage(await (await System.network.fetch(`programs/${toInstall}.json`)).text(), true, l, false, toInstall, false, "undefined");
             }
         }
     }

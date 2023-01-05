@@ -4,7 +4,7 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
-        this.packages = ["programs/programs.json"];
+        this.packages = ["programs/_.json"];
 
         /**
          * @type HtmlWindow
@@ -40,6 +40,7 @@ class program extends System.program.default {
             var p = await (await System.network.fetch(x)).json();
             for (var y of Object.keys(p)) {
                 data[y] = p[y];
+                data[y]["name"] = y
             }
         }
 
@@ -55,31 +56,19 @@ class program extends System.program.default {
             this.window.addHtmlEventListener("click", "button_" + x, this.installProgram, this, data[x]);
         }
     }
-    async installProgram(_, __, programUrl) {
-        var ps = programUrl.split("/");
-        var programName = "";
-        if (ps[ps.length - 1] != "") {
-            programName = ps[ps.length - 1];
-        } else if (ps[ps.length - 2] != "") {
-            programName = ps[ps.length - 2];
-        } else {
-            SystemHtml.WindowHandler.presets.createInformation("could not find program name for installation");
-            return;
-        }
-
-        var l = await SystemHtml.WindowHandler.presets.createLoading("Installing", "Downloading " + programName);
+    async installProgram(_, __, program) {
+        var l = await SystemHtml.WindowHandler.presets.createLoading("Installing", "Downloading " + program["name"]);
 
         //check if allready installed
-        if (await System.program.installed(programName)) {
+        if (await System.program.installed(program["name"])) {
             var r = await SystemHtml.WindowHandler.presets.createConfirm("Allready installed", "This is already installed do you want to continue?");
             if (!r) {
                 l.stop();
                 return;
             }
         }
-
-        var pdata = await (await System.network.fetch("programs/" + programName + ".json")).text();
-        System.program.installPackage(pdata, true, l, undefined, programName);
+        var pdata = await (await System.network.fetch(program["path"])).text();
+        System.program.installPackage(pdata, true, l, undefined, program["name"], false, program["version"]);
     }
 }
 new program();

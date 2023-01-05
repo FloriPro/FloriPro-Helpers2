@@ -6,6 +6,6 @@ declare class program extends standardProg {
      */
     window: HtmlWindow;
     loadStore(): Promise<void>;
-    installProgram(_: any, __: any, programUrl: any): Promise<void>;
+    installProgram(_: any, __: any, program: any): Promise<void>;
 }
 //# sourceMappingURL=main.d.ts.map

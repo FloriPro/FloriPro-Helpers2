@@ -12,5 +12,6 @@
     "Vote": "programs/vote",
     "wordcloud": "programs/wordcloud",
     "sync": "programs/sync",
-    "thereTime": "programs/thereTime"
+    "thereTime": "programs/thereTime",
+    "_Legacy!": "this file is no longer used, but is kept for legacy purposes"
 }

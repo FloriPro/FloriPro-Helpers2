@@ -3,5 +3,6 @@
     "chartjs": "libs/chartjs.json",
     "qrious": "libs/qrious.json",
     "redditApi": "libs/redditApi.json",
-    "md5": "libs/md5.json"
+    "md5": "libs/md5.json",
+    "_": "Depreciated! Use '_.json' instead"
 }

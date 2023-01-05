@@ -15,6 +15,8 @@ declare class syncSyncer {
         pop(path: any): void;
         push(path: any): void;
     };
+    init(): Promise<void>;
+    immuneFiles: any;
     /**
      *
      * @param {?string} path

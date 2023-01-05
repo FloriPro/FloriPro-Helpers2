@@ -161,8 +161,9 @@ declare class systemProgramHandler {
      * @param {boolean} showInstallInfo show the install info in the window
      * @param {string} name name of the package (needed for libs)
      * @param {boolean | undefined} isLib true, if the package is a libary
+     * @param {string} version version of the package
      */
-    installPackage(data: string, display: boolean, displayWindow: loadingPreset, showInstallInfo: boolean, name: string, isLib: boolean | undefined): Promise<void>;
+    installPackage(data: string, display: boolean, displayWindow: loadingPreset, showInstallInfo: boolean, name: string, isLib: boolean | undefined, version: string): Promise<void>;
     /**
      * finds a free id for a now program
      * @returns {number}

@@ -1,0 +1,58 @@
+{
+    "newYear": {
+        "version": "0.0",
+        "path": "programs/newYear.json"
+    },
+    "imageViewer": {
+        "version": "0.0",
+        "path": "programs/imageViewer.json"
+    },
+    "reddit": {
+        "version": "0.0",
+        "path": "programs/reddit.json"
+    },
+    "testScript": {
+        "version": "0.0",
+        "path": "programs/testScript.json"
+    },
+    "jShell": {
+        "version": "0.0",
+        "path": "programs/jShell.json"
+    },
+    "unuSupreme": {
+        "version": "0.0",
+        "path": "programs/unuSupreme.json"
+    },
+    "steffanPack": {
+        "version": "0.0",
+        "path": "programs/steffanPack.json"
+    },
+    "liveChat": {
+        "version": "0.0",
+        "path": "programs/liveChat.json"
+    },
+    "MoodLightTS": {
+        "version": "0.0",
+        "path": "programs/MoodLightTS.json"
+    },
+    "Pong": {
+        "version": "0.0",
+        "path": "programs/pong.json"
+    },
+    "Vote": {
+        "version": "0.0",
+        "path": "programs/vote.json"
+    },
+    "wordcloud": {
+        "version": "0.0",
+        "path": "programs/wordcloud.json"
+    },
+    "sync": {
+        "version": "0.0",
+        "path": "programs/sync.json"
+    },
+    "thereTime": {
+        "version": "0.0",
+        "path": "programs/thereTime.json"
+    }
+}

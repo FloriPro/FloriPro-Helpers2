@@ -1,0 +1,22 @@
+{
+    "anychart": {
+        "version": "0.0",
+        "path": "libs/anychart.json"
+    },
+    "chartjs": {
+        "version": "0.0",
+        "path": "libs/chartjs.json"
+    },
+    "qrious": {
+        "version": "0.0",
+        "path": "libs/qrious.json"
+    },
+    "redditApi": {
+        "version": "0.0",
+        "path": "libs/redditApi.json"
+    },
+    "md5": {
+        "version": "0.0",
+        "path": "libs/md5.json"
+    }
+}

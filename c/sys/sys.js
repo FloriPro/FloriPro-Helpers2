@@ -359,17 +359,17 @@ class systemProgramHandler {
         }
 
         //get libary path from online libs.json file
-        var libs = JSON.parse(await (await System.network.fetch("libs/libs.json")).text());
+        var libs = JSON.parse(await (await System.network.fetch("libs/_.json")).text());
         if (!Object.keys(libs).includes(name)) {
             console.error("Libary " + name + " not found");
         }
-        var path = libs[name];
+        var path = libs[name].path;
 
         var l = await SystemHtml.WindowHandler.presets.createLoading("Installing Libary " + name, "Downloading " + name);
-        await System.program.installPackage(await (await System.network.fetch(path)).text(), true, l, false, name, true);
+        await System.program.installPackage(await (await System.network.fetch(path)).text(), true, l, false, name, true, libs[name].version);
 
         //add libary to libs option
-        await System.options.addValue("libs", name, "c/libs/" + name + "/run.js");
+        await System.options.addValue("libs", name, "c/libs/" + name + "/run.js", true);
 
         return true;
     }
@@ -435,11 +435,13 @@ class systemProgramHandler {
      * @return {Promise<boolean>} was the package installed successfully
      */
     async easyPackageInstall(name, overwrite) {
-        if (await System.program.installed(name) && overwrite != true) {
+        if (overwrite != true && await System.program.installed(name)) {
             return false;
         }
         var l = await SystemHtml.WindowHandler.presets.createLoading("Installing " + name, "Downloading " + name);
-        await System.program.installPackage(await (await System.network.fetch(`programs/${name}.json`)).text(), true, l, false, name);
+        var programs = JSON.parse(await (await System.network.fetch("programs/_.json")).text());
+
+        await System.program.installPackage(await (await System.network.fetch(programs[name]["path"])).text(), true, l, false, name, false, programs[name].version);
         return true;
     }
 
@@ -451,8 +453,9 @@ class systemProgramHandler {
      * @param {boolean} showInstallInfo show the install info in the window
      * @param {string} name name of the package (needed for libs)
      * @param {boolean | undefined} isLib true, if the package is a libary
+     * @param {string} version version of the package
      */
-    async installPackage(data, display, displayWindow, showInstallInfo, name, isLib) {
+    async installPackage(data, display, displayWindow, showInstallInfo, name, isLib, version) {
         if (name == undefined) { name = "unknown"; }
 
         await displayWindow.setNum(25);
@@ -476,6 +479,12 @@ class systemProgramHandler {
         if (display == true) await displayWindow.setNum(75);
         if (isLib != true) {
             var ret = await (await System.run(location + "/install.js"));
+        }
+
+        if (isLib == true) {
+            await System.options.addValue("versions", "lib_" + name, version, true);
+        } else {
+            await System.options.addValue("versions", "prog_" + name, version, true);
         }
 
         if (showInstallInfo == true) {
