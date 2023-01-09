@@ -1,77 +1,83 @@
 {
-    "easyUI": {
-        "displayname": "Easy UI",
-        "version": "0.0",
-        "path": "programs/easyUI.json"
-    },
-    "imageViewer": {
-        "displayname": "Image Viewer",
-        "version": "0.0",
-        "path": "programs/imageViewer.json"
-    },
-    "reddit": {
-        "displayname": "Reddit",
-        "version": "0.2",
-        "path": "programs/reddit.json"
-    },
-    "jShell": {
-        "displayname": "jShell",
-        "version": "0.0",
-        "path": "programs/jShell.json"
-    },
-    "unuSupreme": {
-        "displayname": "Unu Supreme",
-        "version": "0.0",
-        "path": "programs/unuSupreme.json"
-    },
-    "steffanPack": {
-        "displayname": "Steffan Pack",
-        "version": "0.0",
-        "path": "programs/steffanPack.json"
-    },
-    "liveChat": {
-        "displayname": "Live Chat",
-        "version": "0.0",
-        "path": "programs/liveChat.json"
-    },
-    "MoodLightTS": {
-        "displayname": "MoodLightTS",
-        "version": "0.0",
-        "path": "programs/MoodLightTS.json"
-    },
-    "pong": {
-        "displayname": "Pong",
-        "version": "0.0",
-        "path": "programs/pong.json"
-    },
-    "vote": {
-        "displayname": "Vote",
-        "version": "0.0",
-        "path": "programs/vote.json"
-    },
-    "wordcloud": {
-        "displayname": "Wordcloud",
-        "version": "0.0",
-        "path": "programs/wordcloud.json"
-    },
-    "sync": {
-        "displayname": "Sync",
-        "version": "0.1",
-        "path": "programs/sync.json"
-    },
-    "thereTime": {
-        "displayname": "There Time",
-        "version": "0.0",
-        "path": "programs/thereTime.json"
-    },
-    "newYear": {
-        "displayname": "New Year",
-        "version": "0.0",
-        "path": "programs/newYear.json"
-    },
-    "testScript": {
-        "displayname": "Test Script",
-        "version": "0.0",
-        "path": "programs/testScript.json"
-    }
+  "easyUI": {
+    "displayname": "Easy UI",
+    "version": "0.1",
+    "path": "programs/easyUI.json"
+  },
+  "imageViewer": {
+    "displayname": "Image Viewer",
+    "version": "0.0",
+    "path": "programs/imageViewer.json"
+  },
+  "reddit": {
+    "displayname": "Reddit",
+    "version": "0.2",
+    "path": "programs/reddit.json"
+  },
+  "jShell": {
+    "displayname": "jShell",
+    "version": "0.0",
+    "path": "programs/jShell.json"
+  },
+  "unuSupreme": {
+    "displayname": "Unu Supreme",
+    "version": "0.0",
+    "path": "programs/unuSupreme.json"
+  },
+  "steffanPack": {
+    "displayname": "Steffan Pack",
+    "version": "0.0",
+    "path": "programs/steffanPack.json"
+  },
+  "liveChat": {
+    "displayname": "Live Chat",
+    "version": "0.0",
+    "path": "programs/liveChat.json"
+  },
+  "MoodLightTS": {
+    "displayname": "MoodLightTS",
+    "version": "0.0",
+    "path": "programs/MoodLightTS.json"
+  },
+  "pong": {
+    "displayname": "Pong",
+    "version": "0.0",
+    "path": "programs/pong.json"
+  },
+  "vote": {
+    "displayname": "Vote",
+    "version": "0.0",
+    "path": "programs/vote.json"
+  },
+  "wordcloud": {
+    "displayname": "Wordcloud",
+    "version": "0.0",
+    "path": "programs/wordcloud.json"
+  },
+  "sync": {
+    "displayname": "Sync",
+    "version": "0.1",
+    "path": "programs/sync.json"
+  },
+  "thereTime": {
+    "displayname": "There Time",
+    "version": "0.0",
+    "path": "programs/thereTime.json"
+  },
+  "newYear": {
+    "displayname": "New Year",
+    "version": "0.0",
+    "path": "programs/newYear.json"
+  },
+  "testScript": {
+    "displayname": "Test Script",
+    "version": "0.0",
+    "path": "programs/testScript.json"
+  },
+  "fastRedirect": {
+    "hidden": true,
+    "displayname": "Fast Redirect",
+    "version": "0.0",
+    "path": "programs/fastRedirect.json"
+  }
 }
