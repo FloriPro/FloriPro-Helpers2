@@ -441,7 +441,13 @@ class systemProgramHandler {
         var l = await SystemHtml.WindowHandler.presets.createLoading("Installing " + name, "Downloading " + name);
         var programs = JSON.parse(await (await System.network.fetch("programs/_.json")).text());
 
-        await System.program.installPackage(await (await System.network.fetch(programs[name]["path"])).text(), true, l, false, name, false, programs[name].version);
+        if (!Object.keys(programs).includes(name)) {
+            var programs = JSON.parse(await (await System.network.fetch("libs/_.json")).text());
+            await System.program.installPackage(await (await System.network.fetch(programs[name]["path"])).text(), true, l, false, name, true, programs[name].version);
+        }else{
+            await System.program.installPackage(await (await System.network.fetch(programs[name]["path"])).text(), true, l, false, name, false, programs[name].version);
+        }
+
         return true;
     }
 

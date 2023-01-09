@@ -39,6 +39,7 @@ class program extends System.program.default {
         for (var x of this.packages) {
             var p = await (await System.network.fetch(x)).json();
             for (var y of Object.keys(p)) {
+                if (p[y].hidden) continue;
                 data[y] = p[y];
                 data[y]["name"] = y
             }

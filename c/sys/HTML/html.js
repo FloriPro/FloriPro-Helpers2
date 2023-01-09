@@ -391,6 +391,7 @@ class WindowHandler {
                 for (var x of el.classList) { if (x.startsWith("window_")) { el = x.replace("window_", "") } }
                 var id = el;
 
+                if (!SystemHtml.WindowHandler.getWindowById(id)) { return }
                 //resize
                 if (SystemHtml.WindowHandler.getWindowById(id).canUserResize && event.target.classList.contains("window") && SystemHtml.WindowHandler.moving == false) {
                     SystemHtml.WindowHandler.putWindowOnTop(id);
