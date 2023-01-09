@@ -1,6 +1,7 @@
 declare class easUIWorkerProgram extends standardProg {
     init(): Promise<void>;
-    desktop(): Promise<HTMLDivElement>;
+    elementFromHtml(htmlString: any): HTMLDivElement;
+    desktop(): Promise<void>;
     createWindow(): void;
     updateStartmenu(): void;
 }

@@ -4,6 +4,11 @@ class easUIWorkerProgram extends System.program.default {
         //don't use!
     }
     async init() {
+        //check if should be on
+        if (!(await SystemFileSystem.getFileJson("c/user/easyUI/settings.json")).status) {
+            this.stop();
+            return;
+        }
         console.log("init overwriten")
 
         document.body.appendChild(document.querySelector("#stuff"));
@@ -23,57 +28,40 @@ class easUIWorkerProgram extends System.program.default {
 
         document.body.style.webkitOverflowScrolling = 'touch';
 
-        document.body.append(await this.desktop())
+        await this.desktop();
 
         this.createWindow();
         this.updateStartmenu();
     }
+    elementFromHtml(htmlString) {
+        var div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
+
+        return div;
+    }
 
     async desktop() {
-        var desktop = document.createElement("div");
-        desktop.id = "Desktop";
-        desktop.style.position = "absolute";
-        desktop.style.top = "0px";
-        desktop.style.left = "0px";
-        desktop.style.width = "100%";
-        desktop.style.height = "100%";
-        desktop.style.background = "black"//'url("' + SystemFileSystem.toImg(await SystemFileSystem.getFileString((await System.options.get("settings"))["backgroundImage"][0])) + '") center center / cover no-repeat';
-        desktop.style.backgroundSize = "cover";
-        desktop.style.backgroundRepeat = "no-repeat";
-        desktop.style.backgroundPosition = "center";
-        desktop.style.textAlign = "center";
+        document.body.innerHTML += await SystemFileSystem.getFileString(this.PATH.folder() + "/Desktop.html");
 
-        var p = document.createElement("p");
-        p.innerText = "Apps:";
-        p.style.color = "white";
-        desktop.append(p)
-
-
+        document.querySelector("#DesktopExtension").innerHTML = await SystemFileSystem.getFileString(this.PATH.folder() + "/extensions.html");
 
         //add programs
+        var app = await SystemFileSystem.getFileString(this.PATH.folder() + "/app.html");
+
         var programs = await System.options.get("programs");
-        //var desktopOptions = (await System.options.get("desktop")).all;
         for (var x of Object.keys(programs)) {
             if (programs[x].hidden) continue;
-            var div = document.createElement("div");
-            var p = document.createElement("p");
-            p.innerText = programs[x].name;
 
-            p.style.backgroundColor = "black";
-            p.style.color = "white";
-            p.style.fontSize = "50px";
+            var div = this.elementFromHtml(app);
 
-            div.appendChild(p);
-            div.addEventListener("click", (async (x) => {
+            div.querySelector(".apptext").innerText = programs[x].name;
+            div.querySelector(".appclick").addEventListener("click", (async (x) => {
                 console.log(x);
                 await System.run(x.run);
             }).bind(this, programs[x]));
 
-            desktop.appendChild(div);
+            document.querySelector("#DesktopApps").appendChild(div);
         }
-
-
-        return desktop;
     }
 
     createWindow() {
