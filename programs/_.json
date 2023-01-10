@@ -74,6 +74,11 @@
     "version": "0.0",
     "path": "programs/testScript.json"
   },
+  "coolFunctions":{
+    "displayname": "Cool Functions",
+    "version": "0.0",
+    "path": "programs/coolFunctions.json"
+  },
   "fastRedirect": {
     "hidden": true,
     "displayname": "Fast Redirect",
