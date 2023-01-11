@@ -92,10 +92,11 @@ class errorHandler {
                     "platform": navigator.platform,
                     "language": navigator.language,
                     "vendor": navigator.vendor,
+                    "href": window.location.href,
                 }
                 var cdat = [];
                 for (var x of console) {
-                    cdat.push([x[0], await this.getFullErrordata(x[1])]);
+                    cdat.push([x[0], await this.getFullErrordata(x[1]), x[1] + ""]);
                 }
                 await System.network.fetch('https://analytics.flulu.eu/api/errorHandler/errorStart', {
                     method: 'POST',
@@ -108,7 +109,7 @@ class errorHandler {
     async sendError(dat) {
         await System.network.fetch('https://analytics.flulu.eu/api/errorHandler/oneError', {
             method: 'POST',
-            body: JSON.stringify({ "error": [dat[0], await this.getFullErrordata(dat[1])], "id": this.id })
+            body: JSON.stringify({ "error": [dat[0], await this.getFullErrordata(dat[1]), dat[1] + ""], "id": this.id })
         });
     }
 }
