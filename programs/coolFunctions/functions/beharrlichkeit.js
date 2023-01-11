@@ -5,7 +5,7 @@ class makeFunction1 {
                 [{ "name": "start", "type": "number" },
                 { "name": "length", "type": "number" }],
             "type": "line",
-            "title": "IterationenBisQuerproduktKleinerZehn",
+            "title": "Beharrlichkeit",
         };
     }
     run(start, length) {
@@ -19,7 +19,7 @@ class makeFunction1 {
             return i;
         }
 
-        function IterationenBisQuerproduktKleinerZehn(num) {
+        function Beharrlichkeit(num) {
             if (num < 10) {
                 return 0;
             }
@@ -41,7 +41,7 @@ class makeFunction1 {
             dat = [];
 
             for (var x = start; x < length + start; x++) {
-                dat.push({ "data": IterationenBisQuerproduktKleinerZehn(x), "label": x });
+                dat.push({ "data": Beharrlichkeit(x), "label": x });
             }
 
             return dat;

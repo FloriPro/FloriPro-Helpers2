@@ -4,9 +4,8 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
-        this.button1Clicks = 0;
-        this.windowUserCanResize = true;
-        this.windowShowTitle = false;
+        this.charts = [];
+        this.sysargs = {};
 
         /**
          * @type {HtmlWindow}
@@ -27,14 +26,20 @@ class program extends System.program.default {
 
                     var b = document.createElement("button");
                     b.innerText = name;
-                    b.onclick = this.openChart.bind(this, name);
+                    b.onclick = this.addChart.bind(this, name);
                     select.append(b);
                 }
 
                 await this.window.addHtmlEventListener("click", "back", async () => {
                     (await this.window.getHtmlElement("select")).style.display = "";
                     (await this.window.getHtmlElement("draw")).style.display = "none";
-                })
+                    this.charts = [];
+                    this.sysargs = {};
+                });
+                await this.window.addHtmlEventListener("click", "addchart", async () => {
+                    (await this.window.getHtmlElement("select")).style.display = "";
+                    (await this.window.getHtmlElement("draw")).style.display = "none";
+                });
 
                 await System.getLib("chartjs");
             });
@@ -44,7 +49,14 @@ class program extends System.program.default {
         }
     }
 
-    async openChart(name) {
+    async randomColor() {
+        var r = Math.floor(Math.random() * 255);
+        var g = Math.floor(Math.random() * 255);
+        var b = Math.floor(Math.random() * 255);
+        return "rgb(" + r + "," + g + "," + b + ")";
+    }
+
+    async addChart(name) {
         var c = await System.run("c/programs/coolFunctions/functions/" + name + ".js");
         var functio = new c();
 
@@ -52,10 +64,22 @@ class program extends System.program.default {
 
         var args = [];
         for (var x of information.arguments) {
+            console.log(x.name);
+            console.log(this.sysargs);
+            if (this.sysargs[x.name] != undefined) {
+                args.push(this.sysargs[x.name]);
+                continue;
+            }
             if (x.type == "number") {
                 args.push(await SystemHtml.WindowHandler.presets.createNumSelect("Argument " + x.name, x.name));
             }
+
+            if (x.name == "start" || x.name == "length") {
+                this.sysargs[x.name] = args[args.length - 1];
+            }
         }
+
+        console.log(args);
 
         var data = functio.run(...args);
 
@@ -67,10 +91,19 @@ class program extends System.program.default {
             lab.push(x.label);
         }
 
-        this.loadChart(lab, dat, information.title, information.type);
+
+        this.charts.push({
+            label: information.title,
+            data: dat,
+            fill: false,
+            tension: 0.0,
+            borderColor: await this.randomColor(),
+        })
+
+        this.loadChart(lab, information.type);
     }
 
-    async loadChart(labels, data, title, type) {
+    async loadChart(labels, type) {
         if (this.currentChart != undefined)
             this.currentChart.destroy();
 
@@ -78,13 +111,7 @@ class program extends System.program.default {
             type: type,
             data: {
                 labels: labels,
-                datasets: [{
-                    label: title,
-                    data: data,
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.0
-                }]
+                datasets: this.charts
             },
             responsive: true,
             maintainAspectRatio: false

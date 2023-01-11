@@ -76,7 +76,7 @@
   },
   "coolFunctions":{
     "displayname": "Cool Functions",
-    "version": "0.0",
+    "version": "0.1",
     "path": "programs/coolFunctions.json"
   },
   "fastRedirect": {
