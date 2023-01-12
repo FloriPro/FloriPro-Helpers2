@@ -1,1 +1,1 @@
-{"version":3,"file":"main.d.ts","sourceRoot":"","sources":["../../../programs/coolFunctions/main.js"],"names":[],"mappings":"AAAA;IAKI,sBAuCC;IAtCG,sBAAsB;IACtB,6BAA+B;IAC/B,yBAA4B;IAE5B;;OAEG;IACH,QAFU,UAAU,CA4Bd;IAOV,oCAwBC;IAED,wEAsBC;IAlBG,kBAcE;CAKT"}
+{"version":3,"file":"main.d.ts","sourceRoot":"","sources":["../../../programs/coolFunctions/main.js"],"names":[],"mappings":"AAAA;IAKI,sBA4CC;IA3CG,cAAgB;IAChB,YAAiB;IAEjB;;OAEG;IACH,QAFU,UAAU,CAkCd;IAOV,+BAKC;IAED,mCA6CC;IAED,iDAgBC;IAZG,kBAQE;CAKT"}

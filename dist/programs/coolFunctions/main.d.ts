@@ -1,14 +1,14 @@
 declare class program extends standardProg {
     init(): Promise<void>;
-    button1Clicks: number;
-    windowUserCanResize: boolean;
-    windowShowTitle: boolean;
+    charts: any[];
+    sysargs: {};
     /**
      * @type {HtmlWindow}
      */
     window: HtmlWindow;
-    openChart(name: any): Promise<void>;
-    loadChart(labels: any, data: any, title: any, type: any): Promise<void>;
+    randomColor(): Promise<string>;
+    addChart(name: any): Promise<void>;
+    loadChart(labels: any, type: any): Promise<void>;
     currentChart: any;
 }
 //# sourceMappingURL=main.d.ts.map
