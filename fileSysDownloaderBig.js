@@ -33,47 +33,110 @@ function setCookie(cname, cvalue, exdays) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
+async function informationalFetch_Text(url, opts = {}) {
+    var p = new Promise(async function (res, rej) {
+        var xhr = new XMLHttpRequest();
+        xhr.open(opts.method || 'get', url);
+        for (var k in opts.headers || {}) {
+            xhr.setRequestHeader(k, opts.headers[k]);
+        }
+        xhr.responseType = "text";
+        xhr.onload = (e) => {
+            res(xhr.responseText);
+        };
+        xhr.onerror = (...e) => {
+            rej(...e);
+        };
+        xhr.onprogress = (e) => {
+            document.querySelector("#status").innerText = "loading: " + Math.floor((e.loaded / e.total) * 100) + "%"
+        }
+        xhr.send(opts.body);
+    });
+    return await p;
+}
+
 async function loader() {
-    if (getCookie("cookieAllowance") != "true") {
-        var conf = confirm("Do you allow Cookies and Local Storage? This is absolutely vital for this website to function correctly!")
-        if (!conf) {
-            alert("Halted! This website needs Local Storage to function!");
-            return
+    try {
+        if (getCookie("cookieAllowance") != "true") {
+            var conf = confirm("Do you allow Cookies and Local Storage? This is absolutely vital for this website to function correctly!")
+            if (!conf) {
+                alert("Halted! This website needs Local Storage to function!");
+                return
+            } else {
+                setCookie("cookieAllowance", "true", 1000);
+            }
+        }
+
+        if (localStorage.getItem("fileSystemTable") == null || overwriteNotRedownload) {
+            try {
+            var text = await informationalFetch_Text("filesys.json?v=" + (Math.random() * 1000000));
+            } catch (e){
+                console.error(e);
+                document.querySelector("#status").innerText = "Error Initializing OS: Can't load from server!";
+                document.querySelector("#status").className = "error";
+                return
+            }
+            try {
+                var d = JSON.parse(text);
+            } catch (e){
+                console.error(e);
+                document.querySelector("#status").innerText = "Error Initializing OS: Can't parse file system!";
+                document.querySelector("#status").className = "error";
+                return
+            }
+            originalFileSystem = d;
+            try {
+                FileSystemTable = load(d, "c");
+            } catch (e){
+                console.error(e);
+                document.querySelector("#status").innerText = "Error Initializing OS: Can't initialize file system!";
+                document.querySelector("#status").className = "error";
+                return
+            }
+            localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
+
+            //load save files
+            //if (localStorage["save"] != undefined) {
+            //    localStorage[fastFileLookup["_saveFiles.json"]] = localStorage["save"];
+            //var save = JSON.parse(localStorage["save"]);
+            //for (var x of Object.keys(save)) {
+            //    localStorage[fastFileLookup[x]] = save[x];
+            //}
+            //}
+
+            //localStorage.removeItem("save");
         } else {
-            setCookie("cookieAllowance", "true", 1000);
+            FileSystemTable = JSON.parse(localStorage.getItem("fileSystemTable"));
+            try {
+                loadFastLookup(FileSystemTable, "c")
+            } catch (e){
+                console.error(e);
+                document.querySelector("#status").innerText = "Error Initializing OS: Can't reload file system!";
+                document.querySelector("#status").className = "error";
+                return
+            }
         }
-    }
 
-    if (localStorage.getItem("fileSystemTable") == null || overwriteNotRedownload) {
-        var r = await fetch("filesys.json?v=" + (Math.random() * 1000000));
-        var d = JSON.parse(await r.text());
-        originalFileSystem = d;
-        FileSystemTable = load(d, "c");
-        localStorage.setItem("fileSystemTable", JSON.stringify(FileSystemTable));
-
-        //load save files
-        //if (localStorage["save"] != undefined) {
-        //    localStorage[fastFileLookup["_saveFiles.json"]] = localStorage["save"];
-        //var save = JSON.parse(localStorage["save"]);
-        //for (var x of Object.keys(save)) {
-        //    localStorage[fastFileLookup[x]] = save[x];
-        //}
-        //}
-
-        //localStorage.removeItem("save");
-    } else {
-        FileSystemTable = JSON.parse(localStorage.getItem("fileSystemTable"));
-        loadFastLookup(FileSystemTable, "c")
-    }
-
-    //load boot.dat
-    for (var x of localStorage.getItem(FileSystemTable["files"]["boot.dat"]).split("\r\n")) {
-        if (localStorage.getItem(fastFileLookup[x]) == undefined) {
-            console.error("file not found: " + x)
+        //load boot.dat
+        for (var x of localStorage.getItem(FileSystemTable["files"]["boot.dat"]).split("\r\n")) {
+            if (localStorage.getItem(fastFileLookup[x]) == undefined) {
+                console.error("file not found: " + x)
+            }
+            try {
+                await eval(localStorage.getItem(fastFileLookup[x]))
+            } catch (e) {
+                console.error(e)
+                document.querySelector("#status").innerText = "One ore more files doesn't work: " + e + " in file: " + x;
+                document.querySelector("#status").className = "error";
+                return
+            }
         }
-        await eval(localStorage.getItem(fastFileLookup[x]))
+    } catch (e) {
+        console.error(e)
+        document.querySelector("#status").innerText = "Error Initializing OS: " + e;
+        document.querySelector("#status").className = "error";
+        return
     }
-
 }
 
 function loadFastLookup(data, path) {

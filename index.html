@@ -16,7 +16,7 @@
             if ("serviceWorker" in navigator) {
                 try {
                     const registration = await navigator.serviceWorker.register("worker.js");
-                    window.registration=registration;
+                    window.registration = registration;
                     if (registration.installing) {
                         console.log("Service worker installing");
                     } else if (registration.waiting) {
@@ -34,23 +34,44 @@
         });
         registerServiceWorker();
     </script>
+    <style>
+        .normal {
+            color: black;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
     <link rel="manifest" href="pwa.webmanifest" />
 </head>
 
 <body>
-    <p>This website is only for me and my friends! Do not use otherwise</p>
     <a href="impressum/">Impressum</a>
 
-    <p>The Website is loading OR your browser doesn't support this :(</p>
+    <p id="status" class="normal">Loading boot File</p>
+
     <button onclick="localStorage.clear();">reset</button>
     <button onclick="localStorage.removeItem('boot');">reset boot</button>
 </body>
 <script>
     async function load() {
         if (localStorage["boot"] == undefined) {
-            localStorage["boot"] = await (await fetch("fileSysDownloaderBig.js")).text();
+            try {
+                localStorage["boot"] = await (await fetch("fileSysDownloaderBig.js")).text();
+            } catch (e) {
+                console.error(e);
+                document.querySelector("#status").innerText = "Error: Could not load boot file!";
+                document.querySelector("#status").className = "error";
+            }
         }
-        eval(localStorage["boot"])
+        try {
+            eval(localStorage["boot"])
+        } catch (e) {
+            console.error(e);
+            document.querySelector("#status").innerText = "Error: Could not run boot file!";
+            document.querySelector("#status").className = "error";
+        }
     }
     load();
 </script>
