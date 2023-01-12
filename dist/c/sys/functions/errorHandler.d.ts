@@ -2,6 +2,7 @@ declare class errorHandler {
     errors: number;
     sendErrors: boolean;
     haltAt: string[];
+    dontSend: Storage[];
     getId(): Promise<void>;
     id: string;
     /**

@@ -6,6 +6,7 @@ class errorHandler {
         this.getId();
 
         this.haltAt = ["string", "function"];
+        this.dontSend = [localStorage];
     }
 
     async getId() {
@@ -22,6 +23,7 @@ class errorHandler {
      * @returns 
      */
     async getFullErrordata(element, parent = null, i = 5) {
+        if (undefined == element) { return null; }
         var out = []
         var pn = Object.getOwnPropertyNames(element);
         for (var m of pn) {
@@ -51,13 +53,21 @@ class errorHandler {
 
             out.push(o);
         }
+        out.push(await this.getObject(Object.getPrototypeOf(element), "[[ Prototype ]]", parent, i))
         return out
     }
 
     async getObject(element, m, parent, i) {//[parent, m]
+        if (this.dontSend.includes(element)) {
+            return { "name": m, "type": typeof element, "value": element + "", "children": [{ "name": "", "type": "string", "value": "don't send (" + element.constructor.name + ")" + "", "children": [] }] };
+        }
         var dat = { "name": m, "type": typeof element, "value": element + "", "children": [] };
 
-        if (i <= 0 || element == Object || this.haltAt.includes(typeof element)) {
+        if (i < 0) {
+            return { "name": m, "type": typeof element, "value": element + "", "children": [{ "name": "", "type": "string", "value": "max recursion (" + element.constructor.name + ")" + "", "children": [] }] };
+        }
+
+        if (element == Object || this.haltAt.includes(typeof element)) {
             return dat;
         }
 
