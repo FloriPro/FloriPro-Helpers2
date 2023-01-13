@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #canv {
+            background: black;
+
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        #ifr {
+            pointer-events: none;
+        }
+
+        #infos {
+            background-color: white;
+        }
+    </style>
+    <script>
+        var ws = new WebSocket("wss://remotebrowser.floriprolohner.repl.co/")
+        /* 
+            {
+                "event": "mousemove",
+                "vars": ["clientX", "clientY"]
+            },
+         */
+        const events = [
+            {
+                "event": "click",
+                "vars": ["clientX", "clientY"]
+            },
+            {
+                "event": "mousedown",
+                "vars": ["clientX", "clientY"]
+            },
+            {
+                "event": "mouseup",
+                "vars": ["clientX", "clientY"]
+            },
+            {
+                "event": "keydown",
+                "vars": ["key"]
+            },
+            {
+                "event": "keyup",
+                "vars": ["key"]
+            },
+            {
+                "event": "keypress",
+                "vars": ["key"]
+            },
+            {
+                "event": "wheel",
+                "vars": ["deltaX", "deltaY"]
+            },
+            {
+
+                "event": "contextmenu",
+                "vars": ["clientX", "clientY"]
+            }
+        ];
+
+        var gotImg = true;
+
+        var startup = [
+            () => {
+                document.querySelector("#canv").width = window.innerWidth;
+                document.querySelector("#canv").height = window.innerHeight;
+            },
+            () => {
+                send({
+                    "type": "size",
+                    "data": {
+                        "height": window.innerHeight,
+                        "width": window.innerWidth
+                    }
+                })
+            },
+            () => { send({ "type": "getimg" }) },
+            () => {
+                //setInterval(() => {
+                //    if (!gotImg) return;
+                //    send({ "type": "getimg" })
+                //    gotImg = false;
+                //}, 1000)
+            },
+            () => {
+                window.addEventListener("resize", () => { send({ "type": "size", "data": { "height": window.innerHeight, "width": window.innerWidth } }); send({ "type": "getimg" }); });
+            },
+            () => {
+                for (var i = 0; i < events.length; i++) {
+                    addEvent(events[i].event, events[i].vars)
+                }
+            },
+        ];
+
+        window.addEventListener("resize", () => {
+            document.querySelector("#canv").width = window.innerWidth;
+            document.querySelector("#canv").height = window.innerHeight;
+        })
+        class eventHandler {
+            constructor(type, v) {
+                this.type = type;
+                /**
+                 * @type {string[]}
+                 */
+                this.vars = v;
+            }
+            handleEvent(e) {
+                //check if mouse over #infos
+                var x = e.clientX;
+                var y = e.clientY;
+                var i = document.querySelector("#infos");
+                if (x > i.offsetLeft && x < i.offsetLeft + i.offsetWidth && y > i.offsetTop && y < i.offsetTop + i.offsetHeight) {
+                    return;
+                } else if (e.target == document.querySelector("#inputUrl") || e.target == document.querySelector("#inputUrlButton")) {
+                    return
+                } else {
+                    document.activeElement.blur();
+                }
+
+                e.preventDefault();
+                var s = {
+                    "type": "event",
+                    "data": {
+                        "type": e.type,
+                    }
+                }
+
+                this.vars.forEach((v) => {
+                    s.data[v] = e[v];
+                });
+
+                send(s);
+            }
+        }
+
+        function addEvent(event, v) {
+            var e = new eventHandler(event, v);
+            document.addEventListener(event, e.handleEvent.bind(e));
+        }
+
+
+        ws.onopen = function () {
+            console.log("Connected to server")
+            startup.forEach((func) => { try { func() } catch { } })
+        }
+
+        function send(msg) {
+            ws.send(JSON.stringify(msg));
+        }
+
+        ws.onmessage = function (event) {
+            var data = JSON.parse(event.data)
+
+            if (data.type == "img") {
+                gotImg = true;
+                drawImg(data.img, 0, 0)
+                //document.getElementById("img").src = "data:image/png;base64," + data.img
+            }
+            if (data.type == "posimg") {
+                gotImg = true;
+                drawImg(data.img, data.x, data.y)
+            }
+            if (data.type == "noimg") {
+                gotImg = true;
+            }
+            if (data.type == "html") {
+                gotImg = true;
+                /**
+                 * @type {HTMLIFrameElement}
+                 */
+                var i = document.querySelector("#ifr")
+
+                i.srcdoc = data.dat
+            }
+            if (data.type == "send") {
+                if (data.action == "end") {
+                    document.querySelector("#sendStatus").innerHTML = "Done"
+                } else if (data.action == "start") {
+                    document.querySelector("#sendStatus").innerHTML = "Getting"
+                }
+            }
+            if (data.type == "noimg") {
+                sen--;
+                document.querySelector("#sen").innerHTML = sen;
+            }
+            if (data.type == "imgstart") {
+                sen++;
+                document.querySelector("#sen").innerHTML = sen;
+            }
+        }
+
+        let sen = 0;
+
+        function drawImg(src, x, y) {
+            sen--;
+            document.querySelector("#sen").innerHTML = sen;
+            var myCanvas = document.querySelector("#canv");
+            var ctx = myCanvas.getContext('2d');
+            var img = new Image;
+            img.onload = function () {
+                ctx.drawImage(img, x, y);
+            };
+            img.src = "data:image/png;base64," + src;
+        }
+
+        function goUrl() {
+            var url = document.querySelector("#inputUrl").value
+            send({
+                "type": "setUrl",
+                "url": url
+            })
+        }
+    </script>
+    <title>My First Web Page</title>
+</head>
+
+<body>
+    <div style="display: flex; position: fixed; z-index: 99;" id="infos">
+        <input placeholder="url" id="inputUrl"><button onclick="goUrl()" id="inputUrlButton">Go</button>
+        <p id="sendStatus" style="margin: 0px;">Connectoing</p>
+        <p id="sen" style="margin: 0px;">...</p>
+    </div>
+    <br>
+    <canvas id="canv">enable canvas</canvas>
+    <!--
+    <img id="img">
+    -->
+</body>
+
+</html>

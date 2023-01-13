@@ -59,9 +59,14 @@
     "version": "0.1",
     "path": "programs/sync.json"
   },
+  "remoteBrowser": {
+    "displayname": "Remote Browser (Beta)",
+    "version": "0.0",
+    "path": "programs/remoteBrowser.json"
+  },
   "thereTime": {
     "displayname": "There Time",
-    "version": "0.0",
+    "version": "0.1",
     "path": "programs/thereTime.json"
   },
   "newYear": {
