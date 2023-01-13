@@ -305,6 +305,36 @@ class ContextMenu {
             x.remove();
         }
 
+        if (Object.keys(eventButtons).length == 0) {
+            var div = document.createElement("div");
+            div.className = "contextmenu"
+            div.style.top = (position[1] - 10) + "px";
+            div.style.left = (position[0] - 10) + "px";
+
+            div.style.width = "20px";
+            div.style.height = "20px";
+            div.style.backgroundColor = "rgba(255,0,0,0.1)";
+            div.style.borderRadius = "0%";
+            div.style.border = "1px solid rgba(0,0,0,1)";
+
+            div.style.transform = "scale(0)";
+            div.style.transition = "transform 100ms ease-in-out";
+
+            setTimeout(() => {
+                div.style.transform = "scale(1)";
+            }, 10);
+            setTimeout(() => {
+                div.style.transform = "scale(0)";
+            }, 100);
+
+            setTimeout(() => {
+                div.remove();
+            }, 200);
+
+            document.body.appendChild(div);
+            return;
+        }
+
         var div = document.createElement("div");
         div.className = "contextmenu"
         div.style.top = position[1] + "px";
