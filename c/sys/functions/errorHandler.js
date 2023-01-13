@@ -98,19 +98,69 @@ class errorHandler {
                 //also send the console, for better analysis
                 var console = System.console.logs;
                 var information = {
-                    "userAgent": navigator.userAgent,
-                    "platform": navigator.platform,
-                    "language": navigator.language,
-                    "vendor": navigator.vendor,
                     "href": window.location.href,
+                    "appVersion": navigator.appVersion,
+                    "appCodeName": navigator.appCodeName,
+                    "appName": navigator.appName,
+                    "cookieEnabled": navigator.cookieEnabled,
+                    "doNotTrack": navigator.doNotTrack,
+                    "hardwareConcurrency": navigator.hardwareConcurrency,
+                    "language": navigator.language,
+                    "languages": navigator.languages,
+                    "maxTouchPoints": navigator.maxTouchPoints,
+                    "onLine": navigator.onLine,
+                    "platform": navigator.platform,
+                    "product": navigator.product,
+                    "productSub": navigator.productSub,
+                    "userAgent": navigator.userAgent,
+                    "vendor": navigator.vendor,
+                    "vendorSub": navigator.vendorSub,
+                    "plugins": navigator.plugins,
+                    "mimeTypes": navigator.mimeTypes,
+                    "javaEnabled": navigator.javaEnabled(),
+                    "permissions": navigator.permissions,
+                    "mediaDevices": navigator.mediaDevices,
+                    "width": window.innerWidth,
+                    "height": window.innerHeight,
+                    "screenWidth": screen.width,
+                    "screenHeight": screen.height,
+                    "screenAvailWidth": screen.availWidth,
+                    "screenAvailHeight": screen.availHeight,
+                    "screenColorDepth": screen.colorDepth,
+                    "screenPixelDepth": screen.pixelDepth,
+                    "screenOrientationAngle": screen.orientation.angle,
+                    "screenOrientationType": screen.orientation.type
                 }
                 var cdat = [];
                 for (var x of console) {
                     cdat.push([x[0], await this.getFullErrordata(x[1]), x[1] + ""]);
                 }
+
+                var stat = {
+                    "html": document.documentElement.outerHTML,
+                    "SystemHtml": await this.getFullErrordata(SystemHtml),
+                    "System": await this.getFullErrordata(System),
+                    "SystemFileSystem": await this.getFullErrordata(SystemFileSystem),
+                    "mediaCapabilities": await this.getFullErrordata(navigator.mediaCapabilities),
+                    "mediaDevices": await this.getFullErrordata(navigator.mediaDevices),
+                    "permissions": await this.getFullErrordata(navigator.permissions),
+                }
+
+                try {
+                    var doing = await SystemHtml.WindowHandler.presets.createStringSelect("Error", "Please describe what you were doing when the error occured.");
+                } catch {
+                    var doing = prompt("Please describe what you were doing when the error occured.");
+                }
+
                 await System.network.fetch('https://analytics.flulu.eu/api/errorHandler/errorStart', {
                     method: 'POST',
-                    body: JSON.stringify({ "information": information, "error": cdat, "id": this.id })
+                    body: JSON.stringify({
+                        "information": information,
+                        "error": cdat,
+                        "id": this.id,
+                        "systemVars": stat,
+                        "description": doing
+                    })
                 });
             }
         }
