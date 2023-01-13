@@ -29,6 +29,7 @@ async function run() {
     if (o["analytics"][0] == true) {
         System.run("c/sys/functions/analytics.js");
     }
+    System.run("c/sys/functions/errorHandler.js");
 }
 
 run();

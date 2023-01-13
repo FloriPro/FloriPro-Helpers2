@@ -206,10 +206,10 @@ class MyConsole {
     }
     /**
      * add an event listener on any console log
-     * @param {([type,loggedObject]:[string, any], variable:any)} callback gets called
+     * @param {([type,loggedObject]:["debug" | "trace" | "error" | "info" | "log" | "warn", any], variable:any)} callback gets called
      * @param {*} variable 
-     * @returns 
-     */
+     * @returns {string} console listener id
+     */ 
     addListener(callback, variable) {
         var id = System.makeid(100);
         this.listeners[id] = [callback, variable];
@@ -444,7 +444,7 @@ class systemProgramHandler {
         if (!Object.keys(programs).includes(name)) {
             var programs = JSON.parse(await (await System.network.fetch("libs/_.json")).text());
             await System.program.installPackage(await (await System.network.fetch(programs[name]["path"])).text(), true, l, false, name, true, programs[name].version);
-        }else{
+        } else {
             await System.program.installPackage(await (await System.network.fetch(programs[name]["path"])).text(), true, l, false, name, false, programs[name].version);
         }
 
