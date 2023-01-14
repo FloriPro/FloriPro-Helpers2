@@ -84,6 +84,9 @@ class easUIWorkerProgram extends System.program.default {
                     return ret;
                 }
 
+                r.size.backFromFullMax = async () => {
+                    r.size.setMax();
+                };
                 r.size.setMax();
                 r.size.setMax = r.size.setMax;
                 r.size.notMax = r.size.setMax;

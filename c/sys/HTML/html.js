@@ -473,7 +473,6 @@ class WindowHandler {
 
                 SystemHtml.WindowHandler.moving = false;
                 SystemHtml.WindowHandler.movingFullscreen = false;
-                document.body.style.cursor = "default";
 
                 //reactivate iframes
                 var ifr = document.querySelectorAll("iframe");
