@@ -167,6 +167,11 @@
         ws.onmessage = function (event) {
             var data = JSON.parse(event.data)
 
+            if (data.type == "smallimg") {
+                gotImg = true;
+                drawImgSize(data.img, data.size)
+                //document.getElementById("img").src = "data:image/png;base64," + data.img
+            }
             if (data.type == "img") {
                 gotImg = true;
                 drawImg(data.img, 0, 0)
@@ -206,6 +211,21 @@
         }
 
         let sen = 0;
+
+        function drawImgSize(src, multiply) {
+            sen--;
+            document.querySelector("#sen").innerHTML = sen;
+            var myCanvas = document.querySelector("#canv");
+            /**
+             * @type {CanvasRenderingContext2D}
+             */
+            var ctx = myCanvas.getContext('2d');
+            var img = new Image;
+            img.onload = function () {
+                ctx.drawImage(img, 0, 0, img.width * multiply, img.height * multiply);
+            };
+            img.src = "data:image/png;base64," + src;
+        }
 
         function drawImg(src, x, y) {
             sen--;
