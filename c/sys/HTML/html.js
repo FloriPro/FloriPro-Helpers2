@@ -176,7 +176,7 @@ class Html {
     }
 
     htmlEventHandler(event) {
-        if (event.type == "click" && System.eventHandler.longClick == true) {
+        if (event.type == "click" && System.eventHandler.longClick == true && System.eventHandler.onmobile) {
             if (Date.now() - System.eventHandler.mouseDownTime > 500) {
                 console.log("cancel click HTML")
                 return;
@@ -763,8 +763,16 @@ class WindowHandler {
          */
         var w = new (await System.run("c/sys/HTML/HtmlWindow.js"))(id);
         w.onReady = readyCallback
-        await w.load(id, name);
 
+        var c = new class {
+            constructor() {
+            }
+        }();
+        var fp = new Promise((resolve, reject) => {
+            c.resolve = resolve;
+        });
+        await w.load(id, name, fp);
+        c.resolve();
         this.windowsCreated++;
         if (20 * this.windowsCreated >= (window.innerWidth - 50) / 10 || 20 * this.windowsCreated >= (window.innerHeight - 50) / 10) {
             this.windowsCreated = 1;
@@ -773,8 +781,9 @@ class WindowHandler {
         w.getHtml().offsetHeight;
 
         this.windows[id] = w;
-        await SystemHtml.WindowHandler.focus(id);
-        this.updateWindowLayering();
+        SystemHtml.WindowHandler.focus(id).then(() => {
+            this.updateWindowLayering();
+        });
         return w;
     }
     getFreeId() {

@@ -759,7 +759,7 @@ class eventHandler {
                 event.preventDefault();
             }
         }
-        if (type == "click" && replacement == false) {
+        if (type == "click" && replacement == false && System.eventHandler.onmobile) {
             //console.log("click " + (Date.now() - System.eventHandler.mouseDownTime))
             if (System.eventHandler.longClick == true && Date.now() - System.eventHandler.mouseDownTime > 500) {
                 type = "contextmenu";

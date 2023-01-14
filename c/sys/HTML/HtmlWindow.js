@@ -40,6 +40,7 @@ class HtmlWindow {
         }(this);
         this.size = new class {
             constructor(parent) {
+                this.previousMode = "normal";
                 this.transitionTime = 50;
                 /**
                  * @type {HtmlWindow}
@@ -93,6 +94,8 @@ class HtmlWindow {
                 if (this.max) t = "max";
                 if (this.fullMax) t = "fullmax";
 
+                this.previousMode = t;
+
                 this.maxBefore[t]["size"] = await this.getSize();
                 this.maxBefore[t]["pos"] = this.parent.getPosition();
                 this.maxBefore[t]["userResize"] = this.parent.canUserResize
@@ -116,6 +119,17 @@ class HtmlWindow {
                 this.parent.appearence.showTitle(false);
 
                 SystemHtml.WindowHandler.updateWindowLayering();
+            }
+            async backFromFullMax() {
+                var t = this.previousMode;
+
+                if (t == "normal") {
+                    this.notMax();
+                } else if (t == "max") {
+                    this.setMax();
+                } else if (t == "fullmax") {
+                    this.setfullMax();
+                }
             }
             async notMax() {
                 this.fullMax = false;
@@ -379,7 +393,7 @@ class HtmlWindow {
     rename(name) {
         this.getHtml().querySelector(".window-name").innerText = name;
     }
-    async load(id, name) {
+    async load(id, name, pf) {
         var windowStr = await SystemFileSystem.getFileString("c/sys/HTML/window.html");
 
         windowStr = windowStr.replace("%%id%%", "" + id).replace("%%id%%", "" + id)
@@ -390,8 +404,7 @@ class HtmlWindow {
             var w = SystemHtml.WindowHandler.getWindowById(event.getAttribute("windowId"));
             if (w != undefined && w.size.fullMax) {
                 r["size normal"] = (clickEvent) => {
-                    SystemHtml.WindowHandler.getWindowById(clickEvent.target.getAttribute("windowId")).size.notMax();
-                    console.log(clickEvent)
+                    SystemHtml.WindowHandler.getWindowById(clickEvent.target.getAttribute("windowId")).size.backFromFullMax();
                 }
             }
             return r;
@@ -400,26 +413,24 @@ class HtmlWindow {
             return {
                 "close": (clickEvent) => {
                     SystemHtml.WindowHandler.getWindowById(clickEvent.target.parentNode.parentNode.getAttribute("windowId")).makeClose()
-                    console.log(clickEvent)
                 },
                 "minimize": (clickEvent) => {
                     SystemHtml.WindowHandler.getWindowById(clickEvent.target.parentNode.parentNode.getAttribute("windowId")).appearence.minimize();
-                    console.log(clickEvent)
                 },
                 "maximize": (clickEvent) => {
                     SystemHtml.WindowHandler.getWindowById(clickEvent.target.parentNode.parentNode.getAttribute("windowId")).size.setMax()
-                    console.log(clickEvent)
                 },
                 "fullmax": (clickEvent) => {
                     SystemHtml.WindowHandler.getWindowById(clickEvent.target.parentNode.parentNode.getAttribute("windowId")).size.setfullMax()
-                    console.log(clickEvent)
                 }
             }
         }
 
         await this.size.setSize(this.#sizeX, this.#sizeY);
         this.size.userCanResize(true);
-        setTimeout(this.onReady, 2);
+        pf.then(async (pf) => {
+            setTimeout(this.onReady, 2);
+        });
         await delay(1);
         return;
     }
