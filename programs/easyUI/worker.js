@@ -129,15 +129,26 @@ class easUIWorkerProgram extends System.program.default {
             setTimeout(() => {
                 if (r.removed) return;
 
+                var umog = r.size.updateMax.bind(r.size);
+                r.size.updateMax = async () => {
+                    var ot = r.size.transitionTime;
+                    r.size.transitionTime = 0;
+                    await umog();
+                    r.size.transitionTime = ot;
+
+                    if (!r.size.fullMax) {
+                        if (r.removed) return;
+                        await r.size.setSize(window.innerWidth, window.innerHeight - 10);
+                    }
+                }
+
                 var o = r.size.setMax.bind(r.size);
                 r.size.setMax = async (...ar) => {
                     var ret = await o(...ar);
 
                     if (r.removed) return;
 
-                    await r.size.setSize(window.innerWidth, window.innerHeight);
-
-                    r.size.fullMax = true;
+                    await r.size.setSize(window.innerWidth, window.innerHeight - 10);
 
                     return ret;
                 }
@@ -152,8 +163,17 @@ class easUIWorkerProgram extends System.program.default {
 
                 //replace titelbar
                 var html = r.getHtml()
+                html.style.backgroundColor = "rgb(44, 43, 43)";
+                html.querySelector(".content").style.backgroundColor = "rgb(44, 43, 43)";
+                html.querySelector(".content").style.color = "white";
+
                 var titlebar = html.querySelector(".title-bar")
                 titlebar.style.cursor = "default";
+                titlebar.style.backgroundColor = "#242323";
+                titlebar.style.color = "white";
+                titlebar.style.boxShadow = "0px 0px 10px 2px rgb(0 0 0 / 58%)";
+                titlebar.style.marginBottom = "10px";
+                titlebar.querySelector(".title-bar-text").style.color = "white";
 
                 titlebar.querySelector(".title-bar-controls").style.display = "none";
 
@@ -163,7 +183,11 @@ class easUIWorkerProgram extends System.program.default {
                     r.makeClose();
                 }
 
-                titlebar.prepend(back)
+                titlebar.prepend(back);
+
+                //notify window, that easyUI is enabled
+                r.appearence.easyUI = true;
+                if (r.appearence.notifyUI != undefined) r.appearence.notifyUI();
             }, 10);
 
             return r;
