@@ -127,6 +127,25 @@ class Html {
             }
         })
 
+        var observer = new MutationObserver(function (mutations) {
+            var i = document.querySelectorAll("*[imgsrc]");
+            for (var x of i) {
+                var imgsrc = x.getAttribute("imgsrc");
+                x.removeAttribute("imgsrc");
+
+                //run it async so it doesn't block the rest of the code
+                (async (x, imgsrc) => {
+                    if (await SystemFileSystem.fileExists(imgsrc)) {
+                        x.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(imgsrc));
+                    } else {
+                        x.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString("c/sys/imgs/noIco.webp"));
+                    }
+                })(x, imgsrc);
+            }
+        });
+
+        observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
+
         //Desktop
         this.desktop = new Desktop();
     }

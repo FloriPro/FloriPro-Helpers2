@@ -2,6 +2,7 @@ class HtmlWindow {
     #id;
     #sizeX;
     #sizeY;
+    removed = false;
 
     /**
      * asks the window if it wants to be closed. If yes, closes it
@@ -15,6 +16,7 @@ class HtmlWindow {
      * remove the window
      */
     remove() {
+        this.removed = true;
         SystemHtml.WindowHandler.removeWindow(this.#id)
     }
 
@@ -429,7 +431,10 @@ class HtmlWindow {
         await this.size.setSize(this.#sizeX, this.#sizeY);
         this.size.userCanResize(true);
         pf.then(async (pf) => {
-            setTimeout(this.onReady, 2);
+            await delay(2);
+            if (this.removed != true) {
+                this.onReady();
+            }
         });
         await delay(1);
         return;
