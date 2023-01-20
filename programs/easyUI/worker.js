@@ -70,6 +70,14 @@ class easUIWorkerProgram extends System.program.default {
             menu.classList.toggle("hidden");
         });
 
+        document.querySelector("#bottom-arror-arrow").addEventListener("click", async () => {
+            var programs = document.querySelector("#DesktopPrograms");
+            programs.classList.toggle("hidden");
+
+            var arrow = document.querySelector("#bottom-arror-arrow");
+            arrow.classList.toggle("rotate");
+        });
+
         SystemHtml.desktop.buildDesktop = this.ReBuildDesktop.bind(this);
 
         await this.ReBuildDesktop();
@@ -77,7 +85,7 @@ class easUIWorkerProgram extends System.program.default {
     async ReBuildDesktop() {
         document.querySelector("#DesktopApps").innerHTML = "";
 
-        //add programs
+        //add desktop programs
         var app = await SystemFileSystem.getFileString(this.PATH.folder() + "/app.html");
 
         var programs = (await System.options.get("desktop"))["all"];
@@ -90,6 +98,23 @@ class easUIWorkerProgram extends System.program.default {
             }).bind(this, prog));
 
             document.querySelector("#DesktopApps").appendChild(div);
+        }
+
+        //add all programs
+        var program = await SystemFileSystem.getFileString(this.PATH.folder() + "/program.html");
+        document.querySelector("#DesktopPrograms").innerHTML = "";
+
+        var programs = await System.options.get("programs");
+        for (var x of Object.keys(programs)) {
+            if (programs[x].hidden) continue;
+            var div = this.elementFromHtml(program);
+
+            div.querySelector(".apptext").innerText = programs[x].name;
+            div.querySelector(".appclick").addEventListener("click", (async (x) => {
+                await System.run(x.run);
+            }).bind(this, programs[x]));
+
+            document.querySelector("#DesktopPrograms").appendChild(div);
         }
     }
 

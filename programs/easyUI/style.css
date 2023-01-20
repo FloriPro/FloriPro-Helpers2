@@ -3,8 +3,22 @@
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
-.appclick:hover{
+
+.appclick:hover {
     filter: drop-shadow(0px 0px 4px aqua);
+}
+
+
+.bottom-arrow {
+    border-bottom: 2px solid #585858;
+}
+
+#bottom-arror-arrow{
+    transition: 0.5s;
+}
+
+.rotate{
+    rotate: 180deg;
 }

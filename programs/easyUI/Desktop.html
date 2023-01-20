@@ -7,7 +7,7 @@
     background: center center / cover no-repeat #2C2B2B;
     text-align: center;
   ">
-  <button id="DesktopMoreMenu" style="
+  <div id="DesktopMoreMenu" style="
     background: transparent;
     padding: 0;
     margin: 0;
@@ -21,11 +21,12 @@
     justify-content: space-between;
   ">
     <div style="display: flex;align-items: center;">
-      <img imgsrc="c/sys/imgs/gray.webp">
-      <p>FluLu.eu</p>
+      <img imgsrc="c/sys/imgs/color.webp" style="border-radius: 10px;">
+      <p style="color: #58e384;">FluLu.eu</p>
     </div>
-    <img id="DesktopMoreMenuMore" imgsrc="c/programs/easyUI/plus.webp" style="width: 40px; height: auto; margin: 0px;">
-  </button>
+    <img id="DesktopMoreMenuMore" imgsrc="c/programs/easyUI/plus.webp"
+      style="width: 40px; height: auto; margin: 0px; cursor: pointer;">
+  </div>
   <div id="DesktopExtension" class="hidden" style="
     position: fixed;
     top: 40px;
@@ -39,5 +40,43 @@
       justify-content: center;
       max-width: 100%;
     "></div>
+  <br>
+  <br>
+  <br>
+  <br>
+  <div class="bottom-arrow">
+    <p style="color: #585858">Programs</p>
+    <div id="bottom-arror-arrow" class="" style="
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      width: 0;
+      height: 0;
+      margin-top: -3px;
+      border-top: 10px solid #585858;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      z-index: 1;
+      cursor: pointer;
+    "></div>
+    <div style="
+      width: 48px;
+      border-top: 10px solid #2c2b2b;
+      margin-top: -3px;
+      border-left: 0px solid transparent;
+      border-right: 0px solid transparent;
+      position: absolute;
+      left: calc(50% - 24px);
+      z-index: 0;
+    "></div>
+  </div>
+  <br>
+  <div id="DesktopPrograms" class="hidden" style="
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    max-width: 100%;
+  "></div>
 </div>
-<script src="https://replit.com/public/js/replit-badge.js" theme="pink" defer></script>
