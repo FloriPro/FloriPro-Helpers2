@@ -11,6 +11,12 @@ class easUIWorkerProgram extends System.program.default {
         }
         console.log("init overwriten")
 
+        //load css
+        var css = await SystemFileSystem.getFileString("c/programs/easyUI/style.css");
+        var style = document.createElement("style");
+        style.innerHTML = css;
+        document.head.appendChild(style);
+
         document.body.appendChild(document.querySelector("#stuff"));
 
         var hidden = document.createElement("div");
@@ -28,10 +34,24 @@ class easUIWorkerProgram extends System.program.default {
 
         document.body.style.webkitOverflowScrolling = 'touch';
 
-        await this.desktop();
+        await this.makeNewDesktop();
 
         this.createWindow();
         this.updateStartmenu();
+        this.taskbar();
+
+
+        //check for weird stuff
+        this.shouldBeRemoved = [];
+        this.setInterval((() => {
+            for (var x of document.querySelectorAll("._remove")) {
+                if (this.shouldBeRemoved.includes(x)) {
+                    x.remove();
+                    continue;
+                }
+                this.shouldBeRemoved.push(x);
+            }
+        }).bind(this), 500);
     }
     elementFromHtml(htmlString) {
         var div = document.createElement('div');
@@ -40,25 +60,34 @@ class easUIWorkerProgram extends System.program.default {
         return div;
     }
 
-    async desktop() {
+    async makeNewDesktop() {
         document.body.innerHTML += await SystemFileSystem.getFileString(this.PATH.folder() + "/Desktop.html");
 
         document.querySelector("#DesktopExtension").innerHTML = await SystemFileSystem.getFileString(this.PATH.folder() + "/extensions.html");
 
+        document.querySelector("#DesktopMoreMenuMore").addEventListener("click", async () => {
+            var menu = document.querySelector("#DesktopExtension");
+            menu.classList.toggle("hidden");
+        });
+
+        SystemHtml.desktop.buildDesktop = this.ReBuildDesktop.bind(this);
+
+        await this.ReBuildDesktop();
+    }
+    async ReBuildDesktop() {
+        document.querySelector("#DesktopApps").innerHTML = "";
+
         //add programs
         var app = await SystemFileSystem.getFileString(this.PATH.folder() + "/app.html");
 
-        var programs = await System.options.get("programs");
-        for (var x of Object.keys(programs)) {
-            if (programs[x].hidden) continue;
+        var programs = (await System.options.get("desktop"))["all"];
+        for (var prog of programs) {
+            var div = this.elementFromHtml(app.replace("%%imgsrc%%", prog.icon));
 
-            var div = this.elementFromHtml(app);
-
-            div.querySelector(".apptext").innerText = programs[x].name;
+            div.querySelector(".apptext").innerText = prog.name;
             div.querySelector(".appclick").addEventListener("click", (async (x) => {
-                console.log(x);
                 await System.run(x.run);
-            }).bind(this, programs[x]));
+            }).bind(this, prog));
 
             document.querySelector("#DesktopApps").appendChild(div);
         }
@@ -73,9 +102,13 @@ class easUIWorkerProgram extends System.program.default {
             var r = await og(...a);
 
             setTimeout(() => {
+                if (r.removed) return;
+
                 var o = r.size.setMax.bind(r.size);
                 r.size.setMax = async (...ar) => {
                     var ret = await o(...ar);
+
+                    if (r.removed) return;
 
                     await r.size.setSize(window.innerWidth, window.innerHeight);
 
@@ -85,6 +118,7 @@ class easUIWorkerProgram extends System.program.default {
                 }
 
                 r.size.backFromFullMax = async () => {
+                    if (r.removed) return;
                     r.size.setMax();
                 };
                 r.size.setMax();
@@ -112,9 +146,23 @@ class easUIWorkerProgram extends System.program.default {
     }
     updateStartmenu() {
         SystemHtml.updateStartmenu = (async () => {
-            document.querySelector("#Desktop").remove();
-            document.body.append(await this.desktop())
+            await this.ReBuildDesktop()
         }).bind(this);
+    }
+    taskbar() {
+        var og = SystemHtml.WindowHandler.updateTaskBar.bind(SystemHtml.WindowHandler);
+        SystemHtml.WindowHandler.updateTaskBar = () => {
+            og();
+
+            //hide the DesktopNew, when a window is open
+            for (var x of Object.keys(SystemHtml.WindowHandler.windows)) {
+                if (SystemHtml.WindowHandler.windows[x].appearence.shown) {
+                    document.querySelector("#DesktopNew").style.display = "none";
+                    return;
+                }
+            }
+            document.querySelector("#DesktopNew").style.display = "";
+        }
     }
 }
 

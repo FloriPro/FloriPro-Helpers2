@@ -1,24 +1,43 @@
-<div
-  id="Desktop"
-  style="
+<div id="DesktopNew" style="
     position: absolute;
     top: 0px;
     left: 0px;
     width: 100%;
-    height: 100%;
-    background: center center / cover no-repeat black;
+    min-height: 100%;
+    background: center center / cover no-repeat #2C2B2B;
     text-align: center;
-  "
->
-  <div id="DesktopExtension"></div>
+  ">
+  <button id="DesktopMoreMenu" style="
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    box-shadow: 0px 0px 10px 2px rgb(0 0 0 / 58%);
+    margin-bottom: 30px;
+    background-color: #242323;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  ">
+    <div style="display: flex;align-items: center;">
+      <img imgsrc="c/sys/imgs/gray.webp">
+      <p>FluLu.eu</p>
+    </div>
+    <img id="DesktopMoreMenuMore" imgsrc="c/programs/easyUI/plus.webp" style="width: 40px; height: auto; margin: 0px;">
+  </button>
+  <div id="DesktopExtension" class="hidden" style="
+    position: fixed;
+    top: 40px;
+    right: 0;
+  " onclick="console.log(this);this.classList.toggle('hidden');"></div>
   <p style="color: white">Apps:</p>
-  <div
-    id="DesktopApps"
-    style="
+  <div id="DesktopApps" style="
       display: flex;
       flex-wrap: wrap;
       flex-direction: row;
       justify-content: center;
-    "
-  ></div>
+      max-width: 100%;
+    "></div>
 </div>
+<script src="https://replit.com/public/js/replit-badge.js" theme="pink" defer></script>

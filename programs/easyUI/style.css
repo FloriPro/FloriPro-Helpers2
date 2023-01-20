@@ -1,0 +1,10 @@
+#DesktopMoreMenuMore:hover {
+    filter: drop-shadow(0px 0px 4px aqua);
+}
+
+.hidden {
+    display: none;
+}
+.appclick:hover{
+    filter: drop-shadow(0px 0px 4px aqua);
+}
