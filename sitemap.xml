@@ -2,6 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
 		<loc>https://flulu.eu/</loc>
-		<lastmod>2022-12-08T16:12:20+03:00</lastmod>
+		<lastmod>2023-1-20T16:12:20+03:00</lastmod>
+	</url>
+	<url>
+		<loc>https://flulu.eu/web</loc>
+		<lastmod>2023-1-20T16:12:20+03:00</lastmod>
 	</url>
 </urlset>
