@@ -4,3 +4,11 @@
   Informations
 </button>
 <button onclick="System.run('c/programs/easyUI/off.js')">Normal</button>
+<button onclick='
+async function r(){
+var settings = await SystemFileSystem.getFileJson("c/user/easyUI/settings.json");
+settings.darkmode = !settings.darkmode;
+await SystemFileSystem.setFileString("c/user/easyUI/settings.json", JSON.stringify(settings));
+location.reload();
+}r();
+'>Toggle Window Darkmode</button>
