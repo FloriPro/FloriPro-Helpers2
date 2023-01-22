@@ -7,7 +7,7 @@ class program extends System.program.default {
         /**
          * @type {HtmlWindow}
          */
-        this.window = await SystemHtml.WindowHandler.createWindow("test",
+        this.window = await SystemHtml.WindowHandler.createWindow("There Time",
             //onready:
             async () => {
                 //set html

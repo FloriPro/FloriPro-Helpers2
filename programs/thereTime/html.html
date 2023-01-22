@@ -1,94 +1,129 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>OSM and Leaflet</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+      crossorigin=""
+    />
     <style>
-        html,
-        body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
 
-        #info {
-            position: fixed;
-            top: 0;
-            right: 0;
-            background: #fff;
-            padding: 5px;
-            font-size: 25px;
-            z-index: 99999;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+      #info {
+        position: fixed;
+        top: 0;
+        right: 0;
+        background: #fff;
+        padding: 5px;
+        font-size: 25px;
+        z-index: 99999;
+        font-family: Arial, Helvetica, sans-serif;
+      }
 
-        #info p {
-            margin: 0;
-            padding: 0;
-        }
+      #info p {
+        margin: 0;
+        padding: 0;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="info">
-        <p>Geschwindigkeit: <span id="speed">...</span></p>
-        <p>Abstand: <span id="distance">...</span></p>
-        <p>Ankunft: <span id="timeremaining">...</span></p>
+      <p>Geschwindigkeit: <span id="speed">...</span></p>
+      <p>Abstand: <span id="distance">...</span></p>
+      <p>Ankunft: <span id="timeremaining">...</span></p>
     </div>
     <div id="map" style="width: 100%; height: 100%"></div>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+      crossorigin=""
+    ></script>
     <script>
-        // Creating map options
-        var mapOptions = {
-            center: [17.385044, 78.486671],
-            zoom: 10
-        }
+      // Creating map options
+      var mapOptions = {
+        center: [17.385044, 78.486671],
+        zoom: 10,
+      };
 
-        var selectedPos = {
-            lat: 0,
-            lng: 0
-        }
-        var userPos = {
-            lat: 0,
-            lng: 0
-        }
-        var speed = 0;
+      var selectedPos = {
+        lat: 0,
+        lng: 0,
+      };
+      var userPos = {
+        lat: 0,
+        lng: 0,
+      };
+      var speed = 0;
+      var first = true;
 
-        navigator.geolocation.watchPosition((p) => {
-            console.log("watch");
-            speed = p.coords.speed
-            userPos = {
-                lat: p.coords.latitude,
-                lng: p.coords.longitude
-            };
-            checkDistance();
+      navigator.geolocation.watchPosition((p) => {
+        console.log("watch");
+        speed = p.coords.speed;
+        userPos = {
+          lat: p.coords.latitude,
+          lng: p.coords.longitude,
+        };
+        checkDistance();
+
+        if (userMarker) map.removeLayer(userMarker);
+        if (circle) map.removeLayer(circle);
+        userPos = { lat: p.coords.latitude, lng: p.coords.longitude };
+        userMarker = L.circle([p.coords.latitude, p.coords.longitude], 1, {
+          weight: 1,
+          color: "red",
+          fillColor: "#ff0000",
+          fillOpacity: 0.5,
         });
+        circle = L.circle(
+          [p.coords.latitude, p.coords.longitude],
+          p.coords.accuracy / 2,
+          {
+            weight: 1,
+            color: "blue",
+            fillColor: "#0044ff",
+            fillOpacity: 0.1,
+          }
+        );
+        map.addLayer(userMarker);
+        map.addLayer(circle);
+        if (first) {
+          map.panTo(new L.LatLng(p.coords.latitude, p.coords.longitude));
+          first = false;
+        }
+      });
 
-        // Creating a map object
-        var map = new L.map('map', mapOptions);
+      // Creating a map object
+      var map = new L.map("map", mapOptions);
 
-        // Creating a Layer object
-        var layer = new L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png');
+      // Creating a Layer object
+      var layer = new L.TileLayer(
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+      );
 
-        // Adding layer to the map
-        map.addLayer(layer);
+      // Adding layer to the map
+      map.addLayer(layer);
 
-        var marker;
-        map.on('click', function (e) {
-            if (marker)
-                map.removeLayer(marker);
-            console.log(e.latlng); // e is an event object (MouseEvent in this case)
-            selectedPos = e.latlng;
-            marker = L.marker(e.latlng).addTo(map);
-            checkDistance();
-        });
+      var marker;
+      map.on("click", function (e) {
+        if (marker) map.removeLayer(marker);
+        console.log(e.latlng); // e is an event object (MouseEvent in this case)
+        selectedPos = e.latlng;
+        marker = L.marker(e.latlng).addTo(map);
+        checkDistance();
+      });
 
+      var userMarker, circle;
 
-        var userMarker, circle;
-
-        map.locate({ setView: true, watch: true })
+      /*map.locate({ setView: true, watch: true })
             .on('locationfound', function (e) {
                 if (userMarker)
                     map.removeLayer(userMarker);
@@ -114,47 +149,49 @@
             .on('locationerror', function (e) {
                 console.log(e);
                 alert("Location access denied.");
-            });
+            });*/
 
-        /**
-         * Calculates the distance between two points on the world in meters
-         */
-        function calculateDistance(pos1, pos2) {
-            var R = 6371e3; // metres
-            var φ1 = pos1.lat * Math.PI / 180; // φ, λ in radians
-            var φ2 = pos2.lat * Math.PI / 180;
-            var Δφ = (pos2.lat - pos1.lat) * Math.PI / 180;
-            var Δλ = (pos2.lng - pos1.lng) * Math.PI / 180;
+      /**
+       * Calculates the distance between two points on the world in meters
+       */
+      function calculateDistance(pos1, pos2) {
+        var R = 6371e3; // metres
+        var φ1 = (pos1.lat * Math.PI) / 180; // φ, λ in radians
+        var φ2 = (pos2.lat * Math.PI) / 180;
+        var Δφ = ((pos2.lat - pos1.lat) * Math.PI) / 180;
+        var Δλ = ((pos2.lng - pos1.lng) * Math.PI) / 180;
 
-            var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var a =
+          Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+          Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-            var d = R * c; // in metres
-            return d;
+        var d = R * c; // in metres
+        return d;
+      }
+
+      function checkDistance() {
+        if (selectedPos.lat != 0 && userPos.lat != 0) {
+          var distance = calculateDistance(selectedPos, userPos);
+          document.getElementById("distance").innerHTML =
+            distance.toFixed(2) + " m";
+
+          if (speed == 0 || speed == null) {
+            document.getElementById("timeremaining").innerHTML = "♾";
+          } else {
+            var time = distance / speed;
+            var hours = Math.floor(time / 3600);
+            var minutes = Math.floor((time - hours * 3600) / 60);
+            var seconds = Math.floor(time - hours * 3600 - minutes * 60);
+            document.getElementById("timeremaining").innerHTML =
+              hours + "h " + minutes + "m " + seconds + "s";
+          }
         }
 
-        function checkDistance() {
-            if (selectedPos.lat != 0 && userPos.lat != 0) {
-                var distance = calculateDistance(selectedPos, userPos);
-                document.getElementById("distance").innerHTML = distance.toFixed(2) + " m";
-
-                if (speed == 0 || speed == null){
-                    document.getElementById("timeremaining").innerHTML = "♾";
-                } else {
-                    var time = distance / speed;
-                    var hours = Math.floor(time / 3600);
-                    var minutes = Math.floor((time - (hours * 3600)) / 60);
-                    var seconds = Math.floor(time - (hours * 3600) - (minutes * 60));
-                    document.getElementById("timeremaining").innerHTML = hours + "h " + minutes + "m " + seconds + "s";
-                }
-            }
-
-            // get the speed of the user in km/h
-            document.getElementById("speed").innerHTML = (speed * 3.6).toFixed(2) + " km/h";
-        }
+        // get the speed of the user in km/h
+        document.getElementById("speed").innerHTML =
+          (speed * 3.6).toFixed(2) + " km/h";
+      }
     </script>
-</body>
-
+  </body>
 </html>
