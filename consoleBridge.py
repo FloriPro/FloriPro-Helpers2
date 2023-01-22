@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import threading
 
 # set it to some thing like "heap_" to plot the number after "heap_" (e.g. "heap_100" will plot 100)
-PLOT = "heap_"
+PLOT = None# "heap_"
 
 if (PLOT != None):
     def startPlot():
