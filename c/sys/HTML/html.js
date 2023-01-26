@@ -786,10 +786,10 @@ class WindowHandler {
             constructor() {
             }
         }();
-        var fp = new Promise((resolve, reject) => {
+        var finishPromise = new Promise((resolve, reject) => {
             c.resolve = resolve;
         });
-        await w.load(id, name, fp);
+        await w.load(id, name, finishPromise);
         c.resolve();
         this.windowsCreated++;
         if (20 * this.windowsCreated >= (window.innerWidth - 50) / 10 || 20 * this.windowsCreated >= (window.innerHeight - 50) / 10) {

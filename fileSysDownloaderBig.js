@@ -69,16 +69,16 @@ async function loader() {
 
         if (localStorage.getItem("fileSystemTable") == null || overwriteNotRedownload) {
             try {
-            var text = await informationalFetch_Text("filesys.json?v=" + (Math.random() * 1000000));
-            } catch (e){
+                var text = await informationalFetch_Text("filesys.json?v=" + (Math.random() * 1000000));
+            } catch (e) {
                 console.error(e);
-                document.querySelector("#status").innerText = "Error Initializing OS: Can't load from server!";
+                document.querySelector("#status").innerHTML = "Error Initializing OS: Can't load from server! To visit a allready loaded version of this site please click <a href='/out.html'>here</a>.<br>When you switch between versions, you might need to press <b>'reset Boot'</b> to fully switch!";
                 document.querySelector("#status").className = "error";
                 return
             }
             try {
                 var d = JSON.parse(text);
-            } catch (e){
+            } catch (e) {
                 console.error(e);
                 document.querySelector("#status").innerText = "Error Initializing OS: Can't parse file system!";
                 document.querySelector("#status").className = "error";
@@ -87,7 +87,7 @@ async function loader() {
             originalFileSystem = d;
             try {
                 FileSystemTable = load(d, "c");
-            } catch (e){
+            } catch (e) {
                 console.error(e);
                 document.querySelector("#status").innerText = "Error Initializing OS: Can't initialize file system!";
                 document.querySelector("#status").className = "error";
@@ -109,7 +109,7 @@ async function loader() {
             FileSystemTable = JSON.parse(localStorage.getItem("fileSystemTable"));
             try {
                 loadFastLookup(FileSystemTable, "c")
-            } catch (e){
+            } catch (e) {
                 console.error(e);
                 document.querySelector("#status").innerText = "Error Initializing OS: Can't reload file system!";
                 document.querySelector("#status").className = "error";

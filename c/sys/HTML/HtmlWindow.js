@@ -395,7 +395,7 @@ class HtmlWindow {
     rename(name) {
         this.getHtml().querySelector(".window-name").innerText = name;
     }
-    async load(id, name, pf) {
+    async load(id, name, finishPromise) {
         var windowStr = await SystemFileSystem.getFileString("c/sys/HTML/window.html");
 
         windowStr = windowStr.replace("%%id%%", "" + id).replace("%%id%%", "" + id)
@@ -430,7 +430,10 @@ class HtmlWindow {
 
         await this.size.setSize(this.#sizeX, this.#sizeY);
         this.size.userCanResize(true);
-        pf.then(async (pf) => {
+        if (finishPromise == undefined){
+            return;
+        }
+        finishPromise.then(async (pf) => {
             await delay(2);
             if (this.removed != true) {
                 this.onReady();
