@@ -1,7 +1,7 @@
 {
   "easyUI": {
     "displayname": "Easy UI",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "path": "programs/easyUI.json"
   },
   "imageViewer": {
@@ -79,7 +79,7 @@
     "version": "0.0",
     "path": "programs/testScript.json"
   },
-  "coolFunctions":{
+  "coolFunctions": {
     "displayname": "Cool Functions",
     "version": "0.1",
     "path": "programs/coolFunctions.json"
@@ -89,5 +89,10 @@
     "displayname": "Fast Redirect",
     "version": "0.0",
     "path": "programs/fastRedirect.json"
+  },
+  "exitMe": {
+    "displayname": "Exit Game Toolkit",
+    "version": "0.0",
+    "path": "programs/exitMe.json"
   }
 }

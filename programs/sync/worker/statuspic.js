@@ -3,7 +3,7 @@ class statusPic {
         //check if allready exists
         if (!document.querySelector("#statusPic")) {
             //create element
-            this.statusPic = document.createElement("div");
+            this.statusPic = document.createElement("button");
             this.statusPic.id = "statusPic";
             this.statusPic.style.position = "fixed";
             this.statusPic.style.overflow = "hidden";

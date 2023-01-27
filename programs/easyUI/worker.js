@@ -20,7 +20,7 @@ class easUIWorkerProgram extends System.program.default {
 
         document.body.appendChild(document.querySelector("#stuff"));
 
-        var hidden = document.createElement("div");
+        var hidden = document.createElement("button");
         document.body.appendChild(hidden);
         hidden.id = "hidden";
         hidden.style.display = "none";
@@ -55,7 +55,7 @@ class easUIWorkerProgram extends System.program.default {
         }).bind(this), 500);
     }
     elementFromHtml(htmlString) {
-        var div = document.createElement('div');
+        var div = document.createElement('button');
         div.innerHTML = htmlString.trim();
 
         return div;
@@ -182,12 +182,21 @@ class easUIWorkerProgram extends System.program.default {
 
                 titlebar.querySelector(".title-bar-controls").style.display = "none";
 
+                var feu = document.createElement("button");
+                feu.innerHTML=`
+                <div style="display: flex;align-items: center;background: #2c2b2b;box-shadow: 0px 0px 30px 30px #2c2b2b;height: 0;">
+                    <img imgsrc="c/sys/imgs/color.webp" style="border-radius: 10px" />
+                    <p style="color: #58e384">FluLu.eu</p>
+                </div>
+                `
+
                 var back = document.createElement("button");
                 back.innerText = "<back"
                 back.onclick = () => {
                     r.makeClose();
                 }
 
+                titlebar.prepend(feu);
                 titlebar.prepend(back);
 
                 //notify window, that easyUI is enabled
