@@ -31,8 +31,8 @@ new (class {
             "styling": {
                 "fontSize": 40,
                 "fontFamily": "Arial",
-                "color": "black",
-                "backgroundColor": "transparent"
+                "color": "#000000ff",
+                "backgroundColor": "#00000000"
             }
         });
     }

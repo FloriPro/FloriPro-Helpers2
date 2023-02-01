@@ -4,13 +4,16 @@ class exitMe_gui_projectEditor extends System.program.default {
      * @param {HtmlWindow} window 
      */
     async init(window) {
+        this.getPath = () => { };
+
         /**
-         * @type {{{type:string, data:string|any, pos:{x:number,y:number}, size:{width:number,height:number}, styling:any}[]}}
+         * @type {{type:string, data:string|any, pos:{x:number,y:number}, size:{width:number,height:number}, styling:any}[]}
          */
         this.elements = {};
         this.window = window;
 
         this.elementFunctions = {};
+        this.contextMenuAll = [];
         await this.initElementFunctions();
 
         this.resize = false;
@@ -36,6 +39,13 @@ class exitMe_gui_projectEditor extends System.program.default {
                 }
                 this.elementFunctions[x] = info[x];
             }
+
+            var r = clas.contextMenuAll();
+            if (r != undefined) {
+                for (var x of r) {
+                    this.contextMenuAll.push(x);
+                }
+            }
         }
     }
 
@@ -59,17 +69,29 @@ class exitMe_gui_projectEditor extends System.program.default {
                 this.resize = true;
                 this.resizeType = i;
             }).bind(this, i);
-
+            el.ontouchstart = ((i) => {
+                this.resize = true;
+                this.resizeType = i;
+            }).bind(this, i);
             this.contentChanger.appendChild(el);
         }
 
         this.contentChanger.querySelector("[windowelement='contentChangerBorder']").onmousedown = (() => {
             this.moving = true;
         }).bind(this);
+        this.contentChanger.querySelector("[windowelement='contentChangerBorder']").ontouchstart = (() => {
+            this.moving = true;
+        }).bind(this);
+
         this.window.getHtml().onmouseup = (() => {
             this.moving = false;
             this.resize = false;
         }).bind(this);
+        this.window.getHtml().ontouchend = (() => {
+            this.moving = false;
+            this.resize = false;
+        }).bind(this);
+
         System.eventHandler.addEventHandler("mousemove", this.contentChangerMove.bind(this));
 
         this.window.addHtmlEventListener("onclick", "projectContent", async () => {
@@ -91,6 +113,19 @@ class exitMe_gui_projectEditor extends System.program.default {
             }
             this.editContent();
         });
+
+        this.contentChanger.contextscript = ((e) => {
+            var out = {};
+            for (var x of this.contextMenuAll) {
+                out[x.name] = x.action.bind(this, this.elements, this.elements[this.nowEditing].id, this.content);
+            }
+
+            var s = this.elementFunctions[this.elements[this.nowEditing].type].contextMenu;
+            for (var x of s) {
+                out[x.name] = x.action;
+            }
+            return out;
+        }).bind(this);
     }
 
     contentChangerMove(e) {
@@ -156,6 +191,19 @@ class exitMe_gui_projectEditor extends System.program.default {
         var domEL;
         domEL = this.elementFunctions[element.type].create(element, domEL);
 
+        domEL.contextscript = ((self) => {
+            var out = {};
+            for (var x of this.contextMenuAll) {
+                out[x.name] = x.action.bind(this, this.elements, element.id, this.content);
+            }
+
+            var s = this.elementFunctions[self.type].contextMenu;
+            for (var x of s) {
+                out[x.name] = x.action.bind(this, this.elements, element.id, this.content);
+            }
+            return out;
+        }).bind(this, element);
+
         this.setElementInformation(element, domEL);
 
         domEL.onclick = this.click.bind(this, element.id);
@@ -172,9 +220,6 @@ class exitMe_gui_projectEditor extends System.program.default {
         if (!r.includes("style_top")) domEL.style.top = element.pos.y + "px";
         if (!r.includes("style_width")) domEL.style.width = element.size.width + "px";
         if (!r.includes("style_height")) domEL.style.height = element.size.height + "px";
-        if (!r.includes("contextscript")) domEL.contextscript = () => {
-            return { "a": () => { } };
-        };
     }
 
     async editContent() {
@@ -219,6 +264,10 @@ class exitMe_gui_projectEditor extends System.program.default {
     }
     hideContentChanger() {
         this.contentChanger.style.display = "none";
+    }
+
+    get projectPath() {
+        return this.getPath();
     }
 }
 new exitMe_gui_projectEditor();

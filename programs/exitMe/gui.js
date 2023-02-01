@@ -4,6 +4,7 @@ class exitMe_gui extends System.program.default {
      * @param {HtmlWindow} window 
      */
     async init(window) {
+        this.getPath = () => { };
         this.types = ["projectChoose", "projectEdit"];
         this.window = window;
 
@@ -15,6 +16,7 @@ class exitMe_gui extends System.program.default {
          * @type {exitMe_gui_projectEditor}
          */
         this.projectEditor = await System.program.runProgram(this.PATH.folder() + "/gui/projectEditor.js", this.window);
+        this.projectEditor.getPath = this.getPath.bind(this);
 
         /**
          * @type {exitMe_gui_ribbon}

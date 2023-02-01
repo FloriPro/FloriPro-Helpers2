@@ -66,12 +66,35 @@ class exitMe_gui_ribbon extends System.program.default {
                 }
             }
             else if (functions[x].type == "color") {
-                r = document.createElement("input");
-                r.setAttribute("element", "ribbonBottom");
-                r.setAttribute("type", "color");
-                r.set
-                r.value = functions[x].get();
-                r.onchange = functions[x].change.bind(this, this.editor, r);
+                var current = functions[x].get();
+                r = document.createElement("div");
+                var i = document.createElement("input");
+                i.setAttribute("element", "ribbonBottom");
+                i.setAttribute("type", "color");
+                i.value = current.substring(0, 7);
+
+
+                var alpha = document.createElement("input");
+                alpha.setAttribute("element", "ribbonBottom");
+                alpha.setAttribute("type", "range");
+                alpha.setAttribute("min", "0");
+                alpha.setAttribute("max", "1");
+                alpha.setAttribute("step", "0.01");
+                alpha.value = parseInt(current.substring(7, 9), 16) / 255;
+
+                i.onchange = ((f, i, alpha) => {
+                    var color = i.value;
+                    var opacity = alpha.value;
+                    opacity = Math.round(opacity * 255).toString(16);
+                    if (opacity.length == 1)
+                        opacity = "0" + opacity;
+                    var rgbaCol = '#' + color.slice(-6, -4) + color.slice(-4, -2) + color.slice(-2) + opacity;
+                    f.change.bind(this, this.editor, rgbaCol)();
+                }).bind(this, functions[x], i, alpha);
+                alpha.onchange = i.onchange;
+
+                r.appendChild(i);
+                r.appendChild(alpha);
             }
             else if (functions[x].type == "number") {
                 r = document.createElement("input");
@@ -101,7 +124,18 @@ class exitMe_gui_ribbon extends System.program.default {
                     var f = await SystemHtml.WindowHandler.presets.createFileSelect("Select an image File");
                     if (f != undefined) {
                         functions[x].change.bind(this)(this.editor, f);
-                        console.log(functions[x].change);
+                    } else {
+                    }
+                }).bind(this, x);
+                r.innerText = x;
+            }
+            else if (functions[x].type == "stringAsk") {
+                r = document.createElement("button");
+                r.setAttribute("element", "ribbonBottom");
+                r.onclick = (async (x) => {
+                    var f = await SystemHtml.WindowHandler.presets.createStringSelect("URL", "Enter the URL of the image");
+                    if (f != undefined) {
+                        functions[x].change.bind(this)(this.editor, f);
                     } else {
                     }
                 }).bind(this, x);

@@ -2,6 +2,52 @@
     constructor(window) {
         this.window = window
     }
+    contextMenuAll() {
+        return [
+            {
+                "name": "remove",
+                "action": (elements, nowEditing, content) => {
+                    delete elements[nowEditing];
+                    content.querySelector(`[uuid="${nowEditing}"]`).remove();
+                }
+            },
+            {
+                "name": "layer",
+                "action": (elements, nowEditing, content) => {
+                    SystemHtml.ContextMenu.specific({
+                        "move to top": [(x) => {
+                            console.log(x);
+                            var [elements, nowEditing, content] = [x[0], x[1], x[2]];
+
+                            var el = content.querySelector(`[uuid="${nowEditing}"]`);
+                            content.removeChild(el);
+                            content.appendChild(el);
+
+                            var el2 = elements[nowEditing];
+                            delete elements[nowEditing];
+                            elements[nowEditing] = el2;
+                        }, [elements, nowEditing, content]],
+                        "move to bottom": [(x) => {
+                            var [elements, nowEditing, content] = [x[0], x[1], x[2]];
+                            var el = content.querySelector(`[uuid="${nowEditing}"]`);
+                            content.removeChild(el);
+                            content.prepend(el);
+
+                            var el2 = elements[nowEditing];
+                            delete elements[nowEditing];
+                            elements[nowEditing] = el2;
+                        }, [elements, nowEditing, content]],
+                        "move up": [(x) => {
+                            console.warn("layering overhaul needed!") //TODO: Layering Overhaul
+                        }, [elements, nowEditing, content]],
+                        "move down": [(x) => {
+                            console.warn("layering overhaul needed!") //TODO: Layering Overhaul
+                        }, [elements, nowEditing, content]],
+                    });
+                }
+            }
+        ]
+    }
     get() {
         return {
             "text": {
@@ -28,9 +74,16 @@
                 "stopEdit": async (elements, nowEditing, content) => {
                     content.querySelector(`[uuid="${nowEditing}"]`).style.display = "";
                     elements[nowEditing].data = (await this.window.getHtmlElement("contentChangerChangeText")).value;
-                    console.log(elements[nowEditing].data);
                     (await this.window.getHtmlElement("contentChangerChangeText")).style.display = "none";
-                }
+                },
+                "contextMenu": [
+                    {
+                        "name": "test",
+                        "action": (elements, nowEditing, content) => {
+                            console.log("test");
+                        }
+                    }
+                ]
             },
             "image": {
                 "set": this.imageSettings,
@@ -42,7 +95,8 @@
                 },
                 "stopEdit": async (elements, nowEditing, content) => {
                     console.warn("stop edit should not be called on image!");
-                }
+                },
+                "contextMenu": []
             }
         }
     }
