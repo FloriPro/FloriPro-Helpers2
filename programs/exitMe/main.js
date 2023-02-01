@@ -18,6 +18,7 @@ class program extends System.program.default {
                 this.getProjectList();
 
                 this.gui.loadProject = this.loadProject.bind(this);
+                this.gui.getPath = this.getPath.bind(this);
 
                 //set events
                 this.window.addHtmlEventListener("click", "newProject", async () => {
@@ -111,8 +112,15 @@ class program extends System.program.default {
     async loadProject(name) {
         this.gui.show("projectEdit");
         this.gui.ribbon.loadRibbons();
+        
+        this.name = name;
+        this.path = this.projects[name].path;
 
-        this.gui.loadIntoProject(this.projects[name].path);
+        this.gui.loadIntoProject(this.path);
+    }
+
+    getPath() {
+        return this.path;
     }
 }
 new program();
