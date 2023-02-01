@@ -383,6 +383,18 @@ class ContextMenu {
 
         return button;
     }
+    /**
+     * 
+     * @param {{[name:string]:()=>{}[]}} dat 
+     */
+    async specific(dat) {
+        await delay(10);
+        var u = {}
+        for (var x of Object.keys(dat)) {
+            u[x] = [dat[x][0], dat[x][1]];
+        }
+        this.showContext(u, [System.eventHandler.mouse.x, System.eventHandler.mouse.y]);
+    }
 }
 
 class WindowHandler {
