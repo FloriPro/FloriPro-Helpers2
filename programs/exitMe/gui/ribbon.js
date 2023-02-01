@@ -94,14 +94,25 @@ class exitMe_gui_ribbon extends System.program.default {
                 r.checked = functions[x].get();
                 r.onchange = functions[x].change.bind(this, this.editor, r);
             }
-
+            else if (functions[x].type == "file") {
+                r = document.createElement("button");
+                r.setAttribute("element", "ribbonBottom");
+                r.onclick = (async (x) => {
+                    var f = await SystemHtml.WindowHandler.presets.createFileSelect("Select an image File");
+                    if (f != undefined) {
+                        functions[x].change.bind(this)(this.editor, f);
+                        console.log(functions[x].change);
+                    } else {
+                    }
+                }).bind(this, x);
+                r.innerText = x;
+            }
             bel.append(r);
             //var r = this.getRibbonBottomElement(x, this.functions[name][x].bind(this, this.editor))
             //bel.appendChild(r);
         }
         this.window.parseNewHtml();
     }
-
 
     async select(index) {
         if (this.selectedRibbon != undefined) {

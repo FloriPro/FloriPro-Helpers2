@@ -39,8 +39,22 @@ new (class {
     async button() {
         console.warn("button not implemented");
     }
-    async image() {
-        console.warn("image not implemented");
+    async image(editor) {
+        editor.createElement({
+            "type": "image",
+            "data": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+            "pos": {
+                x: 10,
+                y: 10
+            },
+            "size": {
+                width: 100,
+                height: 100
+            },
+            "styling": {
+                "consistentSize": false,
+            }
+        });
     }
     async website() {
         console.warn("website not implemented");
