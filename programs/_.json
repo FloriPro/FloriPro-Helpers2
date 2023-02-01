@@ -1,7 +1,7 @@
 {
   "easyUI": {
     "displayname": "Easy UI",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "path": "programs/easyUI.json"
   },
   "imageViewer": {
