@@ -6,7 +6,11 @@
         return [
             {
                 "name": "remove",
-                "action": (elements, nowEditing, content) => {
+                "action": (elements, nowEditing, content, editor) => {
+                    editor.nowEditing = null;
+                    editor.hideContentChanger();
+                    editor.updateSelect();
+
                     delete elements[nowEditing];
                     content.querySelector(`[uuid="${nowEditing}"]`).remove();
                 }
@@ -97,6 +101,36 @@
                     console.warn("stop edit should not be called on image!");
                 },
                 "contextMenu": []
+            },
+            "box": {
+                "set": this.boxSettings,
+                "create": () => {
+                    var e = document.createElement("div");
+                    e.style.backgroundClip = "padding-box";
+                    return e;
+                },
+                "editContent": async (element, nowEditing, content) => {
+                    return false;
+                },
+                "stopEdit": async (elements, nowEditing, content) => {
+                    console.warn("stop edit should not be called on box!");
+                },
+                "contextMenu": []
+            },
+            "circle": {
+                "set": this.circleSettings,
+                "create": () => {
+                    var e = document.createElement("div");
+                    e.style.backgroundClip = "padding-box";
+                    return e;
+                },
+                "editContent": async (element, nowEditing, content) => {
+                    return false;
+                },
+                "stopEdit": async (elements, nowEditing, content) => {
+                    console.warn("stop edit should not be called on box!");
+                },
+                "contextMenu": []
             }
         }
     }
@@ -124,6 +158,21 @@
             element.size.height = domEL.height
             return ["style_height"];
         }
+        return [];
+    }
+
+    boxSettings(element, domEL) {
+        domEL.style.backgroundColor = element.styling.backgroundColor;
+        domEL.style.border = element.styling.border + "px solid " + element.styling.borderColor;
+        domEL.style.margin = (element.styling.border * -1) + "px";
+        return [];
+    }
+
+    circleSettings(element, domEL) {
+        domEL.style.backgroundColor = element.styling.backgroundColor;
+        domEL.style.border = element.styling.border + "px solid " + element.styling.borderColor;
+        domEL.style.margin = (element.styling.border * -1) + "px";
+        domEL.style.borderRadius = "50%";
         return [];
     }
 });

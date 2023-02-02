@@ -11,12 +11,17 @@ class exitMe_gui extends System.program.default {
         this.loadProject = (name) => { };
         this.show("projectChoose");
 
+        this.project = null;
+        this.page = 0;
 
         /**
          * @type {exitMe_gui_projectEditor}
          */
         this.projectEditor = await System.program.runProgram(this.PATH.folder() + "/gui/projectEditor.js", this.window);
         this.projectEditor.getPath = this.getPath.bind(this);
+        this.projectEditor.getSaveFile = this.getSaveFile.bind(this);
+        this.projectEditor.gui = this;
+        this.projectEditor.setPage = this.setPage.bind(this);
 
         /**
          * @type {exitMe_gui_ribbon}
@@ -61,8 +66,28 @@ class exitMe_gui extends System.program.default {
     }
 
     async loadIntoProject(path) {
-        var elements = await SystemFileSystem.getFileJson(path);
-        this.projectEditor.loadProject(elements);
+        this.project = await SystemFileSystem.getFileJson(path);
+        this.page = 0;
+        await this.projectEditor.loadProject(this.project.pages[this.page]);
+        this.loadProjectSettings();
+    }
+
+    async loadProjectSettings() {
+        this.projectEditor.setPixelRatio(this.project.pixelRatio);
+    }
+
+    getSaveFile() {
+        return this.project;
+    }
+
+    setPage(elements) {
+        var out = [];
+        for (var x of Object.values(elements)) {
+            delete x["id"];
+            out.push(x);
+        }
+
+        this.project.pages[this.page] = out;
     }
 }
 new exitMe_gui();

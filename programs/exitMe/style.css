@@ -1,12 +1,45 @@
 /*exitMe styles. Use this for all exitMe styles
-        [windowid="{{windowId}}"][windowelement=""]{
-        }
-    */
+    [windowid="{{windowId}}"][windowelement=""]{
+    }
+*/
+
+.window[windowid="{{windowId}}"] .title-bar {
+    background-color: #c53d15;
+}
+
+.window[windowid="{{windowId}}"] .content {
+    background-color: #eae8e6;
+    overflow: hidden;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .minimize {
+    background-color: #c53d15;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .maximize {
+    background-color: #c53d15;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .close {
+    background-color: #c53d15;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .minimize:hover {
+    background-color: #d44b23;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .maximize:hover {
+    background-color: #d44b23;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .close:hover {
+    background-color: #962300;
+}
+
 
 [windowid="{{windowId}}"][windowelement="ribbonControllBar"] {
     display: flex;
     flex-direction: column;
-    height: 100%;
     width: 100%;
 }
 
@@ -16,7 +49,14 @@
     height: 30px;
     width: 100%;
 
+    background-color: #c53d15;
+
+
     border-bottom: 1px solid #bfbfbf;
+}
+
+[windowid="{{windowId}}"][windowelement="projectEdit"] {
+    height: 100%;
 }
 
 [windowid="{{windowId}}"][windowelement="toolSelect"] {
@@ -54,18 +94,21 @@
 
 [windowid="{{windowId}}"][windowelement="projectContent"] {
     border: 1px solid #ff0000;
+    background-color: #ffffff;
 }
+
 
 [windowid="{{windowId}}"][windowelement="projectContentWraper"] {
     padding-left: 10px;
     position: relative;
+    overflow: auto;
 }
 
 [windowid="{{windowId}}"][windowelement="pageSelect"] {
     display: flex;
     flex-direction: row;
     width: 102px;
-    background-color: #ffffff;
+    background-color: #eae8e6;
     border: 1px solid #bfbfbf;
 }
 
@@ -84,7 +127,7 @@
 [windowid="{{windowId}}"][windowelement="editor"] {
     display: flex;
     flex-direction: row;
-    height: 100%;
+    height: calc(100% - 133px);
     width: 100%;
 }
 

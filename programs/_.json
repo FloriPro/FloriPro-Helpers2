@@ -92,7 +92,7 @@
   },
   "exitMe": {
     "displayname": "Exit Game Toolkit",
-    "version": "0.0",
+    "version": "0.1",
     "path": "programs/exitMe.json"
   }
 }

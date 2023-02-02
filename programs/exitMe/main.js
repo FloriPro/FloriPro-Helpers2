@@ -3,7 +3,7 @@ class program extends System.program.default {
         /**
          * @type {HtmlWindow}
          */
-        this.window = await SystemHtml.WindowHandler.createWindow("Exit Game Toolkit",
+        this.window = await SystemHtml.WindowHandler.createWindow("Present IT!",
             //onready:
             async () => {
                 //set html

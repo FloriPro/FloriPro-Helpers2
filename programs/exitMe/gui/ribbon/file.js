@@ -9,7 +9,8 @@ new (class {
             "saveProject": { "type": "button", "change": this.saveProject.bind(this) },
             "saveProjectAs": { "type": "button", "change": this.saveProjectAs.bind(this) },
             "closeProject": { "type": "button", "change": this.closeProject },
-            "exit": { "type": "button", "change": this.exit }
+            "exit": { "type": "button", "change": this.exit },
+            "pixel ratio": { "type": "text", "change": this.setPixelRatio.bind(this), "get": this.getPixelRatio }
         }
     }
     /**
@@ -47,11 +48,20 @@ new (class {
      * @param {exitMe_gui_projectEditor} editor
      */
     generateSaveFile(editor) {
-        var out = [];
-        for (var x of Object.values(editor.elements)) {
-            delete x["id"];
-            out.push(x);
-        }
-        return out;
+        return editor.saveFile;
+    }
+
+    /**
+     * @param {exitMe_gui_projectEditor} editor
+     */
+    setPixelRatio(editor, element) {
+        editor.gui.project.pixelRatio = element.value;
+        editor.gui.loadProjectSettings();
+    }
+    /**
+     * @param {exitMe_gui_ribbon} ribbon
+     */
+    getPixelRatio(ribbon) {
+        return ribbon.editor.gui.project.pixelRatio;
     }
 })();

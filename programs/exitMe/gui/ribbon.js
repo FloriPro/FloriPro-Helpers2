@@ -58,7 +58,7 @@ class exitMe_gui_ribbon extends System.program.default {
                 r = document.createElement("select");
                 r.setAttribute("element", "ribbonBottom");
                 r.onchange = functions[x].change.bind(this, this.editor, r);
-                r.selectedOptions = functions[x].get();
+                r.selectedOptions = functions[x].get(this);
                 for (var y of functions[x].options) {
                     var o = document.createElement("option");
                     o.innerText = y;
@@ -66,7 +66,7 @@ class exitMe_gui_ribbon extends System.program.default {
                 }
             }
             else if (functions[x].type == "color") {
-                var current = functions[x].get();
+                var current = functions[x].get(this);
                 r = document.createElement("div");
                 var i = document.createElement("input");
                 i.setAttribute("element", "ribbonBottom");
@@ -100,21 +100,21 @@ class exitMe_gui_ribbon extends System.program.default {
                 r = document.createElement("input");
                 r.setAttribute("element", "ribbonBottom");
                 r.setAttribute("type", "number");
-                r.value = functions[x].get();
+                r.value = functions[x].get(this);
                 r.onchange = functions[x].change.bind(this, this.editor, r);
             }
             else if (functions[x].type == "text") {
                 r = document.createElement("input");
                 r.setAttribute("element", "ribbonBottom");
                 r.setAttribute("type", "text");
-                r.value = functions[x].get();
+                r.value = functions[x].get(this);
                 r.onchange = functions[x].change.bind(this, this.editor, r);
             }
             else if (functions[x].type == "checkbox") {
                 r = document.createElement("input");
                 r.setAttribute("element", "ribbonBottom");
                 r.setAttribute("type", "checkbox");
-                r.checked = functions[x].get();
+                r.checked = functions[x].get(this);
                 r.onchange = functions[x].change.bind(this, this.editor, r);
             }
             else if (functions[x].type == "file") {

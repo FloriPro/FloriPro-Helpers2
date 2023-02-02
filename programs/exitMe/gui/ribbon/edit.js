@@ -27,6 +27,12 @@ new (class {
                 "Image Url": { "type": "stringAsk", "change": this.imageUrl.bind(this), "get": this.getImage.bind(this) },
                 "Consistent Size": { "type": "checkbox", "change": this.imageConsistentSize.bind(this), "get": this.getImageConsistentSize.bind(this) }
             };
+        } else if (element.type == "box" || element.type == "circle") {
+            return {
+                "Color": { "type": "color", "change": this.backgroundColor.bind(this), "get": this.getBackgroundColor.bind(this) },
+                "Border": { "type": "number", "change": this.border.bind(this), "get": this.getBorder.bind(this) },
+                "BorderColor": { "type": "color", "change": this.borderColor.bind(this), "get": this.getBorderColor.bind(this) }
+            }
         }
         else {
             return {};
@@ -110,5 +116,19 @@ new (class {
 
     getImageConsistentSize() {
         return this.element.styling.consistentSize;
+    }
+    border(editor, el) {
+        editor.elements[editor.nowEditing].styling.border = el.value;
+        editor.reloadElement(editor.nowEditing);
+    }
+    getBorder() {
+        return this.element.styling.border;
+    }
+    borderColor(editor, color) {
+        editor.elements[editor.nowEditing].styling.borderColor = color;
+        editor.reloadElement(editor.nowEditing);
+    }
+    getBorderColor() {
+        return this.element.styling.borderColor;
     }
 })();

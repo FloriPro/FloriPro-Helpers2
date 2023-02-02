@@ -7,6 +7,8 @@ new (class {
     getFunctions() {
         return {
             "text": { "type": "button", "change": this.text },
+            "box": { "type": "button", "change": this.box },
+            "circle": { "type": "button", "change": this.circle },
             "button": { "type": "button", "change": this.button },
             "image": { "type": "button", "change": this.image },
             "website": { "type": "button", "change": this.website },
@@ -33,6 +35,44 @@ new (class {
                 "fontFamily": "Arial",
                 "color": "#000000ff",
                 "backgroundColor": "#00000000"
+            }
+        });
+    }
+    async box(editor) {
+        editor.createElement({
+            "type": "box",
+            "data": null,
+            "pos": {
+                x: 10,
+                y: 10
+            },
+            "size": {
+                width: 100,
+                height: 100
+            },
+            "styling": {
+                "backgroundColor": "#ff0000ff",
+                "border": "2",
+                "borderColor": "#000000ff",
+            }
+        });
+    }
+    async circle(editor) {
+        editor.createElement({
+            "type": "circle",
+            "data": null,
+            "pos": {
+                x: 10,
+                y: 10
+            },
+            "size": {
+                width: 100,
+                height: 100
+            },
+            "styling": {
+                "backgroundColor": "#00ff00ff",
+                "border": "2",
+                "borderColor": "#000000ff",
             }
         });
     }

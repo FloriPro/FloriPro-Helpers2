@@ -5,7 +5,13 @@ class exitMe_gui_projectEditor extends System.program.default {
      */
     async init(window) {
         this.getPath = () => { };
+        this.getSaveFile = () => { };
+        this.setPage = (elements) => { };
 
+        /**
+         * @type {exitMe_gui}
+         */
+        this.gui = null;
         /**
          * @type {{type:string, data:string|any, pos:{x:number,y:number}, size:{width:number,height:number}, styling:any}[]}
          */
@@ -25,6 +31,30 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.makeContentChanger();
 
         this.select = (element) => { };
+
+        this.zoom = 1;
+        this.initZoom();
+    }
+
+    initZoom() {
+        this.window.addHtmlEventListener("onwheel", "projectEdit", ((a,b,c,e) => {
+            if (!e.altKey) { return }
+            console.log("prevent")
+            e.preventDefault();
+
+            if (e.deltaY > 0) {
+                this.zoom -= 0.1;
+            } else {
+                this.zoom += 0.1;
+            }
+            if (this.zoom < 0.1) {
+                this.zoom = 0.1;
+            }
+            if (this.zoom > 2) {
+                this.zoom = 2;
+            }
+            this.content.style.setProperty("zoom", this.zoom);
+        }).bind(this));
     }
 
     async initElementFunctions() {
@@ -96,6 +126,12 @@ class exitMe_gui_projectEditor extends System.program.default {
 
         this.window.addHtmlEventListener("onclick", "projectContent", async () => {
             if (this.editing) {
+                if (this.elements[this.nowEditing] == undefined) {
+                    this.nowEditing = null;
+                    this.hideContentChanger();
+                    this.updateSelect();
+                    return;
+                }
                 await this.elementFunctions[this.elements[this.nowEditing].type].stopEdit(this.elements, this.nowEditing, this.content);
                 this.editing = false;
                 this.reloadElement(this.nowEditing);
@@ -117,12 +153,12 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.contentChanger.contextscript = ((e) => {
             var out = {};
             for (var x of this.contextMenuAll) {
-                out[x.name] = x.action.bind(this, this.elements, this.elements[this.nowEditing].id, this.content);
+                out[x.name] = x.action.bind(this, this.elements, this.elements[this.nowEditing].id, this.content, this);
             }
 
             var s = this.elementFunctions[this.elements[this.nowEditing].type].contextMenu;
             for (var x of s) {
-                out[x.name] = x.action;
+                out[x.name] = x.action.bind(this, this.elements, this.elements[this.nowEditing].id, this.content, this);
             }
             return out;
         }).bind(this);
@@ -194,12 +230,12 @@ class exitMe_gui_projectEditor extends System.program.default {
         domEL.contextscript = ((self) => {
             var out = {};
             for (var x of this.contextMenuAll) {
-                out[x.name] = x.action.bind(this, this.elements, element.id, this.content);
+                out[x.name] = x.action.bind(this, this.elements, element.id, this.content, this);
             }
 
             var s = this.elementFunctions[self.type].contextMenu;
             for (var x of s) {
-                out[x.name] = x.action.bind(this, this.elements, element.id, this.content);
+                out[x.name] = x.action.bind(this, this.elements, element.id, this.content, this);
             }
             return out;
         }).bind(this, element);
@@ -220,6 +256,8 @@ class exitMe_gui_projectEditor extends System.program.default {
         if (!r.includes("style_top")) domEL.style.top = element.pos.y + "px";
         if (!r.includes("style_width")) domEL.style.width = element.size.width + "px";
         if (!r.includes("style_height")) domEL.style.height = element.size.height + "px";
+
+        this.gui.setPage(this.elements);
     }
 
     async editContent() {
@@ -239,6 +277,13 @@ class exitMe_gui_projectEditor extends System.program.default {
         //this.elements[id].pos.x += 10;
         if (this.nowEditing != undefined) {
             if (this.editing) {
+                if (this.content.querySelector(`[uuid="${this.nowEditing}"]`) == null) {
+                    this.editing = true;
+                    this.nowEditing = id;
+                    this.updateSelect();
+                    this.setContentChanger();
+                    return;
+                }
                 this.content.querySelector(`[uuid="${this.nowEditing}"]`).style.display = "";
                 this.elements[this.nowEditing].data = (await this.window.getHtmlElement("contentChangerChangeText")).value;
                 (await this.window.getHtmlElement("contentChangerChangeText")).style.display = "none";
@@ -250,7 +295,6 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.nowEditing = id;
         this.updateSelect();
         this.setContentChanger();
-        //this.reloadElement(id);
     }
 
     setContentChanger() {
@@ -268,6 +312,15 @@ class exitMe_gui_projectEditor extends System.program.default {
 
     get projectPath() {
         return this.getPath();
+    }
+
+    get saveFile() {
+        return this.getSaveFile();
+    }
+
+    setPixelRatio(r) {
+        this.content.style.width = r.split(":")[0] + "px";
+        this.content.style.height = r.split(":")[1] + "px";
     }
 }
 new exitMe_gui_projectEditor();

@@ -1,38 +1,43 @@
-[
-    {
+{
+  "pages": [
+    [
+      {
         "type": "text",
         "data": "This is a text block",
         "pos": {
-            "x": 50,
-            "y": 50
+          "x": 50,
+          "y": 50
         },
         "size": {
-            "width": 100,
-            "height": 100
+          "width": 100,
+          "height": 100
         },
         "styling": {
-            "fontSize": 12,
-            "fontFamily": "Arial",
-            "color": "#ffffffff",
-            "backgroundColor": "#0000ffff"
+          "fontSize": 12,
+          "fontFamily": "Arial",
+          "color": "#ffffffff",
+          "backgroundColor": "#0000ffff"
         }
-    },
-    {
+      },
+      {
         "type": "text",
         "data": "UWU",
         "pos": {
-            "x": 50,
-            "y": 150
+          "x": 50,
+          "y": 150
         },
         "size": {
-            "width": 100,
-            "height": 40
+          "width": 100,
+          "height": 40
         },
         "styling": {
-            "fontSize": 40,
-            "fontFamily": "Arial",
-            "color": "#000000ff",
-            "backgroundColor": "#00000000"
+          "fontSize": 40,
+          "fontFamily": "Arial",
+          "color": "#000000ff",
+          "backgroundColor": "#00000000"
         }
-    }
-]
+      }
+    ]
+  ],
+  "pixelRatio": "700:394" 
+}
