@@ -22,3 +22,7 @@
 .rotate{
     rotate: 180deg;
 }
+
+body{
+    overflow: hidden;
+}

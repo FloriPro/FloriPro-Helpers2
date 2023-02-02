@@ -13,6 +13,7 @@ async function run() {
     var prog = await System.program.runProgram(p.path);
 
     await delay(100);
+    history.pushState({}, null, location.href.split("?")[0]);
 
     if (prog.window) {
         prog.window.size.setfullMax();

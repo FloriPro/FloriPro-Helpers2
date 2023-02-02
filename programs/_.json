@@ -1,7 +1,7 @@
 {
   "easyUI": {
     "displayname": "Easy UI",
-    "version": "0.2.7",
+    "version": "0.2.8",
     "path": "programs/easyUI.json"
   },
   "imageViewer": {
@@ -87,7 +87,7 @@
   "fastRedirect": {
     "hidden": true,
     "displayname": "Fast Redirect",
-    "version": "0.0",
+    "version": "0.1",
     "path": "programs/fastRedirect.json"
   },
   "exitMe": {
