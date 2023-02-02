@@ -227,6 +227,9 @@ class Html {
                         var eventType = event.type;
                         eventType = eventType.replace("on", "");
 
+                        if (this.htmlEventList[name][eventType] == undefined) {
+                            continue;
+                        }
                         for (var element of this.htmlEventList[name][eventType]) {
                             if (this.htmlEventListThis[name] == undefined) {
                                 element[0](element, id, element[1], event);
