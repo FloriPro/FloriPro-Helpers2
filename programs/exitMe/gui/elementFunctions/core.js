@@ -66,7 +66,9 @@
             "text": {
                 "set": this.textSettings,
                 "create": () => {
-                    return document.createElement("p");
+                    var p = document.createElement("p");
+                    p.style.backgroundClip = "padding-box";
+                    return p;
                 },
                 "editContent": async (element, nowEditing, content) => {
                     var cccc = (await this.window.getHtmlElement("contentChangerChangeText"));
@@ -101,7 +103,14 @@
             "image": {
                 "set": this.imageSettings,
                 "create": () => {
-                    return document.createElement("img");
+                    var div = document.createElement("div");
+                    var img = document.createElement("img");
+                    img.style.width = "100%";
+                    img.setAttribute("element", "projectContent_element")
+                    img.style.height = "100%";
+                    div.style.backgroundClip = "padding-box";
+                    div.appendChild(img);
+                    return div;
                 },
                 "editContent": async (element, nowEditing, content) => {
                     return false;
@@ -156,22 +165,27 @@
     }
 
     /**
-     * 
      * @param {any} element 
-     * @param {HTMLImageElement} domEL 
-     * @returns 
+     * @param {HTMLDivElement} dom
      */
-
-    imageSettings(element, domEL) {
+    imageSettings(element, dom, dontLoad = false) {
+        var domEL = dom.querySelector("img");
+        if (dontLoad == false) {
+            domEL.onload = (() => {
+                this.set(element, dom, true);
+            }).bind(this);
+        }
         domEL.src = element.data;
+        dom.style.backgroundColor = element.styling.backgroundColor;
+        dom.style.border = element.styling.border + "px solid " + element.styling.borderColor;
+        dom.style.margin = (element.styling.border * -1) + "px";
+
+
         if (element.styling.consistentSize == true) {
-            domEL.style.height = "";
+            dom.style.height = "";
             element.size.height = domEL.height
             return ["style_height"];
         }
-        domEL.style.backgroundColor = element.styling.backgroundColor;
-        domEL.style.border = element.styling.border + "px solid " + element.styling.borderColor;
-        domEL.style.margin = (element.styling.border * -1) + "px";
         return [];
     }
 

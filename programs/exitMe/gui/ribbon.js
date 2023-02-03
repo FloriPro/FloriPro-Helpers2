@@ -151,11 +151,15 @@ class exitMe_gui_ribbon extends System.program.default {
                 r.onchange = functions[x].change.bind(this, this.editor, r);
             }
             else if (functions[x].type == "checkbox") {
-                r = document.createElement("input");
-                r.setAttribute("element", "ribbonBottom");
-                r.setAttribute("type", "checkbox");
-                r.checked = functions[x].get(this);
-                r.onchange = functions[x].change.bind(this, this.editor, r);
+                var inp = document.createElement("input");
+                inp.setAttribute("element", "ribbonBottom");
+                inp.setAttribute("type", "checkbox");
+                inp.checked = functions[x].get(this);
+                inp.onchange = functions[x].change.bind(this, this.editor, inp);
+
+                r = document.createElement("div");
+                r.appendChild(inp);
+                r.appendChild(document.createTextNode(x));
             }
             else if (functions[x].type == "file") {
                 r = document.createElement("button");

@@ -59,10 +59,14 @@ class exitMe_gui_projectEditor extends System.program.default {
 
         this.nowEditing = null;
         this.contentChanger = await this.window.getHtmlElement("contentChanger");
+        this.content = await this.window.getHtmlElement("projectContent");
         this.makeContentChanger();
+        this.outlineOverlay = await this.window.getHtmlElement("outlineOverlay");
 
         this.zoom = 1;
         this.initZoom();
+
+        this.overlayOutline = true;
 
         this.updateLayers = (() => {
             this.gui.setPage(this.elements);
@@ -73,6 +77,16 @@ class exitMe_gui_projectEditor extends System.program.default {
                 this.reloadElement(x);
             }
         }).bind(this);
+
+        this.updateOuverlayOutline();
+    }
+
+    updateOuverlayOutline() {
+        if (this.overlayOutline) {
+            this.outlineOverlay.style.display = "block";
+        } else {
+            this.outlineOverlay.style.display = "none";
+        }
     }
 
     initZoom() {
@@ -98,10 +112,34 @@ class exitMe_gui_projectEditor extends System.program.default {
         }
         this.content.style.setProperty("zoom", this.zoom);
         this.contentChanger.style.setProperty("zoom", this.zoom);
+        this.outlineOverlay.style.setProperty("zoom", this.zoom);
 
         for (var x of this.contentChanger.children) {
             x.style.setProperty("zoom", 1 / this.zoom);
         }
+
+        //center projectContentInnerWraper
+        var width = this.content.offsetWidth * this.zoom;
+        var height = this.content.offsetHeight * this.zoom;
+        var width2 = this.content.parentElement.parentElement.offsetWidth;
+        var height2 = this.content.parentElement.parentElement.offsetHeight;
+
+        var x = (width2 - width) / 2;
+        var y = (height2 - height) / 2;
+
+        if (x > 0) {
+            this.content.parentElement.style.setProperty("margin-left", x + "px");
+        } else {
+            this.content.parentElement.parentElement.scrollLeft = -x;
+            this.content.parentElement.style.setProperty("margin-left", "0px");
+        }
+        if (y > 0) {
+            this.content.parentElement.style.setProperty("margin-top", y + "px");
+        } else {
+            this.content.parentElement.parentElement.scrollTop = -y;
+            this.content.parentElement.style.setProperty("margin-top", "0px");
+        }
+
     }
 
     async initElementFunctions() {
@@ -171,8 +209,8 @@ class exitMe_gui_projectEditor extends System.program.default {
 
         System.eventHandler.addEventHandler("mousemove", this.contentChangerMove.bind(this));
 
-        this.window.addHtmlEventListener("onclick", "projectContent", async (_, __, ___, e) => {
-            if (e.target.getAttribute("windowelement") != "projectContent") { return }
+        this.window.addHtmlEventListener("onclick", "projectContentWraper", async (_, __, ___, e) => {
+            if (e.target.getAttribute("windowelement") != "projectContent" && e.target.getAttribute("windowelement") != "projectContentWraper" && e.target.getAttribute("windowelement") != "projectContentInnerWraper") { return }
             if (this.editing) {
                 if (this.elements[this.nowEditing] == undefined) {
                     this.nowEditing = null;
@@ -191,14 +229,14 @@ class exitMe_gui_projectEditor extends System.program.default {
             this.updateSelect();
         });
 
-        this.window.addHtmlEventListener("onclick", "contentChanger", (_, __, ___, e) => {
+        /*this.window.addHtmlEventListener("onclick", "contentChanger", (_, __, ___, e) => {
             if (e.target.getAttribute("windowelement") == "contentChanger_bomml") {
                 return;
             } if (e.target.getAttribute("windowelement") == "contentChangerBorderPart") {
                 return;
             }
             this.editContent();
-        });
+        });*/
 
         this.contentChanger.contextscript = ((e) => {
             var out = {};
@@ -260,7 +298,6 @@ class exitMe_gui_projectEditor extends System.program.default {
      * @param {{type:string, data:string|any, pos:{x:number,y:number}, size:{width:number,height:number}, styling:any}[]} elements 
      */
     async loadProject(elements) {
-        this.content = await this.window.getHtmlElement("projectContent");
         this.content.innerHTML = "";
         this.elements = {};
 
@@ -269,6 +306,12 @@ class exitMe_gui_projectEditor extends System.program.default {
         for (var x of elements) {
             this.createElement(x);
         }
+
+        setTimeout(this.applyZoom.bind(this), 0)
+
+        this.window.onResize = () => {
+            this.applyZoom();
+        };
     }
 
     /**
@@ -301,8 +344,8 @@ class exitMe_gui_projectEditor extends System.program.default {
 
         domEL.addEventListener("click", this.click.bind(this, element.id));
         domEL.setAttribute("uuid", element.id)
-        domEL.setAttribute("windowelement", "projectContent_element")
-        domEL.setAttribute("windowid", this.window.getId())
+        domEL.setAttribute("element", "projectContent_element");
+        this.window.parseNewHtml();
         this.elements[element.id] = element;
         this.content.appendChild(domEL);
     }
@@ -330,7 +373,11 @@ class exitMe_gui_projectEditor extends System.program.default {
         var element = this.elements[this.nowEditing];
         var r = await this.elementFunctions[element.type].editContent(element, this.nowEditing, this.content);
         if (r != true) {
+            console.log("editContent returned false")
             this.editing = false;
+            this.nowEditing = null;
+            this.hideContentChanger();
+            this.updateSelect();
         }
     }
 
@@ -355,6 +402,11 @@ class exitMe_gui_projectEditor extends System.program.default {
                 this.editing = false;
                 this.reloadElement(this.nowEditing);
                 return;
+            } else {
+                if (this.nowEditing == id) {
+                    this.editContent();
+                    return;
+                }
             }
         }
         this.nowEditing = id;

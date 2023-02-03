@@ -71,7 +71,7 @@ class exitMe_gui extends System.program.default {
     async loadIntoProject(path) {
         this.project = await SystemFileSystem.getFileJson(path);
         this.page = 0;
-        await this.projectEditor.loadProject(this.project.pages[this.page]);
+        await this.projectEditor.loadProject(this.project.pages[this.page].elements);
         this.loadProjectSettings();
     }
 
@@ -91,7 +91,7 @@ class exitMe_gui extends System.program.default {
             out.push(x);
         }
 
-        this.project.pages[this.page] = out;
+        this.project.pages[this.page].elements = out;
     }
 }
 new exitMe_gui();

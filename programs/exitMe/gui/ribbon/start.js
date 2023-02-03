@@ -64,7 +64,7 @@ new (class {
     }
     /**
      * @param {exitMe_gui_projectEditor} editor 
-     * @param {HTMLInputElement} element 
+     * @param {string} element 
      */
     color(editor, color) {
         editor.elements[editor.nowEditing].styling.color = color;
