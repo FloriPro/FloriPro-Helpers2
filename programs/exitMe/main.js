@@ -10,6 +10,7 @@ class program extends System.program.default {
                 await this.window.setContent("<style>" + (await SystemFileSystem.getFileString(this.PATH.folder() + "/style.css")).replaceAll("{{windowId}}", this.window.getId()) + "</style>" + await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
                 await this.window.size.setSize(320, 400)
                 this.window.size.userCanResize(true)
+                this.window.size.setMax();
 
                 /**
                  * @type {exitMe_gui}

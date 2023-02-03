@@ -4,6 +4,9 @@ new (class {
     getName() {
         return "file";
     }
+    getPos() {
+        return 0;
+    }
     getFunctions() {
         return {
             "saveProject": { "type": "button", "change": this.saveProject.bind(this) },

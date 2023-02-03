@@ -15,19 +15,40 @@ class exitMe_gui_ribbon extends System.program.default {
         var tel = await this.window.getHtmlElement("topBar");
         tel.innerHTML = "";
 
+        var poses = [];
+        var c = {};
         for (var x of this.topRibbons) {
             var f = await System.run(this.PATH.folder() + "/ribbon/" + x,);
             this.classes[f.getName()] = f
 
-            var r = document.createElement("button");
-            r.setAttribute("element", "ribbonTop");
-            r.setAttribute("index", this.topRibbons.indexOf(x));
-            r.onclick = ((i) => {
-                this.select(i);
-            }).bind(this, this.topRibbons.indexOf(x));
-            r.innerText = f.getName();
+            var p = f.getPos();
+            poses.push(p);
+            if (c[p] == undefined) {
+                c[p] = [];
+            }
+            c[p].push(f.getName());
+        }
 
-            tel.appendChild(r);
+        poses = poses.sort((a, b) => {
+            return a - b;
+        });
+
+        var i = 0;
+        for (var x of poses) {
+            for (var y of c[x]) {
+                var f = this.classes[y];
+
+                var r = document.createElement("button");
+                r.setAttribute("element", "ribbonTop");
+                r.setAttribute("index", i);
+                r.onclick = ((i) => {
+                    this.select(i);
+                }).bind(this, i);
+                r.innerText = f.getName();
+
+                tel.appendChild(r);
+                i++;
+            }
         }
 
         this.window.parseNewHtml();
@@ -44,11 +65,30 @@ class exitMe_gui_ribbon extends System.program.default {
         var bel = await this.window.getHtmlElement("toolSelect");
         bel.innerHTML = "";
 
+        var el = document.createElement("div");
+        el.setAttribute("element", "toolSelectElement");
+        bel.append(el)
+
         var functions = this.classes[name].getFunctions(this.currentELement);
 
         for (var x of Object.keys(functions)) {
             var r;
-            if (functions[x].type == "button") {
+            if (x.startsWith("_separator")) {
+                r = document.createElement("div");
+                r.setAttribute("element", "seperator")
+
+                bel.append(r);
+
+                el = document.createElement("div");
+                el.setAttribute("element", "toolSelectElement");
+                bel.append(el)
+                continue;
+            } else if (x.startsWith("_descriptor")) {
+                r = document.createElement("p");
+                r.setAttribute("element", "descriptor");
+                r.innerText = functions[x];
+            }
+            else if (functions[x].type == "button") {
                 r = document.createElement("button");
                 r.setAttribute("element", "ribbonBottom");
                 r.onclick = functions[x].change.bind(this, this.editor);
@@ -141,7 +181,7 @@ class exitMe_gui_ribbon extends System.program.default {
                 }).bind(this, x);
                 r.innerText = x;
             }
-            bel.append(r);
+            el.append(r);
             //var r = this.getRibbonBottomElement(x, this.functions[name][x].bind(this, this.editor))
             //bel.appendChild(r);
         }

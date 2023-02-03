@@ -17,36 +17,45 @@
             },
             {
                 "name": "layer",
-                "action": (elements, nowEditing, content) => {
+                "action": (elements, nowEditing, content, editor) => {
                     SystemHtml.ContextMenu.specific({
                         "move to top": [(x) => {
-                            console.log(x);
-                            var [elements, nowEditing, content] = [x[0], x[1], x[2]];
-
-                            var el = content.querySelector(`[uuid="${nowEditing}"]`);
-                            content.removeChild(el);
-                            content.appendChild(el);
-
-                            var el2 = elements[nowEditing];
-                            delete elements[nowEditing];
-                            elements[nowEditing] = el2;
-                        }, [elements, nowEditing, content]],
+                            /**
+                             * @type {[{[id:string]:exitMe_gui_projectEditor_element}, string, HTMLElement, exitMe_gui_projectEditor]}
+                             */
+                            var [elements, nowEditing, content, editor] = [x[0], x[1], x[2], x[3]];
+                            console.log(editor);
+                            editor.elements = editor.util.setLayer(elements, nowEditing, editor.util.getLayerMax(elements) + 1);
+                            editor.updateLayers();
+                        }, [elements, nowEditing, content, editor]],
                         "move to bottom": [(x) => {
-                            var [elements, nowEditing, content] = [x[0], x[1], x[2]];
-                            var el = content.querySelector(`[uuid="${nowEditing}"]`);
-                            content.removeChild(el);
-                            content.prepend(el);
-
-                            var el2 = elements[nowEditing];
-                            delete elements[nowEditing];
-                            elements[nowEditing] = el2;
-                        }, [elements, nowEditing, content]],
+                            /**
+                             * @type {[{[id:string]:exitMe_gui_projectEditor_element}, string, HTMLElement, exitMe_gui_projectEditor]}
+                             */
+                            var [elements, nowEditing, content, editor] = [x[0], x[1], x[2], x[3]];
+                            editor.elements = editor.util.setLayer(elements, nowEditing, 0);
+                            editor.updateLayers();
+                        }, [elements, nowEditing, content, editor]],
                         "move up": [(x) => {
-                            console.warn("layering overhaul needed!") //TODO: Layering Overhaul
-                        }, [elements, nowEditing, content]],
+                            /**
+                             * @type {[{[id:string]:exitMe_gui_projectEditor_element}, string, HTMLElement, exitMe_gui_projectEditor]}
+                             */
+                            var [elements, nowEditing, content, editor] = [x[0], x[1], x[2], x[3]];
+                            editor.elements = editor.util.setLayer(elements, nowEditing, elements[nowEditing].layer + 2);
+                            editor.updateLayers();
+                        }, [elements, nowEditing, content, editor]],
                         "move down": [(x) => {
-                            console.warn("layering overhaul needed!") //TODO: Layering Overhaul
-                        }, [elements, nowEditing, content]],
+                            /**
+                             * @type {[{[id:string]:exitMe_gui_projectEditor_element}, string, HTMLElement, exitMe_gui_projectEditor]}
+                             */
+                            var [elements, nowEditing, content, editor] = [x[0], x[1], x[2], x[3]];
+                            if (elements[nowEditing].layer < 0) {
+                                console.warn("layer is allready lowest 0");
+                                return;
+                            }
+                            editor.elements = editor.util.setLayer(elements, nowEditing, elements[nowEditing].layer - 1);
+                            editor.updateLayers();
+                        }, [elements, nowEditing, content, editor]],
                     });
                 }
             }
@@ -141,6 +150,8 @@
         domEL.style.backgroundColor = element.styling.backgroundColor;
         domEL.style.fontSize = element.styling.fontSize + "px";
         domEL.style.fontFamily = element.styling.fontFamily;
+        domEL.style.border = element.styling.border + "px solid " + element.styling.borderColor;
+        domEL.style.margin = (element.styling.border * -1) + "px";
         return []
     }
 
@@ -158,6 +169,9 @@
             element.size.height = domEL.height
             return ["style_height"];
         }
+        domEL.style.backgroundColor = element.styling.backgroundColor;
+        domEL.style.border = element.styling.border + "px solid " + element.styling.borderColor;
+        domEL.style.margin = (element.styling.border * -1) + "px";
         return [];
     }
 

@@ -17,16 +17,19 @@ class exitMe_gui extends System.program.default {
         /**
          * @type {exitMe_gui_projectEditor}
          */
-        this.projectEditor = await System.program.runProgram(this.PATH.folder() + "/gui/projectEditor.js", this.window);
+        this.projectEditor = await System.program.runProgram(this.PATH.folder() + "/gui/projectEditor.js", [this.window, this]);
         this.projectEditor.getPath = this.getPath.bind(this);
         this.projectEditor.getSaveFile = this.getSaveFile.bind(this);
-        this.projectEditor.gui = this;
         this.projectEditor.setPage = this.setPage.bind(this);
 
         /**
          * @type {exitMe_gui_ribbon}
          */
         this.ribbon = await System.program.runProgram(this.PATH.folder() + "/gui/ribbon.js", [this.window, this.projectEditor]);
+        /**
+         * @type {exitMe_gui_bottomControll}
+         */
+        this.bottomControll = await System.program.runProgram(this.PATH.folder() + "/gui/bottomControll.js", [this.window, this.projectEditor]);
 
         this.projectEditor.select = this.ribbon.setElement.bind(this.ribbon);
     }
@@ -83,6 +86,7 @@ class exitMe_gui extends System.program.default {
     setPage(elements) {
         var out = [];
         for (var x of Object.values(elements)) {
+            var x = Object.assign({}, x);
             delete x["id"];
             out.push(x);
         }

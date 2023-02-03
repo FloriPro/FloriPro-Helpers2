@@ -1,19 +1,50 @@
+class exitMe_gui_projectEditor_element {                              ///--remove--
+    constructor() {                                                   ///--remove--
+        /**@type {string} */                                          ///--remove--
+        this.type;                                                    ///--remove--
+        /**@type {string | any} */                                    ///--remove--
+        this.data;                                                    ///--remove--
+        /**@type {{ x: number, y: number }} */                        ///--remove--
+        this.pos;                                                     ///--remove--
+        /**@type {{ width: number, height: number }} */               ///--remove--
+        this.size;                                                    ///--remove--
+        /**@type {any} */                                             ///--remove--
+        this.styling;                                                 ///--remove--
+        /**@type {number} */                                          ///--remove--
+        this.layer;                                                   ///--remove--
+        /**@type {string} */                                          ///--remove--
+        this.id;                                                      ///--remove--
+    }                                                                 ///--remove--
+}                                                                     ///--remove--
 class exitMe_gui_projectEditor extends System.program.default {
     /**
      * 
-     * @param {HtmlWindow} window 
+     * @param {[HtmlWindow, exitMe_gui]} window 
      */
-    async init(window) {
-        this.getPath = () => { };
-        this.getSaveFile = () => { };
-        this.setPage = (elements) => { };
+    async init([window, gui]) {
+        this.getPath = () => {
+            console.error("function not set!")
+        };
+        this.getSaveFile = () => {
+            console.error("function not set!")
+        };
+        this.setPage = (elements) => {
+            console.error("function not set!")
+        };
+        this.select = (element) => {
+            console.error("function not set!")
+        };
 
+        /**
+         * @type {exitMe_gui_projectEditor_util}
+         */
+        this.util = await System.run(this.PATH.folder() + "/util/projectEditorUtil.js");
         /**
          * @type {exitMe_gui}
          */
-        this.gui = null;
+        this.gui = gui;
         /**
-         * @type {{type:string, data:string|any, pos:{x:number,y:number}, size:{width:number,height:number}, styling:any}[]}
+         * @type {{[key: string]:exitMe_gui_projectEditor_element}}
          */
         this.elements = {};
         this.window = window;
@@ -30,16 +61,23 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.contentChanger = await this.window.getHtmlElement("contentChanger");
         this.makeContentChanger();
 
-        this.select = (element) => { };
-
         this.zoom = 1;
         this.initZoom();
+
+        this.updateLayers = (() => {
+            this.gui.setPage(this.elements);
+
+            this.elements = this.util.capLayers(this.elements);
+
+            for (var x in this.elements) {
+                this.reloadElement(x);
+            }
+        }).bind(this);
     }
 
     initZoom() {
-        this.window.addHtmlEventListener("onwheel", "projectEdit", ((a,b,c,e) => {
+        this.window.addHtmlEventListener("onwheel", "projectEdit", ((a, b, c, e) => {
             if (!e.altKey) { return }
-            console.log("prevent")
             e.preventDefault();
 
             if (e.deltaY > 0) {
@@ -47,14 +85,23 @@ class exitMe_gui_projectEditor extends System.program.default {
             } else {
                 this.zoom += 0.1;
             }
-            if (this.zoom < 0.1) {
-                this.zoom = 0.1;
-            }
-            if (this.zoom > 2) {
-                this.zoom = 2;
-            }
-            this.content.style.setProperty("zoom", this.zoom);
+            this.applyZoom();
         }).bind(this));
+    }
+
+    applyZoom() {
+        if (this.zoom < 0.1) {
+            this.zoom = 0.1;
+        }
+        if (this.zoom > 3) {
+            this.zoom = 3;
+        }
+        this.content.style.setProperty("zoom", this.zoom);
+        this.contentChanger.style.setProperty("zoom", this.zoom);
+
+        for (var x of this.contentChanger.children) {
+            x.style.setProperty("zoom", 1 / this.zoom);
+        }
     }
 
     async initElementFunctions() {
@@ -124,7 +171,8 @@ class exitMe_gui_projectEditor extends System.program.default {
 
         System.eventHandler.addEventHandler("mousemove", this.contentChangerMove.bind(this));
 
-        this.window.addHtmlEventListener("onclick", "projectContent", async () => {
+        this.window.addHtmlEventListener("onclick", "projectContent", async (_, __, ___, e) => {
+            if (e.target.getAttribute("windowelement") != "projectContent") { return }
             if (this.editing) {
                 if (this.elements[this.nowEditing] == undefined) {
                     this.nowEditing = null;
@@ -146,6 +194,8 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.window.addHtmlEventListener("onclick", "contentChanger", (_, __, ___, e) => {
             if (e.target.getAttribute("windowelement") == "contentChanger_bomml") {
                 return;
+            } if (e.target.getAttribute("windowelement") == "contentChangerBorderPart") {
+                return;
             }
             this.editContent();
         });
@@ -165,31 +215,33 @@ class exitMe_gui_projectEditor extends System.program.default {
     }
 
     contentChangerMove(e) {
+        var movementX = e.movementX / this.zoom
+        var movementY = e.movementY / this.zoom
         if (this.moving == true) {
-            this.elements[this.nowEditing].pos.x += e.movementX;
-            this.elements[this.nowEditing].pos.y += e.movementY;
+            this.elements[this.nowEditing].pos.x += movementX;
+            this.elements[this.nowEditing].pos.y += movementY;
             this.reloadElement(this.nowEditing);
             this.setContentChanger();
         }
         else if (this.resize == true) {
             if (this.resizeType == 0) {
-                this.elements[this.nowEditing].pos.x += e.movementX;
-                this.elements[this.nowEditing].pos.y += e.movementY;
-                this.elements[this.nowEditing].size.width -= e.movementX;
-                this.elements[this.nowEditing].size.height -= e.movementY;
+                this.elements[this.nowEditing].pos.x += movementX;
+                this.elements[this.nowEditing].pos.y += movementY;
+                this.elements[this.nowEditing].size.width -= movementX;
+                this.elements[this.nowEditing].size.height -= movementY;
             }
             else if (this.resizeType == 1) {
-                this.elements[this.nowEditing].pos.x += e.movementX;
-                this.elements[this.nowEditing].size.width -= e.movementX;
-                this.elements[this.nowEditing].size.height += e.movementY;
+                this.elements[this.nowEditing].pos.x += movementX;
+                this.elements[this.nowEditing].size.width -= movementX;
+                this.elements[this.nowEditing].size.height += movementY;
             }
             else if (this.resizeType == 2) {
-                this.elements[this.nowEditing].pos.y += e.movementY;
-                this.elements[this.nowEditing].size.width += e.movementX;
-                this.elements[this.nowEditing].size.height -= e.movementY;
+                this.elements[this.nowEditing].pos.y += movementY;
+                this.elements[this.nowEditing].size.width += movementX;
+                this.elements[this.nowEditing].size.height -= movementY;
             } else if (this.resizeType == 3) {
-                this.elements[this.nowEditing].size.width += e.movementX;
-                this.elements[this.nowEditing].size.height += e.movementY;
+                this.elements[this.nowEditing].size.width += movementX;
+                this.elements[this.nowEditing].size.height += movementY;
             }
             this.reloadElement(this.nowEditing);
             this.setContentChanger();
@@ -212,6 +264,8 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.content.innerHTML = "";
         this.elements = {};
 
+        elements = this.util.sortLayers(elements);
+
         for (var x of elements) {
             this.createElement(x);
         }
@@ -219,11 +273,14 @@ class exitMe_gui_projectEditor extends System.program.default {
 
     /**
      * 
-     * @param {{type:string, data:string|any, pos:{x:number,y:number}, size:{width:number,height:number}, styling:any}} element
+     * @param {exitMe_gui_projectEditor_element} element
      */
     createElement(element) {
         element.id = System.makeid(10);
-
+        element.layer = this.util.getLayerMax(this.elements) + 1;
+        /**
+         * @type {HTMLElement}
+         */
         var domEL;
         domEL = this.elementFunctions[element.type].create(element, domEL);
 
@@ -242,12 +299,19 @@ class exitMe_gui_projectEditor extends System.program.default {
 
         this.setElementInformation(element, domEL);
 
-        domEL.onclick = this.click.bind(this, element.id);
+        domEL.addEventListener("click", this.click.bind(this, element.id));
         domEL.setAttribute("uuid", element.id)
+        domEL.setAttribute("windowelement", "projectContent_element")
+        domEL.setAttribute("windowid", this.window.getId())
         this.elements[element.id] = element;
         this.content.appendChild(domEL);
     }
 
+    /**
+     * 
+     * @param {exitMe_gui_projectEditor_element} element 
+     * @param {HTMLElement} domEL 
+     */
     setElementInformation(element, domEL) {
         var r = this.elementFunctions[element.type].set(element, domEL);
 
@@ -256,6 +320,7 @@ class exitMe_gui_projectEditor extends System.program.default {
         if (!r.includes("style_top")) domEL.style.top = element.pos.y + "px";
         if (!r.includes("style_width")) domEL.style.width = element.size.width + "px";
         if (!r.includes("style_height")) domEL.style.height = element.size.height + "px";
+        if (!r.includes("style_zIndex")) domEL.style.zIndex = element.layer;
 
         this.gui.setPage(this.elements);
     }

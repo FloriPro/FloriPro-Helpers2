@@ -4,6 +4,9 @@ new (class {
     getName() {
         return "Elements";
     }
+    getPos() {
+        return 30;
+    }
     getFunctions() {
         return {
             "text": { "type": "button", "change": this.text },
@@ -34,7 +37,9 @@ new (class {
                 "fontSize": 40,
                 "fontFamily": "Arial",
                 "color": "#000000ff",
-                "backgroundColor": "#00000000"
+                "backgroundColor": "#00000000",
+                "border": "1",
+                "borderColor": "#000000ff",
             }
         });
     }
@@ -93,6 +98,9 @@ new (class {
             },
             "styling": {
                 "consistentSize": false,
+                "backgroundColor": "#00000000",
+                "border": "0",
+                "borderColor": "#000000ff",
             }
         });
     }
