@@ -139,7 +139,7 @@ class easUIWorkerProgram extends System.program.default {
 
                     if (!r.size.fullMax) {
                         if (r.removed) return;
-                        await r.size.setSize(window.innerWidth, window.innerHeight - (this.darkmode ? 10 : 0));
+                        await r.size.setSize(window.innerWidth, window.innerHeight - (this.darkmode ? 0 : 0));
                     }
                 }
 
@@ -149,7 +149,7 @@ class easUIWorkerProgram extends System.program.default {
 
                     if (r.removed) return;
 
-                    await r.size.setSize(window.innerWidth, window.innerHeight - (this.darkmode ? 10 : 0));
+                    await r.size.setSize(window.innerWidth, window.innerHeight - (this.darkmode ? 0 : 0));
 
                     return ret;
                 }
@@ -176,7 +176,7 @@ class easUIWorkerProgram extends System.program.default {
                     titlebar.style.backgroundColor = "#242323";
                     titlebar.style.color = "white";
                     titlebar.style.boxShadow = "0px 0px 10px 2px rgb(0 0 0 / 58%)";
-                    titlebar.style.marginBottom = "10px";
+                    titlebar.style.position = "relative";
                     titlebar.querySelector(".title-bar-text").style.color = "white";
                 }
 
