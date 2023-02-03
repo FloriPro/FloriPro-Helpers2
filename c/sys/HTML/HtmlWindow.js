@@ -63,6 +63,9 @@ class HtmlWindow {
                 this.parent.#sizeY = y;
                 this.parent.getHtml().style.width = this.parent.#sizeX + "px";
                 this.parent.getHtml().style.height = this.parent.#sizeY + "px";
+
+                this.parent.onResize();
+                setTimeout(this.parent.onResize, this.transitionTime + 1);
             }
             getSize() {
                 return [this.parent.#sizeX, this.parent.#sizeY]
@@ -430,7 +433,7 @@ class HtmlWindow {
 
         await this.size.setSize(this.#sizeX, this.#sizeY);
         this.size.userCanResize(true);
-        if (finishPromise == undefined){
+        if (finishPromise == undefined) {
             return;
         }
         finishPromise.then(async (pf) => {
