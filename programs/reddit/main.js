@@ -13,7 +13,7 @@ class program extends System.program.default {
         this.pastId = -1;
 
         this.permalink = ""
-        this.allreadyRead = await SystemFileSystem.getFileJson("c/user/reddit/old.json")
+        await this.loadAllreadyRead();
 
         this.allreadyLoading = false;
         this.maxWidth = "500px";
@@ -168,7 +168,7 @@ class program extends System.program.default {
 
         var maxIt = 50;
         var i = 0;
-        while (this.allreadyRead.includes(md5(n.data.permalink)) || n.data.permalink == "_") {
+        while (this.sawAllready(md5(n.data.permalink)) || n.data.permalink == "_") {
             n = await this.redditApi.next();
             i++;
             if (i >= maxIt) {
@@ -215,8 +215,8 @@ class program extends System.program.default {
         this.img.innerHTML = "";
 
         this.permalink = n.data.permalink;
-        if (!this.allreadyRead.includes(md5(n.data.permalink))) {
-            this.allreadyRead.push(md5(n.data.permalink))
+        if (!this.sawAllready(md5(n.data.permalink))) {
+            this.addToAllreadySaw(md5(n.data.permalink))
         }
         this.updateAllreadyRead();
 
@@ -280,9 +280,6 @@ class program extends System.program.default {
         }
         this.allreadyLoading = false;
     }
-    async updateAllreadyRead() {
-        await SystemFileSystem.setFileString("c/user/reddit/old.json", JSON.stringify(this.allreadyRead));
-    }
     openVideo() {
         var media = this.currentPost.media();
         new videoWindow(media["dat"][0], media["dat"][1]);
@@ -293,6 +290,43 @@ class program extends System.program.default {
     imgFullscreen() {
         console.log("fullscreen")
         new ImgWindow(this.currentPost.ImageFull());
+    }
+
+    async loadAllreadyRead() {
+        this.allreadyRead = [];
+        var f = await SystemFileSystem.getFiles("c/user/reddit/old")
+        if (f.length == 0) {
+            console.warn("Install failed");
+            await SystemFileSystem.setFileString("c/user/reddit/old/0.json", "[]");
+            f = await SystemFileSystem.getFiles("c/user/reddit/old");
+        }
+
+        for (var x of f) {
+            var d = await SystemFileSystem.getFileString("c/user/reddit/old/" + x);
+            this.allreadyRead = this.allreadyRead.concat(JSON.parse(d));
+        }
+
+        if (await SystemFileSystem.fileExists("c/user/reddit/old.json")) {
+            var d = await SystemFileSystem.getFileString("c/user/reddit/old.json");
+            this.allreadyRead = this.allreadyRead.concat(JSON.parse(d));
+        }
+    }
+    sawAllready(hash) {
+        return this.allreadyRead.includes(hash);
+    }
+    async addToAllreadySaw(hash) {
+        const perfile = 20;
+
+        this.allreadyRead.push(hash);
+        if (await SystemFileSystem.fileExists("c/user/reddit/old/" + Math.floor(this.allreadyRead.length / perfile) + ".json") == false) {
+            await SystemFileSystem.setFileString("c/user/reddit/old/" + Math.floor(this.allreadyRead.length / perfile) + ".json", "[]");
+        }
+        var v = await SystemFileSystem.getFileJson("c/user/reddit/old/" + Math.floor(this.allreadyRead.length / perfile) + ".json");
+        v.push(hash);
+        await SystemFileSystem.setFileString("c/user/reddit/old/" + Math.floor(this.allreadyRead.length / perfile) + ".json", JSON.stringify(v));
+    }
+    async updateAllreadyRead() {
+        //await SystemFileSystem.setFileString("c/user/reddit/old.json", JSON.stringify(this.allreadyRead));
     }
 }
 

@@ -11,7 +11,7 @@
   },
   "reddit": {
     "displayname": "Reddit",
-    "version": "0.3",
+    "version": "0.4",
     "path": "programs/reddit.json"
   },
   "jShell": {
