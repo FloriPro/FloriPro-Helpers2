@@ -65,7 +65,7 @@ class program extends System.program.default {
                 p.style.display = "flex";
                 p.innerText = x[0];
 
-                var typ = document.createElement("button");
+                var typ = document.createElement("span");
                 if (x[2]) {
                     typ.innerText = "↑";
                     typ.style.backgroundColor = "orange";

@@ -227,7 +227,7 @@ class program extends System.program.default {
         this.link.href = "https://www.reddit.com" + n.data.permalink;
 
         for (var x of n.composedImage()) {
-            var div = document.createElement("button");
+            var div = document.createElement("div");
 
             var i = document.createElement("img");
             i.src = x["compressed"];
@@ -383,9 +383,9 @@ class commentWindow {
         if (dat["body_html"] == undefined && dat["author"] == undefined) {
             return
         }
-        var mainDiv = document.createElement("button");
+        var mainDiv = document.createElement("div");
 
-        var textDiv = document.createElement("button")
+        var textDiv = document.createElement("div")
 
         var author = document.createElement("p");
         var body = document.createElement("p");
@@ -399,7 +399,7 @@ class commentWindow {
         mainDiv.append(textDiv)
 
         if (dat["replies"].length != 0) {
-            var repliesDiv = document.createElement("button");
+            var repliesDiv = document.createElement("div");
             repliesDiv.className = "redditComment";
             repliesDiv.style.marginLeft = "5px";
 
