@@ -30,6 +30,6 @@ new (class {
 
     setoutline(editor, element) {
         editor.overlayOutline = element.checked;
-        editor.updateOuverlayOutline();
+        editor.updateOverlayOutline();
     }
 })();

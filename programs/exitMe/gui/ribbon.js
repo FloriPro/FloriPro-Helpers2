@@ -122,6 +122,7 @@ class exitMe_gui_ribbon extends System.program.default {
                 alpha.setAttribute("step", "0.01");
                 alpha.value = parseInt(current.substring(7, 9), 16) / 255;
 
+
                 i.onchange = ((f, i, alpha) => {
                     var color = i.value;
                     var opacity = alpha.value;
@@ -134,7 +135,10 @@ class exitMe_gui_ribbon extends System.program.default {
                 alpha.onchange = i.onchange;
 
                 r.appendChild(i);
-                r.appendChild(alpha);
+
+                if (functions[x].noalpha != true) {
+                    r.appendChild(alpha);
+                }
             }
             else if (functions[x].type == "number") {
                 r = document.createElement("input");

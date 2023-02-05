@@ -35,6 +35,8 @@ class exitMe_gui_projectEditor extends System.program.default {
             console.error("function not set!")
         };
 
+        this.alignLines = {};
+
         /**
          * @type {exitMe_gui_projectEditor_util}
          */
@@ -60,6 +62,8 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.nowEditing = null;
         this.contentChanger = await this.window.getHtmlElement("contentChanger");
         this.content = await this.window.getHtmlElement("projectContent");
+        this.alignLineHorizontal = await this.window.getHtmlElement("alignLineHorizontal");
+        this.alignLineVertical = await this.window.getHtmlElement("alignLineVertical");
         this.makeContentChanger();
         this.outlineOverlay = await this.window.getHtmlElement("outlineOverlay");
 
@@ -78,10 +82,10 @@ class exitMe_gui_projectEditor extends System.program.default {
             }
         }).bind(this);
 
-        this.updateOuverlayOutline();
+        this.updateOverlayOutline();
     }
 
-    updateOuverlayOutline() {
+    updateOverlayOutline() {
         if (this.overlayOutline) {
             this.outlineOverlay.style.display = "block";
         } else {
@@ -113,6 +117,10 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.content.style.setProperty("zoom", this.zoom);
         this.contentChanger.style.setProperty("zoom", this.zoom);
         this.outlineOverlay.style.setProperty("zoom", this.zoom);
+        this.alignLineHorizontal.style.setProperty("zoom", this.zoom);
+        this.alignLineVertical.style.setProperty("zoom", this.zoom);
+        this.window.getHtml().querySelector("#mousePos").style.setProperty("zoom", this.zoom);
+
 
         for (var x of this.contentChanger.children) {
             x.style.setProperty("zoom", 1 / this.zoom);
@@ -182,27 +190,35 @@ class exitMe_gui_projectEditor extends System.program.default {
 
             el.onmousedown = ((i) => {
                 this.resize = true;
-                this.resizeType = i;
+                this.mouseMovementType = i;
             }).bind(this, i);
             el.ontouchstart = ((i) => {
                 this.resize = true;
-                this.resizeType = i;
+                this.mouseMovementType = i;
             }).bind(this, i);
             this.contentChanger.appendChild(el);
         }
 
-        this.contentChanger.querySelector("[windowelement='contentChangerBorder']").onmousedown = (() => {
+        this.contentChanger.querySelector("[windowelement='contentChangerBorder']").onmousedown = ((e) => {
+            this.mouseMovementType = parseInt(e.target.getAttribute("movementType"));
             this.moving = true;
         }).bind(this);
-        this.contentChanger.querySelector("[windowelement='contentChangerBorder']").ontouchstart = (() => {
+        this.contentChanger.querySelector("[windowelement='contentChangerBorder']").ontouchstart = ((e) => {
+            this.mouseMovementType = parseInt(e.target.getAttribute("movementType"));
             this.moving = true;
         }).bind(this);
 
         this.window.getHtml().onmouseup = (() => {
+            if (this.moving || this.resize) {
+                this.clipMovement();
+            }
             this.moving = false;
             this.resize = false;
         }).bind(this);
         this.window.getHtml().ontouchend = (() => {
+            if (this.moving || this.resize) {
+                this.clipMovement();
+            }
             this.moving = false;
             this.resize = false;
         }).bind(this);
@@ -252,7 +268,7 @@ class exitMe_gui_projectEditor extends System.program.default {
         }).bind(this);
     }
 
-    contentChangerMove(e) {
+    async contentChangerMove(e) {
         var movementX = e.movementX / this.zoom
         var movementY = e.movementY / this.zoom
         if (this.moving == true) {
@@ -262,28 +278,254 @@ class exitMe_gui_projectEditor extends System.program.default {
             this.setContentChanger();
         }
         else if (this.resize == true) {
-            if (this.resizeType == 0) {
+            if (this.mouseMovementType == 0) {
                 this.elements[this.nowEditing].pos.x += movementX;
                 this.elements[this.nowEditing].pos.y += movementY;
                 this.elements[this.nowEditing].size.width -= movementX;
                 this.elements[this.nowEditing].size.height -= movementY;
             }
-            else if (this.resizeType == 1) {
+            else if (this.mouseMovementType == 1) {
                 this.elements[this.nowEditing].pos.x += movementX;
                 this.elements[this.nowEditing].size.width -= movementX;
                 this.elements[this.nowEditing].size.height += movementY;
             }
-            else if (this.resizeType == 2) {
+            else if (this.mouseMovementType == 2) {
                 this.elements[this.nowEditing].pos.y += movementY;
                 this.elements[this.nowEditing].size.width += movementX;
                 this.elements[this.nowEditing].size.height -= movementY;
-            } else if (this.resizeType == 3) {
+            }
+            else if (this.mouseMovementType == 3) {
                 this.elements[this.nowEditing].size.width += movementX;
                 this.elements[this.nowEditing].size.height += movementY;
             }
             this.reloadElement(this.nowEditing);
             this.setContentChanger();
         }
+
+        if (!this.moving && !this.resize) {
+            return;
+        }
+
+        /*var [maybeHorizontal, maybeVertical] = this.getPossibleAlignLines();
+
+        if (maybeHorizontal.length == 0) {
+            this.alignLineVertical.style.display = "none";
+        } else {
+            this.alignLineVertical.style.display = "block";
+        }
+        this.alignLineVertical.style.top = maybeHorizontal[0] + "px";*/
+
+        var line = await this.getPossibleAlignLines();
+        if (line.type == "-") {
+            this.alignLineHorizontal.style.display = "none";
+            this.alignLineVertical.style.display = "none";
+        }
+
+        if (line.type == "vertical") {
+            this.alignLineHorizontal.style.display = "block";
+            this.alignLineVertical.style.display = "none";
+            this.alignLineHorizontal.style.left = line.pos + "px";
+        }
+        if (line.type == "horizontal") {
+            this.alignLineHorizontal.style.display = "none";
+            this.alignLineVertical.style.display = "block";
+            this.alignLineVertical.style.top = line.pos + "px";
+        }
+    }
+
+    async getMousePosOnEditor() {
+        var mousePos = { x: System.eventHandler.mouse.x, y: System.eventHandler.mouse.y };
+        var c = this.content
+        var editor = { "x": c.getBoundingClientRect().x, "y": c.getBoundingClientRect().y };
+
+        editor.x *= this.zoom;
+        editor.y *= this.zoom;
+
+        mousePos.x -= editor.x;
+        mousePos.y -= editor.y;
+
+        mousePos.x /= this.zoom;
+        mousePos.y /= this.zoom;
+        return mousePos;
+    }
+
+    async getPossibleAlignLines() {
+        //align lines
+        const near = 10;
+
+        var elementHorizontal = [this.elements[this.nowEditing].pos.y, this.elements[this.nowEditing].pos.y + this.elements[this.nowEditing].size.height];
+        var elementVertical = [this.elements[this.nowEditing].pos.x, this.elements[this.nowEditing].pos.x + this.elements[this.nowEditing].size.width];
+
+        var maybeHorizontal = [];
+        var maybeVertical = [];
+        var typeHorizontal = [];
+        var typeVertical = [];
+
+        var mouse = await this.getMousePosOnEditor();
+
+        //debug: show mouse pos
+        this.window.getHtml().querySelector("#mousePos").style.top = mouse.y + "px";
+        this.window.getHtml().querySelector("#mousePos").style.left = mouse.x + "px";
+
+        var line = { "type": "-", "pos": -1, "distance": -1 }
+        for (var x of Object.keys(this.alignLines)) {
+            if (x == this.nowEditing) {
+                continue;
+            }
+
+            for (var y of this.alignLines[x].horizontal) {
+                for (var z of elementHorizontal) {
+                    if (y - near < z && y + near > z || y - near < mouse.y && y + near > mouse.y) {
+                        //distance from mouse to line
+                        var distance = Math.abs(y - mouse.y);
+                        if (distance < line.distance || line.distance == -1) {
+                            line.distance = distance;
+                            line.pos = y;
+                            line.type = "horizontal";
+                        }
+                    }
+                }
+            }
+
+            for (var y of this.alignLines[x].vertical) {
+                for (var z in elementVertical) {
+                    if (y - near < elementVertical[z] && y + near > elementVertical[z] || y - near < mouse.x && y + near > mouse.x) {
+                        //distance from mouse to line
+                        var distance = Math.abs(y - mouse.x);
+                        if (distance < line.distance || line.distance == -1) {
+                            line.distance = distance;
+                            line.pos = y;
+                            line.type = "vertical";
+                        }
+                    }
+                }
+            }
+        }
+        /*for (var y of this.alignLines[x].horizontal) {
+            var i = 0;
+            for (var z of elementHorizontal) {
+                if (y - near < z && y + near > z) {
+                    maybeHorizontal.push(parseInt(y));
+                    typeHorizontal.push(i);
+                }
+                i++;
+            }
+        }
+
+        for (var y of this.alignLines[x].vertical) {
+            var i = 0;
+            for (var z of elementVertical) {
+                if (y - near < z && y + near > z) {
+                    maybeVertical.push(parseInt(y));
+                    typeVertical.push(i);
+                }
+                i++;
+            }
+        }*/
+
+        /*
+        if (this.moving) {
+            var closestH = -1;
+
+            if (maybeHorizontal.length != 0)
+                for (var x of maybeHorizontal) {
+                    if (Math.abs(x - System.eventHandler.mouse.y) < Math.abs(maybeHorizontal[closest] - System.eventHandler.mouse.y)) {
+                        closestH = maybeHorizontal.indexOf(x);
+                    }
+                }
+            var closestV = -1;
+
+            if (maybeVertical.length != 0)
+                for (var x of maybeVertical) {
+                    if (Math.abs(x - System.eventHandler.mouse.x) < Math.abs(maybeVertical[closest] - System.eventHandler.mouse.x)) {
+                        closestV = maybeVertical.indexOf(x);
+                    }
+                }
+
+            var closest = -1;
+            if (maybeHorizontal[closestH] > maybeVertical[closestV]) {
+                closest = closestH;
+                maybeHorizontal = [maybeHorizontal[closestH]];
+                typeHorizontal = [typeHorizontal[closestH]];
+            } else {
+                closest = closestV;
+                maybeVertical = [maybeVertical[closestV]];
+                typeVertical = [typeVertical[closestV]];
+            }
+        }
+        if (this.resize) {
+            var closestH = -1;
+
+            if (maybeHorizontal.length != 0)
+                for (var x of maybeHorizontal) {
+                    if (Math.abs(x - System.eventHandler.mouse.y) < Math.abs(maybeHorizontal[closest] - System.eventHandler.mouse.y)) {
+                        closestH = maybeHorizontal.indexOf(x);
+                    }
+                }
+            var closestV = -1;
+
+            if (maybeVertical.length != 0)
+                for (var x of maybeVertical) {
+                    if (Math.abs(x - System.eventHandler.mouse.x) < Math.abs(maybeVertical[closest] - System.eventHandler.mouse.x)) {
+                        closestV = maybeVertical.indexOf(x);
+                    }
+                }
+
+            var closest = -1;
+            if (maybeHorizontal[closestH] > maybeVertical[closestV]) {
+                closest = closestH;
+                maybeHorizontal = [maybeHorizontal[closestH]];
+                typeHorizontal = [typeHorizontal[closestH]];
+                maybeVertical = [];
+                typeVertical = [];
+            } else {
+                closest = closestV;
+                maybeVertical = [maybeVertical[closestV]];
+                typeVertical = [typeVertical[closestV]];
+                maybeHorizontal = [];
+                typeHorizontal = [];
+            }
+        }
+
+        return [maybeHorizontal, maybeVertical, typeHorizontal, typeVertical];
+        */
+
+        return line;
+    }
+
+    clipMovement() {
+        /*this.alignLineVertical.style.display = "none";
+        var [maybeHorizontal, maybeVertical, typeHorizontal, typeVertical] = this.getPossibleAlignLines();
+
+        if (maybeHorizontal.length == 0) {
+            console.log("no horizontal")
+            return
+        }
+
+        var margin = parseInt(document.querySelector(`[uuid="${this.nowEditing}"]`).style.margin.split("px")[0]) * -1;
+        if (margin == NaN) {
+            margin = 0;
+        }
+
+        if (this.moving) {
+            if (typeHorizontal[0] == 0) {
+                this.elements[this.nowEditing].pos.y = maybeHorizontal[0] + margin;
+            } else if (typeHorizontal[0] == 1) {
+                this.elements[this.nowEditing].pos.y = (maybeHorizontal[0] - this.elements[this.nowEditing].size.height) + margin;
+            }
+        }
+
+        if (this.resize) {
+            if (typeHorizontal[0] == 0) {
+                this.elements[this.nowEditing].size.height = this.elements[this.nowEditing].size.height + (this.elements[this.nowEditing].pos.y + maybeHorizontal[0]) - margin;
+                this.elements[this.nowEditing].pos.y = maybeHorizontal[0] + margin;
+            } else if (typeHorizontal[0] == 1) {
+                this.elements[this.nowEditing].size.height = maybeHorizontal[0] - this.elements[this.nowEditing].pos.y;
+            }
+        }
+
+        this.reloadElement(this.nowEditing);
+        this.setContentChanger();*/
     }
 
     updateSelect() {
@@ -298,13 +540,14 @@ class exitMe_gui_projectEditor extends System.program.default {
      * @param {{type:string, data:string|any, pos:{x:number,y:number}, size:{width:number,height:number}, styling:any}[]} elements 
      */
     async loadProject(elements) {
+        this.alignLines = { "border": { "horizontal": [0, this.gui.project.pixelRatio.split(":")[1]], "vertical": [0, this.gui.project.pixelRatio.split(":")[0]] }, "center": { "horizontal": [], "vertical": [] } };
         this.content.innerHTML = "";
         this.elements = {};
 
         elements = this.util.sortLayers(elements);
 
         for (var x of elements) {
-            this.createElement(x);
+            this.createElement(x, true);
         }
 
         setTimeout(this.applyZoom.bind(this), 0)
@@ -318,7 +561,7 @@ class exitMe_gui_projectEditor extends System.program.default {
      * 
      * @param {exitMe_gui_projectEditor_element} element
      */
-    createElement(element) {
+    createElement(element, first = false) {
         element.id = System.makeid(10);
         element.layer = this.util.getLayerMax(this.elements) + 1;
         /**
@@ -340,7 +583,7 @@ class exitMe_gui_projectEditor extends System.program.default {
             return out;
         }).bind(this, element);
 
-        this.setElementInformation(element, domEL);
+        this.setElementInformation(element, domEL, true);
 
         domEL.addEventListener("click", this.click.bind(this, element.id));
         domEL.setAttribute("uuid", element.id)
@@ -348,6 +591,8 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.window.parseNewHtml();
         this.elements[element.id] = element;
         this.content.appendChild(domEL);
+
+        this.alignLines[element.id] = this.createAlignLines(element.id);
     }
 
     /**
@@ -355,7 +600,7 @@ class exitMe_gui_projectEditor extends System.program.default {
      * @param {exitMe_gui_projectEditor_element} element 
      * @param {HTMLElement} domEL 
      */
-    setElementInformation(element, domEL) {
+    setElementInformation(element, domEL, first = false) {
         var r = this.elementFunctions[element.type].set(element, domEL);
 
         if (!r.includes("style_postion")) domEL.style.position = "absolute";
@@ -366,6 +611,16 @@ class exitMe_gui_projectEditor extends System.program.default {
         if (!r.includes("style_zIndex")) domEL.style.zIndex = element.layer;
 
         this.gui.setPage(this.elements);
+        if (!first)
+            this.alignLines[element.id] = this.createAlignLines(element.id);
+    }
+
+    createAlignLines(id) {
+        var element = this.elements[id];
+        var out = {};
+        out["vertical"] = [element.pos.x, element.pos.x + element.size.width];
+        out["horizontal"] = [element.pos.y, element.pos.y + element.size.height];
+        return out;
     }
 
     async editContent() {
@@ -438,6 +693,13 @@ class exitMe_gui_projectEditor extends System.program.default {
     setPixelRatio(r) {
         this.content.style.width = r.split(":")[0] + "px";
         this.content.style.height = r.split(":")[1] + "px";
+
+        this.alignLineHorizontal.style.height = r.split(":")[1] + "px";
+        this.alignLineHorizontal.style.top = "0px";
+        this.alignLineVertical.style.width = r.split(":")[0] + "px";
+        this.alignLineVertical.style.left = "0px";
+
+        this.applyZoom();
     }
 }
 new exitMe_gui_projectEditor();

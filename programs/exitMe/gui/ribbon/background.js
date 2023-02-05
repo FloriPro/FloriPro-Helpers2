@@ -13,7 +13,8 @@ new (class {
      */
     getFunctions(element) {
         return {
-            "Background color": { "type": "color", "change": this.setBackgroundcolor.bind(this), "get": this.getBackgroundcolor.bind(this) },
+            "Background color": { "type": "color", "change": this.setBackgroundcolor.bind(this), "get": this.getBackgroundcolor.bind(this), "noalpha": true },
+            "_separator": "",
             "Background Image": { "type": "file", "change": this.setBackgroundImage.bind(this), "get": this.getBackgroundImage.bind(this) },
             "Background Image Url": { "type": "stringAsk", "change": this.imageUrl.bind(this), "get": this.getImage.bind(this) },
         }

@@ -262,3 +262,25 @@
     margin-left: -14px;
     margin-top: -14px;
 }
+
+[windowid="{{windowId}}"][windowelement="alignLineHorizontal"] {
+    height: 10000px;
+    width: 0px;
+    left: 300px;
+    top: -5000px;
+    border-left: 3px dotted #ff9100c7;
+    position: absolute;
+    pointer-events: none;
+    z-index: 999999;
+}
+
+[windowid="{{windowId}}"][windowelement="alignLineVertical"] {
+    height: 0px;
+    width: 10000px;
+    left: -5000px;
+    top: 300px;
+    border-top: 3px dotted #ff9100c7;
+    position: absolute;
+    pointer-events: none;
+    z-index: 999999;
+}
