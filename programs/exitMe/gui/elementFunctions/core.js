@@ -12,6 +12,8 @@
                     editor.updateSelect();
 
                     delete elements[nowEditing];
+                    delete editor.alignLines[nowEditing];
+                    editor.genAllAlignLines();
                     content.querySelector(`[uuid="${nowEditing}"]`).remove();
                 }
             },

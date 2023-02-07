@@ -101,7 +101,6 @@
 }
 
 [windowid="{{windowId}}"][windowelement="projectContent"] {
-    border: 1px solid #0000007d;
     background-color: #ffffff;
 }
 
@@ -280,6 +279,14 @@
     left: -5000px;
     top: 300px;
     border-top: 3px dotted #ff9100c7;
+    position: absolute;
+    pointer-events: none;
+    z-index: 999999;
+}
+
+[windowid="{{windowId}}"][windowelement="allAlignLines"] div {
+    left: 0;
+    top: 0;
     position: absolute;
     pointer-events: none;
     z-index: 999999;

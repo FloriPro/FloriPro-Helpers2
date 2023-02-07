@@ -22,6 +22,7 @@ class exitMe_gui_projectEditor extends System.program.default {
      * @param {[HtmlWindow, exitMe_gui]} window 
      */
     async init([window, gui]) {
+        this.window = window;
         this.getPath = () => {
             console.error("function not set!")
         };
@@ -36,6 +37,8 @@ class exitMe_gui_projectEditor extends System.program.default {
         };
 
         this.alignLines = {};
+        this.alignLinesVisible = false;
+        this.allAlignLines = await this.window.getHtmlElement("allAlignLines");
 
         /**
          * @type {exitMe_gui_projectEditor_util}
@@ -49,7 +52,6 @@ class exitMe_gui_projectEditor extends System.program.default {
          * @type {{[key: string]:exitMe_gui_projectEditor_element}}
          */
         this.elements = {};
-        this.window = window;
 
         this.elementFunctions = {};
         this.contextMenuAll = [];
@@ -119,7 +121,7 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.outlineOverlay.style.setProperty("zoom", this.zoom);
         this.alignLineHorizontal.style.setProperty("zoom", this.zoom);
         this.alignLineVertical.style.setProperty("zoom", this.zoom);
-        this.window.getHtml().querySelector("#mousePos").style.setProperty("zoom", this.zoom);
+        this.allAlignLines.style.setProperty("zoom", this.zoom);
 
 
         for (var x of this.contentChanger.children) {
@@ -333,7 +335,7 @@ class exitMe_gui_projectEditor extends System.program.default {
         }
     }
 
-    async getMousePosOnEditor() {
+    getMousePosOnEditor() {
         var mousePos = { x: System.eventHandler.mouse.x, y: System.eventHandler.mouse.y };
         var c = this.content
         var editor = { "x": c.getBoundingClientRect().x, "y": c.getBoundingClientRect().y };
@@ -349,23 +351,14 @@ class exitMe_gui_projectEditor extends System.program.default {
         return mousePos;
     }
 
-    async getPossibleAlignLines() {
+    getPossibleAlignLines() {
         //align lines
-        const near = 10;
+        const near = 3;
 
         var elementHorizontal = [this.elements[this.nowEditing].pos.y, this.elements[this.nowEditing].pos.y + this.elements[this.nowEditing].size.height];
         var elementVertical = [this.elements[this.nowEditing].pos.x, this.elements[this.nowEditing].pos.x + this.elements[this.nowEditing].size.width];
 
-        var maybeHorizontal = [];
-        var maybeVertical = [];
-        var typeHorizontal = [];
-        var typeVertical = [];
-
-        var mouse = await this.getMousePosOnEditor();
-
-        //debug: show mouse pos
-        this.window.getHtml().querySelector("#mousePos").style.top = mouse.y + "px";
-        this.window.getHtml().querySelector("#mousePos").style.left = mouse.x + "px";
+        var mouse = this.getMousePosOnEditor();
 
         var line = { "type": "-", "pos": -1, "distance": -1 }
         for (var x of Object.keys(this.alignLines)) {
@@ -375,7 +368,7 @@ class exitMe_gui_projectEditor extends System.program.default {
 
             for (var y of this.alignLines[x].horizontal) {
                 for (var z of elementHorizontal) {
-                    if (y - near < z && y + near > z || y - near < mouse.y && y + near > mouse.y) {
+                    if (/*y - near < z && y + near > z ||*/ y - near < mouse.y && y + near > mouse.y) {
                         //distance from mouse to line
                         var distance = Math.abs(y - mouse.y);
                         if (distance < line.distance || line.distance == -1) {
@@ -389,7 +382,7 @@ class exitMe_gui_projectEditor extends System.program.default {
 
             for (var y of this.alignLines[x].vertical) {
                 for (var z in elementVertical) {
-                    if (y - near < elementVertical[z] && y + near > elementVertical[z] || y - near < mouse.x && y + near > mouse.x) {
+                    if (/*y - near < elementVertical[z] && y + near > elementVertical[z] ||*/ y - near < mouse.x && y + near > mouse.x) {
                         //distance from mouse to line
                         var distance = Math.abs(y - mouse.x);
                         if (distance < line.distance || line.distance == -1) {
@@ -526,6 +519,65 @@ class exitMe_gui_projectEditor extends System.program.default {
 
         this.reloadElement(this.nowEditing);
         this.setContentChanger();*/
+
+        this.alignLineVertical.style.display = "none";
+        this.alignLineHorizontal.style.display = "none";
+
+        var margin = parseInt(document.querySelector(`[uuid="${this.nowEditing}"]`).style.margin.split("px")[0]) * -1;
+        if (System.eventHandler.keysDown["AltLeft"] == true) {
+            margin = 0;
+        }
+        if (System.eventHandler.keysDown["ShiftLeft"] == true) {
+            return;
+        }
+        var line = this.getPossibleAlignLines();
+        console.log(line);
+        if (line.type == "-") {
+            return;
+        }
+
+        if (this.moving) {
+            if (line.type == "horizontal") {
+                var distTop = Math.abs(line.pos - this.elements[this.nowEditing].pos.y);
+                var distBottom = Math.abs(line.pos - (this.elements[this.nowEditing].pos.y + this.elements[this.nowEditing].size.height));
+                if (distTop < distBottom) {
+                    this.elements[this.nowEditing].pos.y = line.pos + margin;
+                } else {
+                    this.elements[this.nowEditing].pos.y = line.pos - this.elements[this.nowEditing].size.height - margin;
+                }
+            } else if (line.type == "vertical") {
+                var distLeft = Math.abs(line.pos - this.elements[this.nowEditing].pos.x);
+                var distRight = Math.abs(line.pos - (this.elements[this.nowEditing].pos.x + this.elements[this.nowEditing].size.width));
+                if (distLeft < distRight) {
+                    this.elements[this.nowEditing].pos.x = line.pos + margin;
+                } else {
+                    this.elements[this.nowEditing].pos.x = line.pos - this.elements[this.nowEditing].size.width - margin;
+                }
+            }
+        } else if (this.resize) {
+            if (line.type == "horizontal") {
+                var distTop = Math.abs(line.pos - this.elements[this.nowEditing].pos.y);
+                var distBottom = Math.abs(line.pos - (this.elements[this.nowEditing].pos.y + this.elements[this.nowEditing].size.height));
+                if (distTop < distBottom) {
+                    this.elements[this.nowEditing].size.height = this.elements[this.nowEditing].size.height + (this.elements[this.nowEditing].pos.y - line.pos) - margin;
+                    this.elements[this.nowEditing].pos.y = line.pos + margin;
+                } else {
+                    this.elements[this.nowEditing].size.height = line.pos - this.elements[this.nowEditing].pos.y;
+                }
+            } else if (line.type == "vertical") {
+                var distLeft = Math.abs(line.pos - this.elements[this.nowEditing].pos.x);
+                var distRight = Math.abs(line.pos - (this.elements[this.nowEditing].pos.x + this.elements[this.nowEditing].size.width));
+                if (distLeft < distRight) {
+                    this.elements[this.nowEditing].size.width = this.elements[this.nowEditing].size.width + (this.elements[this.nowEditing].pos.x - line.pos) - margin;
+                    this.elements[this.nowEditing].pos.x = line.pos + margin;
+                } else {
+                    this.elements[this.nowEditing].size.width = line.pos - this.elements[this.nowEditing].pos.x;
+                }
+            }
+        }
+
+        this.reloadElement(this.nowEditing);
+        this.setContentChanger();
     }
 
     updateSelect() {
@@ -540,7 +592,7 @@ class exitMe_gui_projectEditor extends System.program.default {
      * @param {{type:string, data:string|any, pos:{x:number,y:number}, size:{width:number,height:number}, styling:any}[]} elements 
      */
     async loadProject(elements) {
-        this.alignLines = { "border": { "horizontal": [0, this.gui.project.pixelRatio.split(":")[1]], "vertical": [0, this.gui.project.pixelRatio.split(":")[0]] }, "center": { "horizontal": [], "vertical": [] } };
+        this.alignLines = { "border": { "horizontal": [0, parseInt(this.gui.project.pixelRatio.split(":")[1])], "vertical": [0, parseInt(this.gui.project.pixelRatio.split(":")[0])] }, "center": { "horizontal": [], "vertical": [] } };
         this.content.innerHTML = "";
         this.elements = {};
 
@@ -593,6 +645,7 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.content.appendChild(domEL);
 
         this.alignLines[element.id] = this.createAlignLines(element.id);
+        this.genAllAlignLines();
     }
 
     /**
@@ -611,8 +664,10 @@ class exitMe_gui_projectEditor extends System.program.default {
         if (!r.includes("style_zIndex")) domEL.style.zIndex = element.layer;
 
         this.gui.setPage(this.elements);
-        if (!first)
+        if (!first) {
             this.alignLines[element.id] = this.createAlignLines(element.id);
+            this.genAllAlignLines();
+        }
     }
 
     createAlignLines(id) {
@@ -700,6 +755,43 @@ class exitMe_gui_projectEditor extends System.program.default {
         this.alignLineVertical.style.left = "0px";
 
         this.applyZoom();
+    }
+
+    genAllAlignLines() {
+        if (!this.alignLinesVisible) { return }
+        this.allAlignLines.innerHTML = "";
+
+        for (var x in this.alignLines) {
+            var lines = this.alignLines[x];
+
+            for (var y of lines.horizontal) {
+                var line = document.createElement("div");
+                line.style.position = "absolute";
+                line.style.top = (y - .5) + "px";
+                line.style.left = "0px";
+                line.style.width = "100%";
+                line.style.height = "0";
+                line.style.borderTop = "1px #cbcbcbc7 dotted";
+                this.allAlignLines.appendChild(line);
+            }
+
+            for (var y of lines.vertical) {
+                var line = document.createElement("div");
+                line.style.position = "absolute";
+                line.style.top = "0px";
+                line.style.left = (y - .5) + "px";
+                line.style.height = "100%";
+                line.style.width = "0";
+                line.style.borderLeft = "1px #cbcbcbc7 dotted";
+                this.allAlignLines.appendChild(line);
+            }
+        }
+    }
+
+    setVisibleAlignLine(val) {
+        this.alignLinesVisible = val;
+        this.allAlignLines.style.display = val ? "" : "none";
+        this.genAllAlignLines();
     }
 }
 new exitMe_gui_projectEditor();

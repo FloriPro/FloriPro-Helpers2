@@ -15,6 +15,9 @@ new (class {
         return {
             "Overlay outline": {
                 "type": "checkbox", "change": this.setoutline.bind(this), "get": this.getoutline.bind(this)
+            },
+            "Align Lines": {
+                "type": "checkbox", "change": this.setVisibleAlignLine.bind(this), "get": this.getVisibleAlignLine.bind(this)
             }
         }
     }
@@ -31,5 +34,18 @@ new (class {
     setoutline(editor, element) {
         editor.overlayOutline = element.checked;
         editor.updateOverlayOutline();
+    }
+
+    setVisibleAlignLine(editor, element) {
+        editor.setVisibleAlignLine(element.checked);
+    }
+
+    /**
+     * 
+     * @param {exitMe_gui_ribbon} editor 
+     * @returns 
+     */
+    getVisibleAlignLine(editor) {
+        return editor.editor.alignLinesVisible;
     }
 })();
