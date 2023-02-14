@@ -4,6 +4,11 @@
     "version": "0.2.9",
     "path": "programs/easyUI.json"
   },
+  "bingWallpaper": {
+    "displayname": "Bing Wallpaper",
+    "version": "0.0",
+    "path": "programs/bingWallpaper.json"
+  },
   "imageViewer": {
     "displayname": "Image Viewer",
     "version": "0.0",

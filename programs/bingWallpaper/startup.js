@@ -1,0 +1,1 @@
+System.program.runProgram("c/programs/bingWallpaper/startupProgram.js")
