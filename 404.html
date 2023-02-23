@@ -1,30 +1,29 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Redirecting...</title>
+    <script>
+      var path = location.pathname;
 
-<head>
-  <title>Redirecting...</title>
-  <script>
-    var path = location.pathname;
+      //parse path
+      path = path.split("/");
+      if (path[0] == "") path.shift();
 
-    //parse path
-    path = path.split("/");
-    if (path[0] == "") path.shift();
+      if (path[0] == "o") {
+        //only this
+        location.href =
+          location.origin + "/?install=easyUI,fastRedirect&redirect=" + path[1];
+      } else if (path[0] == "web") {
+        location.href = location.origin + "/?install=easyUI&clear=true";
+      } else if (path[0] == "el") {
+        location.href = location.origin + "/fastLoad.html";
+      } else {
+        document.body.innerHTML = "<h1>404: No redirect found</h1>";
+      }
+    </script>
+  </head>
 
-    if (path[0] == "o") {
-      //only this
-      location.href = location.origin + "/?install=easyUI,fastRedirect&redirect=" + path[1];
-    }
-    if (path[0] == "web") {
-      location.href = location.origin + "/?install=easyUI&clear=true";
-    }
-    if (path[0] == "el") {
-      location.href = location.origin + "/fastLoad.html";
-    }
-  </script>
-</head>
-
-<body>
-  <p>We are redirecting you... please wait</p>
-</body>
-
+  <body>
+    <p>We are redirecting you... please wait</p>
+  </body>
 </html>
