@@ -1,4 +1,54 @@
 {
+  "UserStore": {
+    "displayname": "User Store",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
+  "x0": {
+    "displayname": "&nbsp;",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
+  "x1": {
+    "displayname": "&nbsp;",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
+  "x2": {
+    "displayname": "&nbsp;",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
+  "x3": {
+    "displayname": "&nbsp;",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
+  "x4": {
+    "displayname": "&nbsp;",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
+  "x5": {
+    "displayname": "&nbsp;",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
+  "x6": {
+    "displayname": "&nbsp;",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
+  "x7": {
+    "displayname": "&nbsp;",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
+  "x8": {
+    "displayname": "&nbsp;",
+    "version": "0.0",
+    "path": "programs/UserStore.json"
+  },
   "easyUI": {
     "displayname": "Easy UI",
     "version": "0.2.9",

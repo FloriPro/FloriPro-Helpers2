@@ -209,7 +209,7 @@ class MyConsole {
      * @param {([type,loggedObject]:["debug" | "trace" | "error" | "info" | "log" | "warn", any], variable:any)} callback gets called
      * @param {*} variable 
      * @returns {string} console listener id
-     */ 
+     */
     addListener(callback, variable) {
         var id = System.makeid(100);
         this.listeners[id] = [callback, variable];
@@ -447,6 +447,23 @@ class systemProgramHandler {
         } else {
             await System.program.installPackage(await (await System.network.fetch(programs[name]["path"])).text(), true, l, false, name, false, programs[name].version);
         }
+
+        return true;
+    }
+    /**
+     * uses installPackage to install the package from this github repository
+     * @param {string} url
+     * @param {string} name 
+     * @param {boolean} overwrite should overwrite if allready exists
+     * @return {Promise<boolean>} was the package installed successfully
+     */
+    async easyPackageUrlInstall(url, name, overwrite, version) {
+        if (overwrite != true && await System.program.installed(name)) {
+            return false;
+        }
+        var l = await SystemHtml.WindowHandler.presets.createLoading("Installing " + name, "Downloading " + name);
+
+        await System.program.installPackage(await (await System.network.fetch(url)).text(), true, l, false, name, false, version);
 
         return true;
     }
