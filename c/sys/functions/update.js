@@ -1,5 +1,5 @@
 async function checkSys() {
-    var nv = await (await System.network.fetch("version", { cache: "no-store" })).text();
+    var nv = (await (await System.network.fetch("version", { cache: "no-store" })).text()).replace("\n", "").replace("\r", "");
     if (nv == VERSION) {
         return;
     }
