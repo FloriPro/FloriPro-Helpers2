@@ -58,6 +58,7 @@ async function informationalFetch_Text(url, opts = {}) {
 async function loader() {
     try {
         if (getCookie("cookieAllowance") != "true") {
+            /*
             var conf = confirm("Do you allow Cookies and Local Storage? This is absolutely vital for this website to function correctly!")
             if (!conf) {
                 alert("Halted! This website needs Local Storage to function!");
@@ -65,6 +66,8 @@ async function loader() {
             } else {
                 setCookie("cookieAllowance", "true", 1000);
             }
+            */
+            window.cookieAllowed = false;
         }
 
         if (localStorage.getItem("fileSystemTable") == null || overwriteNotRedownload) {

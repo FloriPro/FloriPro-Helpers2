@@ -564,7 +564,7 @@ class WindowHandler {
         });
         System.eventHandler.addEventHandler("resize", (event, args) => {
             //update fullscreen windows
-            for (var id in Object.keys(SystemHtml.WindowHandler.windows)) {
+            for (var id of Object.keys(SystemHtml.WindowHandler.windows)) {
                 if (SystemHtml.WindowHandler.windows[id] != undefined && SystemHtml.WindowHandler.windows[id].size.max == true) {
                     SystemHtml.WindowHandler.windows[id].size.updateMax();
                 }

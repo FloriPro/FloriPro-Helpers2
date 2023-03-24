@@ -65,6 +65,8 @@
   async function load() {
     try {
       if (localStorage["boot"] == undefined) {
+        document.querySelector("#status").innerText =
+          "Downloading boot file...";
         try {
           localStorage["boot"] = await (
             await fetch("fileSysDownloaderBig.js")

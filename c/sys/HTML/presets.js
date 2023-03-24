@@ -24,6 +24,17 @@ class presets {
         return await f.load(title);
     }
     /**
+     * @param {string} title 
+     * @returns {Promise<string | undefined>} selected Folder / undefined
+     */
+    createFolderSelect(title, usePromise = true) {
+        var f = new folderSelectPreset()
+        if (title == undefined) {
+            title = "Select"
+        }
+        return f.load(title, usePromise);
+    }
+    /**
      * 
      * @param {string} title 
      * @param {string} text 
@@ -315,6 +326,115 @@ class fileCreatePreset {
         this.create()
     }
 }
+
+class folderSelectPreset {
+    constructor() {
+    }
+    async load(title, usePromise = true) {
+        this.path = "c";
+
+        var promise = new Promise((res, rej) => {
+            this.returnFunction = res;
+        });
+
+        //make window
+        /**
+         * @type {HtmlWindow}
+         */
+        this.window = await SystemHtml.WindowHandler.createWindow(title,
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent(`
+                <button element="back">...</button>
+                <hr>
+                <div element="folderList">
+                    <p>pls remove</p>
+                </div>
+                <hr>
+                <button element="ok">ok</button>
+                <button element="cancel">cancel</button>`);
+                await this.create();
+
+                await this.window.size.setSize(500, 300);
+                this.window.size.userCanResize(true)
+
+            });
+        this.window.close = () => {
+            this.returnFunction(null)
+            return true
+        }
+
+        if (usePromise) {
+            return promise
+        } else {
+            this.promise = promise;
+            return this
+        }
+    }
+    async create() {
+        (await this.window.getHtmlElement("ok")).style.display = "none";
+        await this.window.removeAllEventListeners();
+        //add event listeners
+        await this.window.addHtmlEventListener("onclick", "cancel", () => {
+            //read data
+            this.returnFunction(undefined)
+
+            //close and return
+            this.window.remove()
+        }, this);
+        await this.window.addHtmlEventListener("click", "back", this.back, this)
+        await this.window.addHtmlEventListener("click", "ok", this.ok, this)
+
+        var folderStuff = await this.window.getHtmlElement("folderList")
+        folderStuff.innerHTML = "";
+
+        var i = 0
+        for (var x of await SystemFileSystem.getFolders(this.path)) {
+            var b = document.createElement("button")
+            b.innerText = x + "/";
+            b.setAttribute("element", i + "_el")
+            folderStuff.append(b)
+
+            await this.window.parseNewHtml();
+            await this.window.addHtmlEventListener("click", i + "_el", async (_, __, v) => {
+                (await this.window.getHtmlElement("ok")).style.display = "";
+                this.selected = v[0];
+
+                v[2].style.backgroundColor = "aqua";
+                for (var x of v[2].parentElement.children) {
+                    if (x != v[2]) {
+                        x.style.backgroundColor = "";
+                    }
+                }
+            }, this, [x, i, b])
+            await this.window.addHtmlEventListener("ondblclick", i + "_el", this.button1, this, [x, i])
+            await this.window.addHtmlEventListener("ondblclick", i + "_el", () => {
+                console.log("dblclick")
+            }, this, [x, i])
+            i++;
+        }
+    }
+    async ok() {
+        //return
+        this.returnFunction(this.path + "/" + this.selected);
+        this.window.remove()
+    }
+    async button1(_, __, vars) {
+        this.path += "/" + vars[0];
+        this.create()
+    }
+    async back() {
+        var p = this.path.split("/")
+        var p = p.slice(0, -1);
+        if (p.length == 0) {
+            p = ["c"];
+        }
+        this.path = p.join("/");
+        this.create()
+    }
+}
+
 class numSelectPreset {
     constructor() {
     }
