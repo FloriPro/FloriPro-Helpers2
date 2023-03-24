@@ -18,6 +18,8 @@ class externalFileSelector extends System.program.default {
                     await delay(100);
                     await a.window.size.setfullMax();
                     var d = await a.promise;
+                    
+                    if (d == null) return;
 
                     var folderData = await this.toPackage(d);
 

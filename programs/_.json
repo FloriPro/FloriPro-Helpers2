@@ -153,7 +153,7 @@
   "fileSelector": {
     "hidden": true,
     "displayname": "File Selector",
-    "version": "0.0",
+    "version": "0.1",
     "path": "programs/fileSelector.json"
   }
 }
