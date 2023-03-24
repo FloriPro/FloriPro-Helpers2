@@ -149,5 +149,11 @@
     "displayname": "Exit Game Toolkit",
     "version": "0.4",
     "path": "programs/exitMe.json"
+  },
+  "fileSelector": {
+    "hidden": true,
+    "displayname": "File Selector",
+    "version": "0.0",
+    "path": "programs/fileSelector.json"
   }
 }
