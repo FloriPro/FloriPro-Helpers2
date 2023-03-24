@@ -33,10 +33,9 @@
         }
     }
 </style>
-<div element="status" style="
+<div element="loader" windowid="1" style="
     display: flex;
     height: 100%;
-    flex-direction: column-reverse;
     justify-content: center;
     align-items: center;
 ">
@@ -44,6 +43,11 @@
         <div class="circle border" element="_">
         </div>
     </div>
-    <p element="statusText">Loading Apps</p>
 </div>
-<div element="apps"></div>
+<div element="loadedInformation">
+    <p>title: <span element="title">...</span></p>
+    <p>author: <span element="author">...</span></p>
+    <p>version: <span element="version">...</span></p>
+    <p>description: <span element="description">...</span></p>
+    <button element="install">Install</button>
+</div>

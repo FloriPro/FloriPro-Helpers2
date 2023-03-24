@@ -4,29 +4,20 @@ class program extends System.program.default {
         //don't use!
     }
     async init() {
-        this.packages = ["programs/_.json"];
-
         /**
-         * @type HtmlWindow
+         * @type {HtmlWindow}
          */
-        this.window = await SystemHtml.WindowHandler.createWindow("Store",
+        this.window = await SystemHtml.WindowHandler.createWindow("User Store",
             //onready:
             async () => {
                 //set html
                 await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
 
-                await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
-                this.window.addHtmlEventListener("click", "import", async () => {
-                    var i = await SystemHtml.WindowHandler.presets.createStringSelect("import", "Put url for programs here");
-                    if (i != undefined) {
-                        this.packages.push(i);
-                        this.loadStore();
-                    }
-                }, this);
-                await this.window.size.setSize(500, 300)
-                await this.window.size.userCanResize(true)
+                await this.window.setContent((await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html")).replaceAll("{{windowId}}", this.window.getId()));
+                await this.window.size.setInnerSize(960, 640);
+                this.window.size.userCanResize(true);
 
-                await this.loadStore();
+                this.getApps();
             });
         this.window.close = () => {
             this.stop()
@@ -34,42 +25,68 @@ class program extends System.program.default {
         }
     }
 
-    async loadStore() {
-        var data = {}
-        for (var x of this.packages) {
-            var p = await (await System.network.fetch(x)).json();
-            for (var y of Object.keys(p)) {
-                if (p[y].hidden) continue;
-                data[y] = p[y];
-                data[y]["name"] = y
+    async getApps() {
+        try {
+            dat = await System.network.fetch("https://flulu-app-gen.floriprolohner.repl.co/api/list")
+            dat = await dat.json();
+        } catch {
+            (await this.window.getHtmlElement("statusText")).innerText = "Error while loading apps"
+            return;
+        }
+        (await this.window.getHtmlElement("statusText")).innerText = "OK";
+        (await this.window.getHtmlElement("status")).style.display = "none";
+
+        for (let i = 0; i < dat.length; i++) {
+            const app = dat[i];
+
+            var button = document.createElement("button")
+            button.innerText = app.title + " by " + app.user
+
+            button.setAttribute("appName", app.title)
+            button.setAttribute("appAuthor", app.user)
+
+            button.onclick = async () => {
+
+                /**
+                 * @type {HtmlWindow}
+                 */
+                var window = await SystemHtml.WindowHandler.createWindow("App Information", async () => {
+                    await window.setContent((await SystemFileSystem.getFileString(this.PATH.folder() + "/appinfo.html")).replaceAll("{{windowId}}", window.getId()));
+
+                    await window.size.setInnerSize(960, 640);
+                    window.size.userCanResize(true);
+
+                    (await window.getHtmlElement("loadedInformation")).style.display = "none";
+
+                    try {
+                        var dat = await System.network.fetch("https://flulu-app-gen.floriprolohner.repl.co/api/program/" + app.title);
+                        dat = await dat.json();
+                    } catch {
+                        SystemHtml.WindowHandler.presets.createInformation("Error", "Error while checking App Information");
+                    }
+
+                    var url = dat["path"];
+                    var name = dat["title"];
+                    var author = dat["user"];
+                    var version = dat["version"];
+                    var description = dat["description"];
+
+                    (await window.getHtmlElement("loader")).style.display = "none";
+                    (await window.getHtmlElement("loadedInformation")).style.display = "";
+
+                    (await window.getHtmlElement("title")).innerText = name;
+                    (await window.getHtmlElement("author")).innerText = author;
+                    (await window.getHtmlElement("version")).innerText = version;
+                    (await window.getHtmlElement("description")).innerText = description;
+
+                    (await window.getHtmlElement("install")).onclick = async () => {
+                        System.program.easyPackageUrlInstall(url, name, true, version);
+                    }
+                });
             }
-        }
 
-        var programdiv = await this.window.getHtmlElement("programs");
-        programdiv.innerHTML = "";
-
-        for (var x of Object.keys(data)) {
-            var but = document.createElement("button");
-            but.setAttribute("element", "button_" + x);
-            but.innerText = data[x]["displayname"];
-            programdiv.append(but)
-            this.window.parseNewHtml();
-            this.window.addHtmlEventListener("click", "button_" + x, this.installProgram, this, data[x]);
+            (await this.window.getHtmlElement("apps")).appendChild(button)
         }
-    }
-    async installProgram(_, __, program) {
-        var l = await SystemHtml.WindowHandler.presets.createLoading("Installing", "Downloading " + program["name"]);
-
-        //check if allready installed
-        if (await System.program.installed(program["name"])) {
-            var r = await SystemHtml.WindowHandler.presets.createConfirm("Allready installed", "This is already installed do you want to continue?");
-            if (!r) {
-                l.stop();
-                return;
-            }
-        }
-        var pdata = await (await System.network.fetch(program["path"])).text();
-        System.program.installPackage(pdata, true, l, undefined, program["name"], false, program["version"]);
     }
 }
 new program();
