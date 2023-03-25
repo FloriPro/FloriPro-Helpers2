@@ -111,5 +111,10 @@
     "displayname": "File Selector",
     "version": "0.1",
     "path": "programs/fileSelector.json"
+  },
+  "droog":{
+    "hidden": true,
+    "version": "0.0",
+    "path": "programs/droog.json"
   }
 }
