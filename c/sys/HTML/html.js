@@ -136,7 +136,11 @@ class Html {
                 //run it async so it doesn't block the rest of the code
                 (async (x, imgsrc) => {
                     if (await SystemFileSystem.fileExists(imgsrc)) {
-                        x.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(imgsrc));
+                        var fileType = "png";
+                        if (imgsrc.endsWith(".svg")) {
+                            fileType = "svg+xml";
+                        }
+                        x.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString(imgsrc), fileType);
                     } else {
                         x.src = SystemFileSystem.toImg(await SystemFileSystem.getFileString("c/sys/imgs/noIco.webp"));
                     }

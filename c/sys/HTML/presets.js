@@ -600,6 +600,7 @@ class loadingPreset {
      * @param {number} proc percentage to set
      */
     async setNum(proc) {
+        if (!this.window.getHtml()) return
         var p = await this.window.getHtmlElement("p");
         p.innerText = proc + "%"
     }
@@ -608,6 +609,7 @@ class loadingPreset {
      * @param {string} text text to set
      */
     async setText(text) {
+        if (!this.window.getHtml()) return
         (await this.window.getHtmlElement("text")).innerText = text;
     }
     /**
