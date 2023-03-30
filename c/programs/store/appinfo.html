@@ -55,6 +55,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
     }
 
     .window[windowid="{{windowId}}"] #beforeBackgroundinner {
@@ -76,6 +77,7 @@
 
     .window[windowid="{{windowId}}"] [windowelement="imgWrapper"] {
         height: 100%;
+        display: flex;
         object-fit: cover;
     }
 
@@ -129,7 +131,14 @@
         }
 
         [windowelement="install"] {
-            width: 150px;
+            margin-top: 20%;
+            margin-right: 0;
+            margin-left: 0;
+        }
+
+        #beforeBackground {
+            flex-direction: column !important;
+            justify-content: center !important;
         }
     }
 
@@ -147,7 +156,7 @@
         color: gray;
     }
 
-    .window[windowid="{{windowId}}"] p{
+    .window[windowid="{{windowId}}"] p {
         color: black;
     }
 </style>
