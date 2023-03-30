@@ -204,6 +204,8 @@ class easUIWorkerProgram extends System.program.default {
                 if (r.appearence.notifyUI != undefined) r.appearence.notifyUI();
             }, 10);
 
+            r.darkmode = this.darkmode;
+
             return r;
         }
     }
