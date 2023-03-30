@@ -25,8 +25,6 @@ class program extends System.program.default {
                 await this.window.size.setInnerSize(960, 640);
                 this.window.size.userCanResize(true);
 
-                this.getHomeApps();
-
                 //set events
                 this.window.addHtmlEventListener("onclick", "HomeTab", async () => {
                     this.openTab("Home");
@@ -77,7 +75,8 @@ class program extends System.program.default {
                     (await this.window.getHtmlElement("searchInput")).blur();
                 }, this);
 
-                this.openTab("Home");
+                await this.openTab("Home");
+                this.getHomeApps();
             });
         this.window.close = () => {
             this.stop()
@@ -230,6 +229,10 @@ class program extends System.program.default {
     }
 
     async getHomeApps() {
+        (await this.window.getHtmlElement("statusText")).innerText = "Loading Apps...";
+        (await this.window.getHtmlElement("errorX")).style.display = "none";
+        (await this.window.getHtmlElement("loadingSpinner")).style.display = "";
+        (await this.window.getHtmlElement("status")).style.display = "flex";
         try {
             var dat = await System.network.fetch("https://flulu-app-gen.floriprolohner.repl.co/api/home")
             dat = await dat.json();
