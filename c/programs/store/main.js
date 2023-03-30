@@ -348,7 +348,7 @@ class program extends System.program.default {
             (await window.getHtmlElement("description")).innerText = description;
 
             (await window.getHtmlElement("install")).onclick = async () => {
-                System.program.easyPackageUrlInstall(url, name, true, version);
+                System.program.easyPackageUrlInstall(url + "?v=" + Math.round(Math.random() * 10000), name, true, version);
             }
 
             //backgroundImg
@@ -394,8 +394,6 @@ class program extends System.program.default {
             }
         });
     }
-
-
 
     makeAppButton(app, featured = false) {
         var div = document.createElement("div")
