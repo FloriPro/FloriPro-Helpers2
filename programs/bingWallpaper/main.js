@@ -10,6 +10,7 @@ class program extends System.program.default {
         this.window = await SystemHtml.WindowHandler.createWindow("Bing Wallpaper",
             //onready:
             async () => {
+                await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
                 //set html
                 await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
 

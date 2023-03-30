@@ -150,13 +150,16 @@ class syncSyncer {
         }
 
         //get files that need update
+        var needsUpdateSanitized = [];
         for (var path of needsUpdateFiles) {
             if (this.immuneFiles.includes(path)) {
                 continue;
             }
+            needsUpdateSanitized.push(path);
             this.waitingForAnswer.push(path);
-            this.parent.connection.send({ type: "getFile", data: path });
+            //this.parent.connection.send({ type: "getFile", data: path });
         }
+        this.parent.connection.send({ type: "bulkGet", data: needsUpdateSanitized })
 
         if (!this.hasListener) {
             this.createListener();

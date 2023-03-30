@@ -13,6 +13,8 @@ class program extends System.program.default {
         this.window = await SystemHtml.WindowHandler.createWindow("Cool Functions",
             //onready:
             async () => {
+                await this.window.appearence.setLogo(this.PATH.folder() + "/logo.webp")
+                
                 //set html
                 await this.window.setContent(await SystemFileSystem.getFileString(this.PATH.folder() + "/html.html"));
                 await this.window.size.setSize(300, 200)

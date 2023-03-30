@@ -69,6 +69,10 @@ class syncWorkerConnection {
             this.addAction([data.path, false, true]);
         } else if (data.type == "delete") {
             this.addAction([data.path, false, true]);
+        } else if (data.type == "bulkGet") {
+            for (var i = 0; i < data.data.length; i++) {
+                this.addAction([data.data[i], false, false]);
+            }
         }
 
         this.connection.send(JSON.stringify(data));
