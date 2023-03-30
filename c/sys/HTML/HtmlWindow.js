@@ -66,6 +66,8 @@ class HtmlWindow {
 
                 this.parent.onResize();
                 setTimeout(this.parent.onResize, this.transitionTime + 1);
+                
+                this.parent.getHtml().querySelector(".content").style.height = "inherit";
             }
             getSize() {
                 return [this.parent.#sizeX, this.parent.#sizeY]
@@ -75,6 +77,7 @@ class HtmlWindow {
                 this.parent.#sizeY = null;
                 this.parent.getHtml().style.width = "fit-content";
                 this.parent.getHtml().style.height = "fit-content";
+                this.parent.getHtml().querySelector(".content").style.height = "fit-content";
             }
             userCanResize(yn) {
                 this.parent.canUserResize = yn;
@@ -193,7 +196,7 @@ class HtmlWindow {
                 this.parent.getHtml().querySelector(".content").style.overflow = "auto";
             }
         }(this);
-        this.appearence = new class {
+        this.appearence = new class {content
             constructor(parent) {
                 this.transitionTime = 200;
                 this.logo = null;
@@ -530,7 +533,7 @@ class HtmlWindow {
      * Important: the events only get called, when the target element clicked has an element attribute, regardless of the attributes value.
      * @param {string} event Html element Event (e.g. onclick) 
      * @param {string} htmlElementTag Html Element "element" tag ('<div element="tagofdoom"></div>': 'tagofdoom') 
-     * @param {(variable, id, ?, event)} callback run when the event is triggered
+     * @param {(data, id, variable, event)} callback run when the event is triggered
      * @param {ThisType | undefined} t the class to run the callback function in
      * @param {*} variable one variable passed in the callback function
      */
