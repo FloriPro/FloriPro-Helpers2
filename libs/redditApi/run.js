@@ -118,7 +118,8 @@ class post {
             for (x in this.data["media_metadata"]) {
                 var d = {
                     "full": this.data["media_metadata"][x]["s"]["u"],
-                    "compressed": this.data["media_metadata"][x]["p"][0]["u"]
+                    "compressed": this.data["media_metadata"][x]["p"][0]["u"],
+                    "highquality": this.data["media_metadata"][x]["p"][this.data["media_metadata"][x]["p"].length - 1]["u"],
                 };
                 imgs.push(d)
             }
@@ -130,7 +131,8 @@ class post {
 
                 var d = {
                     "full": a[a.length - 1]["url"],
-                    "compressed": a[0]["url"]
+                    "compressed": a[0]["url"],
+                    "highquality": a[a.length - 1]["url"],
                 };
 
                 if ("url" in this.data) {
