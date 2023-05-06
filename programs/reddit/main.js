@@ -236,6 +236,26 @@ class program extends System.program.default {
             i.setAttribute("element", "oneImg")
             i.classList.add("im1");
 
+            console.log(x)
+            if (x["highquality"] && x["highquality"] != x["compressed"]) {
+                var i1 = document.createElement("img");
+                i1.src = x["highquality"];
+                i1.style.maxWidth = this.maxWidth;
+                i1.style.width = "100%";
+                i1.setAttribute("element", "oneImg")
+                i1.style.display = "none";
+                i1.classList.add("im0");
+                i1.onload = ((i1, i2, i) => {
+                    //check if i1 and i are still in the dom
+                    if (i1.parentElement != null) {
+                        i1.style.display = "";
+                    }
+                    if (i.parentElement != null) {
+                        i.remove();
+                    }
+                }).bind(this, i1, i2, i)
+            }
+
             var i2 = document.createElement("img");
             i2.src = x["full"];
             i2.style.display = "none";
@@ -247,7 +267,12 @@ class program extends System.program.default {
             i2.onload = (event) => {
                 event.composedPath()[0].style.display = "";
                 event.composedPath()[1].querySelector("p").remove();
-                event.composedPath()[1].querySelector(".im1").remove();
+                if (event.composedPath()[1].querySelector(".im1") != null) {
+                    event.composedPath()[1].querySelector(".im1").remove();
+                }
+                if (event.composedPath()[1].querySelector(".im0") != null) {
+                    event.composedPath()[1].querySelector(".im0").remove();
+                }
             }
 
             var p = document.createElement("p");
@@ -256,6 +281,9 @@ class program extends System.program.default {
 
             div.append(p);
             div.append(i);
+            if (x["highquality"]) {
+                div.append(i1);
+            }
             div.append(i2);
 
 
