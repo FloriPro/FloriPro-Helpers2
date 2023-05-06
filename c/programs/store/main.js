@@ -459,7 +459,11 @@ class program extends System.program.default {
 
         var div4 = document.createElement("div")
         div4.className = "projectDescription"
-        div4.innerText = "No description"
+        if (app.shortSentence != null && app.shortSentence != "") {
+            div4.innerText = app.shortSentence
+        } else {
+            div4.innerText = "No description"
+        }
         div4.style.color = "gray";
         div3.appendChild(div4)
 
