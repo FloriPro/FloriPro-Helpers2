@@ -870,10 +870,8 @@ class WindowHandler {
                 if (i == windowLayeringWithoutHidden.length) {
                     var b = win.ontop;
                     win.ontop = true;
-                    win.getHtml().style.filter = "";
                 } else {
                     win.ontop = false;
-                    win.getHtml().style.filter = "brightness(0.98)";
                 }
                 i++;
             }

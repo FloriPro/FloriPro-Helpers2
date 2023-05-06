@@ -99,7 +99,7 @@ input {
 }
 
 .title-bar-controls button {
-    background-color: white;
+    background-color: transparent;
     color: black;
     padding: 0;
     display: block;
