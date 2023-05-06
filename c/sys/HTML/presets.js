@@ -110,6 +110,78 @@ class presets {
             SystemHtml.ContextMenu.showContext(b, [System.eventHandler.mouse.x - 10, System.eventHandler.mouse.y - 10]);
         });
     }
+
+    async createSelect(title, options) {
+        var f = new selectPreset()
+        if (title == undefined) {
+            title = "Select"
+        }
+        return await f.load(title, options);
+    }
+}
+
+class selectPreset {
+    constructor() {
+    }
+    async load(title, options) {
+        var promise = new Promise((res, rej) => {
+            this.returnFunction = res;
+        });
+
+        //make window
+        /**
+         * @type {HtmlWindow}
+         */
+        this.window = await SystemHtml.WindowHandler.createWindow(title,
+            //onready:
+            async () => {
+                //set html
+                await this.window.setContent('<div element="list"></div><hr><button element="ok">ok</button><button element="cancel">cancel</button>');
+
+                await this.window.size.setSize(400, 200);
+                this.window.size.userCanResize(true)
+
+                //add event listeners
+                await this.window.addHtmlEventListener("onclick", "cancel", () => {
+                    //read data
+                    this.returnFunction(undefined)
+
+                    //close and return
+                    this.window.remove()
+                }, this);
+                await this.window.addHtmlEventListener("onclick", "ok", async () => {
+                    //read data
+                    this.returnFunction(this.selected)
+
+                    //close and return
+                    this.window.remove()
+                }, this);
+
+                var list = await this.window.getHtmlElement("list");
+                for (var x of options) {
+                    var b = document.createElement("button");
+                    b.innerText = x;
+                    b.setAttribute("element", x);
+                    list.append(b);
+
+                    this.window.parseNewHtml();
+                    await this.window.addHtmlEventListener("onclick", x, async (_, __, v, e) => {
+                        this.selected = v;
+
+                        for (var x of list.children) {
+                            x.style.backgroundColor = "";
+                        }
+                        e.target.style.backgroundColor = "aqua";
+                    }, this, x);
+                }
+            });
+        this.window.close = () => {
+            this.returnFunction(null)
+            return true
+        }
+
+        return promise
+    }
 }
 
 class fileSelectPreset {

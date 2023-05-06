@@ -85,6 +85,21 @@ class program extends System.program.default {
                         }
                     }, "run as Program": (event) => {
                         System.program.runProgram(event.target.getAttribute("path"));
+                    },
+                    "open with": async (event) => {
+                        var p = await System.options.get("programs");
+                        var names = [];
+                        var namesNames = [];
+                        for (var x of Object.keys(p)) {
+                            names.push(p[x]["name"]);
+                            namesNames.push(x);
+                        }
+                        var r = await SystemHtml.WindowHandler.presets.createSelect("Select Program", names);
+                        if (r != undefined) {
+                            var i = names.indexOf(r);
+                            var path = p[namesNames[i]]["path"];
+                            System.program.runProgram(path, event.target.getAttribute("path"));
+                        }
                     }
                 };
                 if (this.odFiles[target.getAttribute("path").split("/")[target.getAttribute("path").split("/").length - 1]] != undefined) {

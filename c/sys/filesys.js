@@ -153,6 +153,16 @@ class FileSystemClass {
         }
         return x;
     }
+    fileExistsSync(path) {
+        var x = fastFileLookup[path] != undefined;
+        if (x) {
+            if (this.realLocalStorage[fastFileLookup[path]] == undefined) {
+                x = false;
+            }
+        }
+        return x;
+    }
+
     /**
      * returns the content of a file
      * @param {string} path 
@@ -186,6 +196,22 @@ class FileSystemClass {
             return this.ramFiles[path];
         }
     }
+    async getFileStringSync(path, raw = false) {
+        if (this.ramFiles == undefined || this.ramFiles[path] == undefined) {
+            var r = this.localFileLoadSync(path);
+            if (r.startsWith(".od__") && !raw) {
+                var d = r.slice(5)
+                console.error("fetch not available in sync mode!");
+                return null;
+            }
+
+            //this.ramFiles[path] = r; //store the file in ram for fast acces
+            return r;
+        } else {
+            return this.ramFiles[path];
+        }
+    }
+
     async bufferToString(buf) {
         var out = ""
         //var i = 0;
@@ -245,6 +271,13 @@ class FileSystemClass {
      * @return {Promise<string>}
      */
     async localFileLoad(path) {
+        if (this.realLocalStorage.getItem(fastFileLookup[path]) == undefined) {
+            console.error("file " + path + " does not exist!");
+            return "";
+        }
+        return this.realLocalStorage.getItem(fastFileLookup[path]).replace("\r\n", "\n")
+    }
+    localFileLoadSync(path) {
         if (this.realLocalStorage.getItem(fastFileLookup[path]) == undefined) {
             console.error("file " + path + " does not exist!");
             return "";

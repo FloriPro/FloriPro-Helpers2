@@ -421,7 +421,8 @@ class systemProgramHandler {
         r.id = id;
         r.PATH = new System.path(path);
         try {
-            r.init(args);
+            var i = r.init(args);
+            r.initWait = i;
         } catch (e) {
             console.error(e);
         }
