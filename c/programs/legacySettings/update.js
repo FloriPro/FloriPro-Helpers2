@@ -3,7 +3,7 @@ async function run() {
 
     var nv = await (await System.network.fetch("version", { cache: "no-store" })).text();
     if (nv == VERSION) {
-        if (await SystemHtml.WindowHandler.presets.createConfirm("Error", "You currently have the latest version! (NO to update nevertheless)")) {
+        if (!await SystemHtml.WindowHandler.presets.createConfirm("Error", "You currently have the latest version! (Yes to update nevertheless)")) {
             information.stop();
             return;
         }
@@ -51,11 +51,11 @@ async function run() {
 }
 
 /**
- * 
- * @param {*} dat 
- * @param {string} path 
- * @param {*} persistandFiles 
- */
+     * 
+     * @param {*} dat 
+     * @param {string} path 
+     * @param {*} persistandFiles 
+     */
 async function asyncUpdateFiles(dat, path, persistandFiles) {
     for (var x of Object.keys(dat)) {
         if (x.includes(".")) {

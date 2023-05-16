@@ -176,6 +176,7 @@ input {
     background: rgb(29 29 29 / 67%);
     backdrop-filter: blur(11px);
     -webkit-backdrop-filter: blur(11px);
+    -moz-backdrop-filter: blur(11px);
     /* border-top: 1px solid #fff; */
     bottom: 0;
     color: #000;

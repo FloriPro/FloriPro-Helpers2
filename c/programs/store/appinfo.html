@@ -88,7 +88,7 @@
         margin-left: 10px;
     }
 
-    [windowelement="install"] {
+    .window[windowid="{{windowId}}"] [windowelement="install"] {
         height: 100%;
         width: 200px;
         background-color: #3498db;
@@ -160,6 +160,7 @@
     .window[windowid="{{windowId}}"] .title-bar {
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
+        -moz-backdrop-filter: blur(14px);
         background: #ffffff4a;
     }
 
@@ -167,6 +168,7 @@
         background: #ffffff60;
         backdrop-filter: blur(100px);
         -webkit-backdrop-filter: blur(100px);
+        -moz-backdrop-filter: blur(100px);
     }
 
     .window[windowid="{{windowId}}"] [windowelement="backgroundImg"] {

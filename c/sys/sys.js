@@ -410,11 +410,11 @@ class systemProgramHandler {
         if (path == undefined) {
             path = "c";
         }
-        try {
+        //try {
             var r = await eval(dat)
-        } catch (e) {
-            console.error(e);
-        }
+        //} catch (e) {
+        //    console.error(e);
+        //}
         var id = this.findFreeId();
 
         this.programRegister[id] = r;
