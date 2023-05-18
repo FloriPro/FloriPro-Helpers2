@@ -14,6 +14,9 @@ class oneYouce {
         this.xSpeed = Math.floor(Math.random() * energyX * 2) - energyX;
 
         this.create();
+        this.finishPromise = new Promise(((resolve, reject) => {
+            this.finish = resolve;
+        }).bind(this));
     }
     create() {
         this.i = 0;
@@ -32,7 +35,8 @@ class oneYouce {
 
         this.div.style.pointerEvents = "none";
 
-
+        this.div.style.zIndex = "999999999999";
+        this.div.style.borderRadius = "50%";
         this.div.style.position = "absolute";
         this.div.style.left = this.posX + "px";
         this.div.style.top = this.posY + "px";
@@ -68,6 +72,7 @@ class oneYouce {
     }
 
     stop() {
+        this.finish();
         this.div.remove();
         clearInterval(this.intervalid);
     }
@@ -80,10 +85,15 @@ class youce {
         this.div = document.createElement("div");
         this.div.setAttribute("youceId", this.id);
 
+        var p = []
         for (let i = 0; i < 20; i++) {
             let one = new oneYouce(this.id, startX, startY);
             this.div.appendChild(one.div);
+            p.push(one.finishPromise);
         }
+        Promise.all(p).then(() => {
+            this.div.remove();
+        });
 
         document.body.appendChild(this.div);
     }

@@ -139,7 +139,7 @@ class program extends System.program.default {
                     "type": "activeList",
                     "description": "Enabled VIP Features:",
                     "options": async () => {
-                        function dat(name, settingsData) {
+                        function dat(name, settingsData, settingsInDom) {
                             return {
                                 "type": "checkbox",
                                 "status": async () => {
@@ -156,6 +156,7 @@ class program extends System.program.default {
                                     await System.options.addValue("vipInfo", "enabled", enabled, true);
                                     settingsData["VIP.Enabled VIP Features"][name].update();
                                     SystemHtml.WindowHandler.presets.createInformation("VIP", "Please restart the system to apply the changes");
+                                    settingsInDom["VIP"]["Reload"].style.display = "block";
                                 }
                             }
                         }
@@ -163,10 +164,18 @@ class program extends System.program.default {
                         var available = await SystemFileSystem.getFileJson("c/sys/HTML/vip/available.json");
                         var options = {};
                         for (var i = 0; i < available.length; i++) {
-                            options[available[i]] = dat(available[i], this.settingsData);
+                            options[available[i]] = dat(available[i], this.settingsData, this.settingsInDom);
                         }
                         return options;
                     }
+                },
+                "Reload": {
+                    "type": "button",
+                    "description": "Reload Window",
+                    "action": async () => {
+                        location.reload();
+                    },
+                    "display": "none"
                 }
             }
         }
@@ -321,7 +330,9 @@ class program extends System.program.default {
             p.prepend(display);
         }
         else if (data.type == "activeList") {
+            p.classList.add("activeListWrapper");
             var innerDiv = document.createElement("div");
+            innerDiv.classList.add("activeList");
             var op = await data.options();
             for (var x in op) {
                 await this.createLeftHandSub(innerDiv, op, parentName + "." + name, x);
