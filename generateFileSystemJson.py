@@ -6,6 +6,13 @@ import time
 from jsmin import jsmin
 
 
+def encrypt(text, password):
+    out = ""
+    for i in range(len(text)):
+        out += chr(ord(text[i]) ^ ord(password[i % len(password)]))
+    return out
+
+
 def path_to_dict(path):
     if os.path.isdir(path):
         # os.listdir(path)
@@ -28,8 +35,14 @@ def path_to_dict(path):
                 for x in v.split("\n"):
                     if "///--remove--" not in x:
                         v2 += x+"\n"
-                v2=v2.encode("utf-8")
-            #v2 = jsmin(v.decode("utf-8")).encode("utf-8")
+                v2 = v2.encode("utf-8")
+            # v2 = jsmin(v.decode("utf-8")).encode("utf-8")
+            if "// secure js: " in v2.decode("utf-8"):
+                dat = v2.decode("utf-8").split("// secure js: ")
+                v2 = dat[0]
+                password = dat[1].replace("\n", "").replace(" ", "")
+                v2 = encrypt(v2, password).encode("utf-8")
+
         d = base64.b64encode(v2).decode('ascii')
     return d
 
@@ -45,7 +58,7 @@ def upadte():
             d = json.dumps(p)
             f.write(d)
             f.close()
-            #json.dump(p, f)
+            # json.dump(p, f)
             oldData = p
             print(time.time())
 # print(json.dumps(path_to_dict('./c/')))

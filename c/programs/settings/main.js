@@ -118,6 +118,57 @@ class program extends System.program.default {
                     }
                 },
             },
+            "VIP": {
+                "Enter Code": {
+                    "type": "button",
+                    "description": "Enter the authorization code",
+                    "action": async () => {
+                        var code = await SystemHtml.WindowHandler.presets.createStringSelect("VIP Auth", "Enter vip authorization code");
+                        await System.options.vip.setCode(code);
+                    }
+                },
+                "Status": {
+                    "type": "text",
+                    "default": "Not VIP",
+                    "description": "VIP status",
+                    "action": async () => {
+                        this.settingsInDom["VIP"]["Status"].innerText = await System.options.vip.enabled ? "VIP Enabled" : "VIP Disabled";
+                    }
+                },
+                "Enabled VIP Features": {
+                    "type": "activeList",
+                    "description": "Enabled VIP Features:",
+                    "options": async () => {
+                        function dat(name, settingsData) {
+                            return {
+                                "type": "checkbox",
+                                "status": async () => {
+                                    var enabled = (await System.options.get("vipInfo"))["enabled"];
+                                    return enabled.includes(name);
+                                },
+                                "action": async () => {
+                                    var enabled = (await System.options.get("vipInfo"))["enabled"];
+                                    if (enabled.includes(name)) {
+                                        enabled.splice(enabled.indexOf(name), 1)
+                                    } else {
+                                        enabled.push(name)
+                                    }
+                                    await System.options.addValue("vipInfo", "enabled", enabled, true);
+                                    settingsData["VIP.Enabled VIP Features"][name].update();
+                                    SystemHtml.WindowHandler.presets.createInformation("VIP", "Please restart the system to apply the changes");
+                                }
+                            }
+                        }
+
+                        var available = await SystemFileSystem.getFileJson("c/sys/HTML/vip/available.json");
+                        var options = {};
+                        for (var i = 0; i < available.length; i++) {
+                            options[available[i]] = dat(available[i], this.settingsData);
+                        }
+                        return options;
+                    }
+                }
+            }
         }
 
         this.selectedId = 0;
@@ -187,38 +238,56 @@ class program extends System.program.default {
 
         var s = await this.window.getHtmlElement("options");
         s.innerHTML = "";
+        this.createLeftHandData(s, this.settings, name);
 
-        for (var x in this.settings[name]) {
-            var e = this.createElement(x, this.settings[name][x]);
-            s.append(e);
+    }
 
-            if (this.settingsInDom[name] == undefined) {
-                this.settingsInDom[name] = {};
-            }
-            this.settingsInDom[name][x] = e;
-
-            if (this.settingsData[name] == undefined) {
-                this.settingsData[name] = {};
-            }
-            this.settingsData[name][x] = new class {
-                constructor(name, x, parent) {
-                    this.name = name;
-                    this.x = x;
-
-                    /**
-                     * @type {program}
-                     */
-                    this.parent = parent;
-                }
-                async update() {
-                    this.parent.settingsInDom[this.name][this.x].replaceWith(this.parent.createElement(this.x, this.parent.settings[this.name][this.x]));
-                }
-            }(name, x, this);
+    async createLeftHandData(s, settings, name) {
+        for (var x in settings[name]) {
+            await this.createLeftHandSub(s, settings[name], name, x);
         }
     }
 
-    createElement(name, data) {
+    async createLeftHandSub(s, settingspart, name, x, makeNew = true, toReplace = undefined) {
+        var e = await this.createElement(x, settingspart[x], name);
+        if (makeNew) {
+            s.append(e);
+        } else {
+            toReplace.replaceWith(e);
+        }
+
+        if (this.settingsInDom[name] == undefined) {
+            this.settingsInDom[name] = {};
+        }
+        this.settingsInDom[name][x] = e;
+
+        if (this.settingsData[name] == undefined) {
+            this.settingsData[name] = {};
+        }
+        this.settingsData[name][x] = new class {
+            constructor(name, x, settingspart, s, parent) {
+                this.name = name;
+                this.x = x;
+                this.settingspart = settingspart;
+                this.s = s;
+
+                /**
+                 * @type {program}
+                 */
+                this.parent = parent;
+            }
+            async update() {
+                //this.parent.settingsInDom[this.name][this.x].replaceWith(
+                //    await this.parent.createElement(this.x, this.settingspart[this.x])
+                //);
+                this.parent.createLeftHandSub(this.s, this.settingspart, this.name, this.x, false, this.parent.settingsInDom[this.name][this.x]);
+            }
+        }(name, x, settingspart, s, this);
+    }
+
+    async createElement(name, data, parentName) {
         var p = document.createElement("p");
+        data.action = data.action || (() => { });
         p.innerText = name;
         if (data.default) {
             p.innerText = data.default;
@@ -232,6 +301,7 @@ class program extends System.program.default {
         }
         else if (data.type == "text") {
             p.classList.add("cooltext");
+            setTimeout(data.action.bind(this), 1);
         }
         else if (data.type == "checkbox") {
             p.classList.add("coolcheckbox");
@@ -249,6 +319,14 @@ class program extends System.program.default {
             })
 
             p.prepend(display);
+        }
+        else if (data.type == "activeList") {
+            var innerDiv = document.createElement("div");
+            var op = await data.options();
+            for (var x in op) {
+                await this.createLeftHandSub(innerDiv, op, parentName + "." + name, x);
+            }
+            p.append(innerDiv);
         }
 
         if (data.display) {

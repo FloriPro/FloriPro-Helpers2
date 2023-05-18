@@ -411,7 +411,7 @@ class systemProgramHandler {
             path = "c";
         }
         //try {
-            var r = await eval(dat)
+        var r = await eval(dat)
         //} catch (e) {
         //    console.error(e);
         //}
@@ -645,9 +645,9 @@ class standardProg {
 
 class options {
     /**
-     * returns the data of an option (allways a dict)
+     * returns the data of an option (allways a dict) or null if it does not exist
      * @param {string} option name of the option whitch contains a dict of values
-     * @returns {Promise<{ [any: string]: any }} dict of the values of the option
+     * @returns {Promise<null | {[any: string]: any;}>} dict of the values of the option
      */
     async get(option) {
         var d = SystemFileSystem.getFileJson("c/sys/options/" + option + ".json");
@@ -670,6 +670,16 @@ class options {
             console.warn("no overwrite")
             return false;
         }
+    }
+
+    constructor() {
+        setTimeout(this.init.bind(this), 100);
+    }
+    async init() {
+        var p = await System.program.runProgram("c/sys/HTML/vip/vipVerify.js");
+        this.vip = p;
+        await p.initWait;
+        this.vip.startAll();
     }
 }
 
