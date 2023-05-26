@@ -21,6 +21,9 @@
     /* Firefox */
     -ms-user-select: none;
     /* Internet Explorer/Edge */
+
+    -webkit-touch-callout: none;
+    /* iOS Safari */
 }
 
 *[tooltip]:hover::after {
@@ -477,9 +480,11 @@ iframe {
 .DesktopImg {
     /*background-color: #ffffffba;*/
     user-drag: none;
-    user-select: none;
-    -moz-user-select: none;
     -webkit-user-drag: none;
+
+    user-select: none;
+    -moz-user-select: -moz-none;
     -webkit-user-select: none;
     -ms-user-select: none;
+
 }
