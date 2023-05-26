@@ -21,6 +21,8 @@ class HtmlWindow {
     }
 
     constructor(id) {
+        this.settings = {};
+
         this.ontop = true;
         this.animationHandler = new class {
             constructor(parent) {
@@ -59,6 +61,15 @@ class HtmlWindow {
              * @param {number | undefined} y 
              */
             async setSize(x, y) {
+                if (this.parent.settings["clampWindowToScreen"] && !this.max) {
+                    if (x > window.innerWidth - 20) {
+                        x = window.innerWidth - 20;
+                    }
+                    if (y > window.innerHeight - 50) {
+                        y = window.innerHeight - 50;
+                    }
+                }
+
                 this.parent.#sizeX = x;
                 this.parent.#sizeY = y;
                 this.parent.getHtml().style.width = this.parent.#sizeX + "px";
@@ -66,7 +77,7 @@ class HtmlWindow {
 
                 this.parent.onResize();
                 setTimeout(this.parent.onResize, this.transitionTime + 1);
-                
+
                 this.parent.getHtml().querySelector(".content").style.height = "inherit";
             }
             getSize() {
@@ -196,7 +207,8 @@ class HtmlWindow {
                 this.parent.getHtml().querySelector(".content").style.overflow = "auto";
             }
         }(this);
-        this.appearence = new class {content
+        this.appearence = new class {
+            content;
             constructor(parent) {
                 this.transitionTime = 200;
                 this.logo = null;
@@ -434,6 +446,14 @@ class HtmlWindow {
             }
         }
 
+        await (async (parent) => {
+            var needed = ["clampWindowToScreen", "automaticFullscreen"];
+            var d = (await System.options.get("settings"));
+            for (var i = 0; i < needed.length; i++) {
+                parent.settings[needed[i]] = d[needed[i]][0];
+            }
+        })(this);
+
         await this.size.setSize(this.#sizeX, this.#sizeY);
         this.size.userCanResize(true);
         if (finishPromise == undefined) {
@@ -443,8 +463,16 @@ class HtmlWindow {
             await delay(2);
             if (this.removed != true) {
                 this.onReady();
+                if (this.settings.automaticFullscreen) {
+                    setTimeout((() => {
+                        if (this.removed != true) {
+                            this.size.setMax();
+                        }
+                    }).bind(this), 3);
+                }
             }
         });
+
         await delay(1);
         return;
     }
@@ -452,15 +480,12 @@ class HtmlWindow {
     /**
      * Only used by the programm for resizing
      * @param {number} sizeX 
-     * @param {number} sizeY 
+     * @param {number} sizeY
      */
     addWindowSize(sizeX, sizeY) {
         this.#sizeX += sizeX;
         this.#sizeY += sizeY;
-        if (sizeX != "automatic") {
-            this.getHtml().style.width = this.#sizeX + "px";
-            this.getHtml().style.height = this.#sizeY + "px";
-        }
+        this.size.setSize(this.#sizeX, this.#sizeY);
         this.onResize();
     }
     /**

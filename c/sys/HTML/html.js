@@ -339,7 +339,7 @@ class ContextMenu {
 
             div.style.width = "20px";
             div.style.height = "20px";
-            div.style.backgroundColor = "rgba(255,0,0,0.1)";
+            div.style.backgroundColor = "#ffb3b3ba";
             div.style.borderRadius = "0%";
             div.style.border = "1px solid rgba(0,0,0,1)";
 

@@ -34,6 +34,7 @@ class easUIWorkerProgram extends System.program.default {
         document.querySelector("#all").style.background = "";
 
         document.body.style.webkitOverflowScrolling = 'touch';
+        document.body.classList.add("disable-select");
 
         await this.makeNewDesktop();
 
@@ -183,7 +184,7 @@ class easUIWorkerProgram extends System.program.default {
                 titlebar.querySelector(".title-bar-controls").style.display = "none";
 
                 var feu = document.createElement("div");
-                feu.innerHTML=`
+                feu.innerHTML = `
                 <div style="display: flex;align-items: center;background: #2c2b2b;box-shadow: 0px 0px 30px 30px #2c2b2b;height: 0;">
                     <img imgsrc="c/sys/imgs/color.webp" style="border-radius: 10px" />
                     <p style="color: #58e384">FluLu.eu</p>

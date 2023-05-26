@@ -90,9 +90,31 @@ class program extends System.program.default {
                     "description": "Startup Disclaimer",
                     "action": async () => {
                         await this.directChange("startupDisclaimer");
-                        this.settingsData["Accessibility"]["Startup Disclaimer"].update();
+                        this.settingsData["Accessibility"]["Instant reset"].update();
                     }
                 },
+                "Clamp Windows to Screen Size": {
+                    "type": "checkbox",
+                    "status": async () => {
+                        return (await System.options.get("settings"))["clampWindowToScreen"][0];
+                    },
+                    "description": "Clamp Windows to Screen Size",
+                    "action": async () => {
+                        await this.directChange("clampWindowToScreen");
+                        this.settingsData["Accessibility"]["Instant reset"].update();
+                    }
+                },
+                "Automatic Fullscreen": {
+                    "type": "checkbox",
+                    "status": async () => {
+                        return (await System.options.get("settings"))["automaticFullscreen"][0];
+                    },
+                    "description": "Automatic Fullscreen",
+                    "action": async () => {
+                        await this.directChange("automaticFullscreen");
+                        this.settingsData["Accessibility"]["Instant reset"].update();
+                    }
+                }
             },
             "Analytics": {
                 "Allow analytics": {

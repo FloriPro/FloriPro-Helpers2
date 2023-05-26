@@ -435,10 +435,12 @@ textarea {
     position: absolute;
     background-color: white;
     box-shadow: rgb(0 0 0) 0px 0px 20px -5px;
+    border: 1px solid #8a8a8a;
 }
 
 .contextmenubutton {
     background-color: transparent;
+    width: 100%;
 }
 
 .contextmenubutton:hover {

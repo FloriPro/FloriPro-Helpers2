@@ -22,19 +22,30 @@ def path_to_dict(path):
             d[x] = s
 
     else:
-        f = open(path, 'rb')
+        f = open(path, "rb")
         v = f.read()
         f.close()
 
         filename = path.replace("\\", "/").split("/")[-1]
         v2 = v[:]
-        if (filename.endswith(".js")):
+
+        if (
+            filename.endswith(".html")
+            or filename.endswith(".json")
+            or filename.endswith(".js")
+        ):
+            if "//copy: " in v2.decode("utf-8"):
+                dat = v2.decode("utf-8").split("//copy: ")
+                v2 = dat[0]
+                copy = dat[1].replace("\n", "").replace(" ", "")
+                v2 = open(copy, "rb").read()
+        if filename.endswith(".js"):
             v = v.decode("utf-8")
             if "///--remove--" in v:
                 v2 = ""
                 for x in v.split("\n"):
                     if "///--remove--" not in x:
-                        v2 += x+"\n"
+                        v2 += x + "\n"
                 v2 = v2.encode("utf-8")
             # v2 = jsmin(v.decode("utf-8")).encode("utf-8")
             if "// secure js: " in v2.decode("utf-8"):
@@ -43,7 +54,7 @@ def path_to_dict(path):
                 password = dat[1].replace("\n", "").replace(" ", "")
                 v2 = encrypt(v2, password).encode("utf-8")
 
-        d = base64.b64encode(v2).decode('ascii')
+        d = base64.b64encode(v2).decode("ascii")
     return d
 
 
@@ -61,6 +72,8 @@ def upadte():
             # json.dump(p, f)
             oldData = p
             print(time.time())
+
+
 # print(json.dumps(path_to_dict('./c/')))
 
 
