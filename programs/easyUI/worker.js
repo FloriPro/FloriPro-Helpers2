@@ -54,6 +54,15 @@ class easUIWorkerProgram extends System.program.default {
                 this.shouldBeRemoved.push(x);
             }
         }).bind(this), 500);
+
+        setTimeout(async () => {
+            if ((await System.options.get("settings"))["automaticFullscreen"][0]) {
+                var r = await SystemHtml.WindowHandler.presets.createConfirm("EasyUI", "The Setting: 'Automatic Fullscreen' is not supported by EasyUI. Should it be disabled?");
+                if (r) {
+                    System.options.addValue("settings", "automaticFullscreen", [false, "bool"], true);
+                }
+            }
+        }, 1000);
     }
     elementFromHtml(htmlString) {
         var div = document.createElement('div');
@@ -147,6 +156,7 @@ class easUIWorkerProgram extends System.program.default {
                 var o = r.size.setMax.bind(r.size);
                 r.size.setMax = async (...ar) => {
                     var ret = await o(...ar);
+                    r.size.max = true;
 
                     if (r.removed) return;
 
@@ -162,6 +172,9 @@ class easUIWorkerProgram extends System.program.default {
                 r.size.setMax();
                 r.size.setMax = r.size.setMax;
                 r.size.notMax = r.size.setMax;
+                setTimeout(() => {
+                    r.size.setMax();
+                }, 10);
 
                 //replace titelbar
                 var html = r.getHtml()
