@@ -571,6 +571,8 @@ class WindowHandler {
             for (var id of Object.keys(SystemHtml.WindowHandler.windows)) {
                 if (SystemHtml.WindowHandler.windows[id] != undefined && SystemHtml.WindowHandler.windows[id].size.max == true) {
                     SystemHtml.WindowHandler.windows[id].size.updateMax();
+                    setTimeout(SystemHtml.WindowHandler.windows[id].size.updateMax.bind(SystemHtml.WindowHandler.windows[id].size), 200);
+                    setTimeout(SystemHtml.WindowHandler.windows[id].size.updateMax.bind(SystemHtml.WindowHandler.windows[id].size), 1000);
                 }
             }
         });
