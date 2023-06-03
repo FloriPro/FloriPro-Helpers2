@@ -87,6 +87,7 @@ input {
 
     text-overflow: ellipsis;
     overflow: hidden;
+    margin-bottom: 11px;
 }
 
 .title-bar-left {
@@ -94,7 +95,7 @@ input {
 }
 
 .title-bar-text span {
-    font-size: 30px;
+    font-size: 20px;
 }
 
 .title-bar-controls {
@@ -311,7 +312,7 @@ p {
 
 div {
     border: 0;
-    font-size: 300%;
+    font-size: 100%;
     font: inherit;
     margin: 0;
     padding: 0;
@@ -355,7 +356,7 @@ lable,
 label,
 select,
 textarea {
-    font-size: 25px;
+    font-size: 15px;
 }
 
 * {

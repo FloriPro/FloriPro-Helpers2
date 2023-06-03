@@ -463,7 +463,6 @@ class commentWindow {
         if (dat["replies"].length != 0) {
             var repliesDiv = document.createElement("div");
             repliesDiv.className = "redditComment";
-            repliesDiv.style.marginLeft = "5px";
 
             for (var x of dat["replies"]) {
                 var v = this.loadComment(x)

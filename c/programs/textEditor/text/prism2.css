@@ -1,10 +1,10 @@
 #editing,
 #highlighting {
   /* Both elements need the same text and space styling so they are directly on top of each other */
-  margin: 10px;
+  margin: 5px;
   padding: 10px;
   border: 0;
-  width: calc(100% - 40px);
+  width: calc(100% - 30px);
 }
 
 #highlighting {
@@ -15,9 +15,9 @@
 #highlighting,
 #highlighting * {
   /* Also add text styles to highlighting tokens */
-  font-size: 15pt;
+  font-size: 15px;
   font-family: monospace;
-  line-height: 20pt;
+  line-height: 17px;
 }
 
 #editing,

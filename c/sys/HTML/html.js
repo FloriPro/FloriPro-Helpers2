@@ -18,6 +18,12 @@ class Html {
         var _StartMenuFastButtons = document.querySelector("#startMenuFastButtons");
         var _taskbar = document.querySelector("#taskbar");
 
+        //disable zoom
+        var meta = document.createElement('meta');
+        meta.name = "viewport";
+        meta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0";
+        document.head.appendChild(meta);
+
         //load StartMenu
         await this.loadStartMenu(_StartMenuPrograms);
 

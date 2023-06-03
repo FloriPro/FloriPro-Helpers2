@@ -62,11 +62,11 @@ class HtmlWindow {
              */
             async setSize(x, y) {
                 if (this.parent.settings["clampWindowToScreen"] && !this.max) {
-                    if (x > window.innerWidth - 20) {
-                        x = window.innerWidth - 20;
+                    if (x > window.innerWidth - 0) {
+                        x = window.innerWidth - 0;
                     }
-                    if (y > window.innerHeight - 50) {
-                        y = window.innerHeight - 50;
+                    if (y > window.innerHeight - 0) {
+                        y = window.innerHeight - 0;
                     }
                 }
 
