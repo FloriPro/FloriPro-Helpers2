@@ -9,8 +9,10 @@
   <meta name="description" content="The official site from @FluLu#2197" />
   <meta name="author" content="FluLu" />
   <meta name="theme-color" content="black" />
-  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a0c7630ae25b4a35be7283ec284eee74"}'></script><!-- End Cloudflare Web Analytics -->
-  
+  <!-- Cloudflare Web Analytics -->
+  <!--<script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+    data-cf-beacon='{"token": "a0c7630ae25b4a35be7283ec284eee74"}'></script><!-- End Cloudflare Web Analytics -->
+
   <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8665766363050666"
     crossorigin="anonymous"></script>-->
   <script>
@@ -60,42 +62,29 @@
 
   <p id="status" class="normal">Initializing boot File Load</p>
 
-  <button onclick="localStorage.clear();">reset</button>
+  <p>V2</p>
+  <button onclick="localStorage.clear();localStorage['info']='reset';">reset</button>
   <button onclick="localStorage.removeItem('boot');">reset boot</button>
 </body>
 <script>
   async function load() {
     try {
-      if (localStorage["boot"] == undefined) {
-        document.querySelector("#status").innerText =
-          "Downloading boot file...";
-        try {
-          localStorage["boot"] = await (
-            await fetch("fileSysDownloaderBig.js")
-          ).text();
-        } catch (e) {
+      if (localStorage[" boot"] == undefined) {
+        document.querySelector("#status").innerText = "Downloading boot file...";
+        try { localStorage["boot"] = await (await fetch("fileSysDownloaderBig.js")).text(); } catch (e) {
           console.error(e);
-          document.querySelector("#status").innerText =
-            "Error: Could not load boot file!";
+          document.querySelector("#status").innerText = "Error: Could not load boot file!";
           document.querySelector("#status").className = "error";
         }
       }
     } catch {
       console.error(e);
-      document.querySelector("#status").innerText =
-        "Error: Could not initialize boot!";
+      document.querySelector("#status").innerText = "Error: Could not initialize boot!";
+      document.querySelector("#status").className = "error";
+    } try { eval(localStorage["boot"]); } catch (e) {
+      console.error(e); document.querySelector("#status").innerText = "Error: Could not run boot file!";
       document.querySelector("#status").className = "error";
     }
-    try {
-      eval(localStorage["boot"]);
-    } catch (e) {
-      console.error(e);
-      document.querySelector("#status").innerText =
-        "Error: Could not run boot file!";
-      document.querySelector("#status").className = "error";
-    }
-  }
-  load();
-</script>
+  } load(); </script>
 
 </html>

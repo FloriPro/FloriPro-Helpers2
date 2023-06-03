@@ -16,7 +16,7 @@
         "bool"
     ],
     "analytics": [
-        true,
+        false,
         "bool"
     ],
     "ip-spende": [

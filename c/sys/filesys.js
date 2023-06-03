@@ -1,6 +1,648 @@
 console.log("initializing FileSystem");
 
+class dbWrapper {
+    constructor() {
+        this.db = null;
+    }
+    createPromise() {
+        //creates a promise and returns it with resolve and reject
+        var resolve, reject;
+        var p = new Promise((res, rej) => {
+            resolve = res;
+            reject = rej;
+        });
+        return { promise: p, resolve: resolve, reject: reject };
+    }
+    async init() {
+        var p = this.createPromise();
+        const dbPromise = indexedDB.open('fileSystem', 2);
+        dbPromise.onupgradeneeded = function (event) {
+            console.error("Database should not be upgraded!")
+        }
+        dbPromise.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        dbPromise.onsuccess = function (event) {
+            this.db = event.target.result;
+            p.resolve(event.target.result);
+        }.bind(this);
+        return await p.promise;
+    }
+
+    async addFolder(path) {
+        console.log("adding folder", path);
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['fileStructure'], 'readwrite');
+        var objectStore = transaction.objectStore('fileStructure');
+        var request = objectStore.add({
+            path: path,
+            data: {
+                containingFiles: [],
+                containingFolders: []
+            }
+        });
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            p.resolve(event.target.result);
+        }
+
+        // get containing folder and add folder to it
+        if (path.split("/").length > 1)
+            await this.addFolderToFolder(path, path.split("/").slice(0, -1).join("/"));
+
+        return await p.promise;
+    }
+    async addFolderToFolder(path, folder) {
+        console.log("adding folder to folder", path, folder);
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['fileStructure'], 'readwrite');
+        var objectStore = transaction.objectStore('fileStructure');
+        var request = objectStore.get(folder);
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            var data = event.target.result;
+            if (data.data.containingFolders.includes(path)) {
+                p.resolve(event.target.result);
+                return;
+            }
+            data.data.containingFolders.push(path);
+            var request2 = objectStore.put(data);
+            request2.onerror = function (event) {
+                console.error("Database error: " + event.target.error);
+                p.reject(event.target.error);
+            }
+            request2.onsuccess = function (event) {
+                p.resolve(event.target.result);
+            }
+        }
+        return await p.promise;
+    }
+    async addFileToFolder(folder, path) {
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['fileStructure'], 'readwrite');
+        var objectStore = transaction.objectStore('fileStructure');
+
+        var request = objectStore.get(folder);
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            var data = event.target.result;
+            console.log(data, folder);
+            if (!data.data.containingFiles.includes(path))
+                data.data.containingFiles.push(path);
+            var request2 = objectStore.put(data);
+            request2.onerror = function (event) {
+                console.error("Database error: " + event.target.error);
+                p.reject(event.target.error);
+            }
+            request2.onsuccess = function (event) {
+                p.resolve(event.target.result);
+            }
+        }
+        return await p.promise;
+    }
+
+    async removeFileFromFolder(folder, path) {
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['fileStructure'], 'readwrite');
+        var objectStore = transaction.objectStore('fileStructure');
+
+        var request = objectStore.get(folder);
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            var data = event.target.result;
+            data.data.containingFiles = data.data.containingFiles.filter((e) => e != path);
+            var request2 = objectStore.put(data);
+            request2.onerror = function (event) {
+                console.error("Database error: " + event.target.error);
+                p.reject(event.target.error);
+            }
+            request2.onsuccess = function (event) {
+                p.resolve(event.target.result);
+            }
+        }
+        return await p.promise;
+    }
+
+    async removeFile(path) {
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['fileStructure'], 'readwrite');
+        var objectStore = transaction.objectStore('fileStructure');
+
+        var request = objectStore.get(path);
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            var data = event.target.result;
+            var request2 = objectStore.delete(path);
+            request2.onerror = function (event) {
+                console.error("Database error: " + event.target.error);
+                p.reject(event.target.error);
+            }
+            request2.onsuccess = function (event) {
+                p.resolve(event.target.result);
+            }
+        }
+        return await p.promise;
+    }
+
+
+    async removeFolderFromFolder(folder, path) {
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['fileStructure'], 'readwrite');
+        var objectStore = transaction.objectStore('fileStructure');
+
+        var request = objectStore.get(folder);
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            var data = event.target.result;
+            data.data.containingFolders = data.data.containingFolders.filter((e) => e != path);
+            var request2 = objectStore.put(data);
+            request2.onerror = function (event) {
+                console.error("Database error: " + event.target.error);
+                p.reject(event.target.error);
+            }
+            request2.onsuccess = function (event) {
+                p.resolve(event.target.result);
+            }
+        }
+        return await p.promise;
+    }
+
+    async removeFolder(path) {
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['fileStructure'], 'readwrite');
+        var objectStore = transaction.objectStore('fileStructure');
+        var request = objectStore.delete(path);
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            p.resolve(event.target.result);
+        }
+        return await p.promise;
+    }
+
+    async getFolder(path) {
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['fileStructure'], 'readonly');
+        var objectStore = transaction.objectStore('fileStructure');
+        var request = objectStore.get(path);
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            if (event.target.result == undefined) {
+                p.resolve(null);
+                return;
+            }
+            p.resolve(event.target.result.data);
+        }
+        return await p.promise;
+    }
+
+    async getFile(path) {
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['files'], 'readonly');
+        var objectStore = transaction.objectStore('files');
+        var request = objectStore.get(path);
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            p.resolve(event.target.result);
+        }
+        return await p.promise;
+    }
+    async putFile(path, data) {
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['files'], 'readwrite');
+        var objectStore = transaction.objectStore('files');
+        var request = objectStore.put({
+            path: path,
+            data: data
+        });
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            p.resolve(event.target.result);
+        }
+        return await p.promise;
+    }
+
+    async clear() {
+        var p = this.createPromise();
+        var transaction = this.db.transaction(['files'], 'readwrite');
+        var objectStore = transaction.objectStore('files');
+        var request = objectStore.clear();
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            p.resolve(event.target.result);
+        }
+
+        var p2 = this.createPromise();
+        var transaction2 = this.db.transaction(['fileStructure'], 'readwrite');
+        var objectStore2 = transaction2.objectStore('fileStructure');
+        var request2 = objectStore2.clear();
+        request2.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p2.reject(event.target.error);
+        }
+        request2.onsuccess = function (event) {
+            p2.resolve(event.target.result);
+        }
+
+        await p2.promise;
+        await p.promise;
+    }
+}
+
 class FileSystemClass {
+    //now uses indexedDB
+    constructor() {
+        if (localStorage["fileSystemTable"] && !localStorage["type"]) {
+            localStorage.removeItem("boot");
+
+            localStorage["type"] = "indexedDB";
+            location.reload();
+            return
+        }
+
+        /**
+         * @type {IDBDatabase}
+         */
+        this.db = null;
+        /**
+         * @type {dbWrapper}
+         */
+        this.dbWrapper = null;
+        this.changes = new class {
+            constructor(parent) {
+                this.parent = parent;
+                /**
+                 * @type {Array<(path,type)=>{}>}
+                 */
+                this.changeListeners = [];
+            }
+            /**
+             * @param {(path,dat)=>{}} listener 
+             */
+            addListener(listener) {
+                this.changeListeners.push(listener);
+            }
+            /**
+             * @param {(path,type)=>{}} listener
+             */
+            removeListener(listener) {
+                this.changeListeners.splice(this.changeListeners.indexOf(listener), 1);
+            }
+            send(path, type) {
+                for (var x of SystemFileSystem.changes.changeListeners) {
+                    x(path, type);
+                }
+            }
+        }(this);
+        var opdb = this.openDB();
+    }
+
+    async openDB() {
+        if (this.db != null) {
+            return;
+        }
+        this.dbWrapper = new dbWrapper();
+        this.db = await this.dbWrapper.init();
+        await this.loadPersistandFiles();
+
+        if (localStorage["fileSystemTable"] && localStorage["type"]) {
+            //convert to indexedDB
+            setTimeout(() => {
+                var wid = SystemHtml.WindowHandler.getFreeId()
+                SystemHtml.WindowHandler.presets.createInformation("Converting to indexedDB", "Copying files to indexedDB. Please wait a few seconds.");
+                setInterval(() => {
+                    SystemHtml.WindowHandler.focus(wid);
+                }, 10);
+            }, 100);
+            var table = JSON.parse(localStorage["fileSystemTable"]);
+            await this.localStorageConverter(table, "c");
+
+            await new Promise((resolve, reject) => { setTimeout(resolve, 500) });
+            localStorage.removeItem("fileSystemTable");
+            location.reload();
+        }
+    }
+    async localStorageConverter(data, path) {
+        for (var x in data.files) {
+            console.log("copying file: ", path + "/" + x, " to indexedDB")
+            await this.setFileString(path + "/" + x, localStorage[data.files[x]]);
+        }
+        for (var x in data.folder) {
+            console.log("copying folder: ", path + "/" + x, " to indexedDB")
+            await this.createFolder(path, x);
+            await this.localStorageConverter(data.folder[x], path + "/" + x);
+        }
+    }
+
+    async loadPersistandFiles() {
+        var save = localStorage.getItem("savedPersistandFiles");
+        if (save == null) {
+            return;
+        }
+        save = JSON.parse(save);
+        for (var x in save) {
+            await this.setFileString(x, save[x]);
+        }
+        localStorage.removeItem("savedPersistandFiles");
+        var out = await SystemHtml.WindowHandler.presets.createConfirm("Last Session Restore", "Your files have been restored from your last session. To apply changes, the page will be reloaded. Do you want to continue?");
+        if (out) {
+            location.reload();
+        }
+    }
+
+    async dbOpen() {
+        if (this.db != null) {
+            return;
+        }
+        await opdb;
+    }
+
+    async reset() {
+        //check for files not to delete
+        var persistandFileJson = await this.getFileJson("c/persistandFiles.json");
+        var save = {};
+        for (var x of persistandFileJson) {
+            if (await this.fileExists(x)) {
+                var dat = await this.getFileString(x);
+                save[x] = dat;
+            }
+        }
+        localStorage.setItem("savedPersistandFiles", JSON.stringify(save));
+
+        //delete all files
+        await this.dbOpen();
+        await this.dbWrapper.clear();
+    }
+
+    async unpackPackage(data) {
+        var p = new packageLoader(data);
+        await p.loader(data);
+    }
+
+    toImg(str, fileType = "png") {
+        return "data:image/" + fileType + ";base64," + btoa(str);
+    }
+
+    async setFileString(path, dat, dispatchEvent = true) {
+        await this.dbOpen();
+        var beforeDat = (await this.dbWrapper.getFile(path)) || {
+            data: {
+                path: path,
+                data: null,
+                info: {
+                    lastModified: -1
+                }
+            }
+        };
+        var folder = path.split("/");
+        folder.pop();
+        folder = folder.join("/");
+
+        beforeDat = beforeDat.data;
+        beforeDat.data = dat;
+        beforeDat.info.lastModified = Date.now();
+
+        await this.dbWrapper.addFileToFolder(folder, path);
+        await this.dbWrapper.putFile(path, beforeDat);
+        if (dispatchEvent) {
+            SystemFileSystem.changes.send(path, "set");
+        }
+        var test = await this.getFileString(path);
+        if (test != dat) {
+            console.error("file not set correctly", path);
+            console.log(dat, " || wanted, but got || ", test);
+        }
+    }
+
+    async createFile(path) {
+        await this.dbOpen();
+
+        if (await this.fileExists(path)) {
+            return;
+        }
+        await this.setFileString(path, "");
+    }
+
+    async createFolder(path, name) {
+        await this.dbOpen();
+        if (await this.folderExists(path + "/" + name)) {
+            return;
+        }
+
+        await this.dbWrapper.addFolder(path + "/" + name);
+    }
+
+    async folderExists(path) {
+        await this.dbOpen();
+        return await this.dbWrapper.getFolder(path) != null;
+    }
+
+    async fileExists(path) {
+        await this.dbOpen();
+        return await this.dbWrapper.getFile(path) != null;
+    }
+
+    async getFileString(path, raw = false) {
+        var d = await this.dbWrapper.getFile(path);
+        if (d == null) {
+            return null;
+        }
+        if (d.data.data == null) {
+            return null;
+        }
+        if (raw) {
+            return d.data.data;
+        }
+        if (d.data.data.startsWith(".od__")) {
+            var d = d.data.data.slice(5);
+            var dat = await System.network.informationalFetch_Text(d);
+            return dat;
+        }
+        return d.data.data;
+    }
+
+    async bufferToString(buf) {
+        var out = ""
+        var view = new Uint8Array(buf);
+        for (var x = 0; x < view.length; x++) {
+            out += String.fromCharCode(view[x]);
+        }
+        return out;
+    }
+
+    async getFileJson(path) {
+        var d = await this.getFileString(path);
+        if (d == null) {
+            console.error("File does not exist: " + path);
+            return null;
+        }
+        return JSON.parse(d);
+    }
+
+    async getFile(path) {
+        await this.dbOpen();
+        var beforeDat = (await this.dbWrapper.getFile(path)) || {
+            data: {
+                path: path,
+                data: null,
+                info: {
+                    lastModified: -1
+                }
+            }
+        };
+        beforeDat = beforeDat.data;
+        var f = new FileSysFileNew(path, beforeDat.info);
+        return f;
+    }
+
+    async getFolder(path) {
+        //TODO
+    }
+
+    async getFiles(path) {
+        await this.dbOpen();
+        var folder = await this.dbWrapper.getFolder(path);
+        if (folder == null) {
+            return [];
+        }
+        var d = [];
+        for (var x of folder.containingFiles) {
+            d.push(x.split("/").pop());
+        }
+        return d;
+    }
+
+    async getFolders(path) {
+        await this.dbOpen();
+        var folder = await this.dbWrapper.getFolder(path);
+        if (folder == null) {
+            return [];
+        }
+        var d = [];
+        for (var x of folder.containingFolders) {
+            d.push(x.split("/").pop());
+        }
+        return d;
+    }
+
+    async removeFile(path) {
+        await this.dbOpen();
+        await this.dbWrapper.removeFile(path);
+        var folder = path.split("/");
+        folder.pop();
+        folder = folder.join("/");
+        await this.dbWrapper.removeFileFromFolder(folder, path);
+        SystemFileSystem.changes.send(path, "remove");
+    }
+    /**
+     * @deprecated
+     * @param {*} path 
+     */
+    async deleteFile(path) {
+        await this.removeFile(path);
+    }
+    async removeFolder(path) {
+        await this.dbOpen();
+        await this.dbWrapper.removeFolder(path);
+        var folder = path.split("/");
+        folder.pop();
+        folder = folder.join("/");
+
+        //remove all files in folder
+        await this.removeFilesInFolder(path);
+
+        await this.dbWrapper.removeFolderFromFolder(folder, path);
+    }
+
+    async removeFilesInFolder(path) {
+        var files = await this.getFiles(path);
+        for (var x of files) {
+            await this.removeFile(path + "/" + x);
+        }
+        var folders = await this.getFolders(path);
+        for (var x of folders) {
+            await this.removeFolder(path + "/" + x);
+        }
+    }
+
+    async moveInFolder(path, to) {
+        if (!to) {
+            console.error("to is null");
+            return;
+        }
+        if (to == path) {
+            console.error("to is path");
+            return;
+        }
+        await this.dbOpen();
+
+        var toPath = to.split("/");
+        toPath.pop();
+        toPath = toPath.join("/");
+        await this.createFolder(toPath, to.split("/").pop());
+        await this.moveInFolderR(path, to);
+
+        console.log("moveInFolder", path, to);
+        await this.removeFolder(path);
+        var bpath = path.split("/");
+        bpath.pop();
+        bpath = bpath.join("/");
+        await this.createFolder(bpath, path.split("/").pop());
+    }
+
+    async moveFile(path, to) {
+        await this.dbOpen();
+        var dat = await this.getFileString(path, true);
+        await this.setFileString(to, dat, false);
+        await this.removeFile(path);
+    }
+
+    async moveInFolderR(path, to) {
+        var folders = await this.getFolders(path);
+        for (var x of folders) {
+            await this.moveFolder(path + "/" + x, to + "/" + x);
+        }
+        var files = await this.getFiles(path);
+        for (var x of files) {
+            await this.moveFile(path + "/" + x, to + "/" + x);
+        }
+    }
+}
+
+class OldFileSystemClass {
     constructor() {
         this.PositionalFileSystem = PositionalFileSystem;
         this.realLocalStorage = localStorage;
@@ -75,7 +717,6 @@ class FileSystemClass {
         }
     }
     async removeLocalStorage() {
-
         Object.defineProperty(window, 'localStorage', {
             value: undefined
         });
@@ -415,6 +1056,7 @@ class packageLoader {
                 await SystemFileSystem.setFileString(path + "/" + x, this.b64_to_utf8(data[x]));
             }
             else {
+                await SystemFileSystem.createFolder(path, x);
                 await this.load(data[x], path + "/" + x);
             }
         }
@@ -462,6 +1104,49 @@ class FileSysFile {
     }
     async getOnlineDataLink() {
         var r = await SystemFileSystem.localFileLoad(this.path)
+        if (r.startsWith(".od__")) {
+            return r.replace(".od__", "");
+        }
+        return undefined;
+    }
+}
+class FileSysFileNew {
+    constructor(path, info) {
+        this.path = path;
+        this.info = info;
+    }
+    async text() {
+        return await this.getFileString(this.path);
+    }
+    async remove() {
+        console.warn("File: remove not implemented");
+        return false
+    }
+    async rename() {
+        console.warn("File: rename not implemented");
+        return false
+    }
+    async getInformation() {
+        return this.info;
+    }
+    /**
+     * checks if this file is a online data file
+     * @return {boolean}
+     */
+    async isOnlineData() {
+        var r = await SystemFileSystem.getFileString(this.path, true);
+        if (r == undefined) {
+            return false;
+        }
+        if (r.startsWith(".od__")) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    async getOnlineDataLink() {
+        var r = await SystemFileSystem.getFileString(this.path, true)
         if (r.startsWith(".od__")) {
             return r.replace(".od__", "");
         }
