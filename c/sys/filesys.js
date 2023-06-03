@@ -416,8 +416,35 @@ class FileSystemClass {
         return "data:image/" + fileType + ";base64," + btoa(str);
     }
 
+    async createFolderToFile(path) {
+        var folder = path.split("/");
+        folder.pop();
+        folder = folder.join("/");
+        console.log("creating folder to file: ", folder);
+
+        var topFolder = folder.split("/");
+        topFolder.pop();
+        topFolder = topFolder.join("/");
+        if (topFolder != "") {
+            if (!(await this.folderExists(topFolder))) {
+                await this.createFolderToFile(folder);
+            }
+        }
+
+        await this.createFolder(topFolder, folder.split("/").pop());
+    }
+
     async setFileString(path, dat, dispatchEvent = true) {
         await this.dbOpen();
+
+        //check if folder containing the file exists
+        var folder = path.split("/");
+        folder.pop();
+        folder = folder.join("/");
+        if (!(await this.folderExists(folder))) {
+            await this.createFolderToFile(path);
+        }
+
         var beforeDat = (await this.dbWrapper.getFile(path)) || {
             data: {
                 path: path,
