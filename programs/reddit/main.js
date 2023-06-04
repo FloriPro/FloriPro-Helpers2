@@ -21,7 +21,7 @@ class program extends System.program.default {
         /**
          * @type {reddit}
          */
-        this.redditApi = new (await System.getLib("redditApi")) //new (await System.run(this.PATH.folder() + "/api.js"))(["memes"]);
+        this.redditApi = new (await System.run(this.PATH.folder() + "/api.js"))();//new (await System.getLib("redditApi")) //new (await System.run(this.PATH.folder() + "/api.js"))(["memes"]);
         this.redditApi.vars = await SystemFileSystem.getFileJson("c/user/reddit/settings.json")
 
 
@@ -414,7 +414,7 @@ class ImgWindow {
 
                 setTimeout(this.window.size.setfullMax.bind(this.window.size), 100);
                 console.log("add event");
-                await this.window.addHtmlEventListener("onclick", "img", ()=>{
+                await this.window.addHtmlEventListener("onclick", "img", () => {
                     console.log("click");
                     this.window.makeClose();
                 }, this);
@@ -426,6 +426,9 @@ class ImgWindow {
 }
 class commentWindow {
     constructor(post) {
+        /**
+         * @type {post}
+         */
         this.post = post;
         this.load();
     }
@@ -441,6 +444,7 @@ class commentWindow {
 
                 var c = await this.window.getHtmlElement("comment");
                 c.innerHTML = "";
+                console.log(comments);
                 for (var x of comments) {
                     c.append(this.loadComment(x));
                 }
@@ -450,38 +454,61 @@ class commentWindow {
         }
     }
 
-    loadComment(dat) {
+    loadComment(dat, isReply = false) {
         if (dat["body_html"] == undefined && dat["author"] == undefined) {
             return
         }
         var mainDiv = document.createElement("div");
+        if (!isReply) {
+            mainDiv.className = "redditCommentFirst";
+        }
 
         var textDiv = document.createElement("div")
+        textDiv.className = "redditCommentText";
 
-        var author = document.createElement("p");
+
+        var author = document.createElement("div");
+        author.className = "redditCommentAuthor";
+
+        var authorImg = document.createElement("img");
+        authorImg.src = "https://www.redditstatic.com/avatars/avatar_default_02_0079D3.png";
+        dat.author_data.getIcon().then((v) => {
+            authorImg.src = v;
+        });
+        authorImg.className = "redditCommentAuthorImg";
+        author.append(authorImg);
+
+        var authorP = document.createElement("p");
+        authorP.innerText = dat["author"]
+        author.append(authorP);
+
         var body = document.createElement("p");
-        author.innerText = dat["author"]
-        author.style.fontWeight = "700";
         body.innerHTML = dat["body_html"]
+        body.className = "redditCommentBody";
 
         textDiv.append(author);
         textDiv.append(body);
 
         mainDiv.append(textDiv)
 
-        if (dat["replies"].length != 0) {
+        if (dat["replies"].length > 0) {
             var repliesDiv = document.createElement("div");
-            repliesDiv.className = "redditComment";
+            repliesDiv.className = "redditCommentReplies redditComment redditCommentIndentLine";
+
+            //only if not last
+            body.classList.add("redditCommentIndentLine");
 
             for (var x of dat["replies"]) {
-                var v = this.loadComment(x)
+                var v = this.loadComment(x, true)
                 if (v != undefined)
                     repliesDiv.append(v);
             }
 
             mainDiv.append(repliesDiv)
+        } else {
+            body.classList.add("redditCommentNOLine");
         }
-        mainDiv.append(document.createElement("hr"))
+        //mainDiv.append(document.createElement("hr"))
 
         return mainDiv;
     }

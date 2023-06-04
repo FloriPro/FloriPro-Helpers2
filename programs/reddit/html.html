@@ -1,12 +1,63 @@
 <style>
-    .redditComment:hover {
-        /*background-color: aquamarine;*/
-        border-left: 2px solid #0000ff;
+    .redditCommentIndentLine {
+        margin-left: 14px;
+        padding-left: 6px;
+        border-left: 1px solid #C3C3C5;
     }
 
-    .redditComment {
-        margin-left: 15px;
-        border-left: 2px solid #C3C3C5;
+    .redditCommentAuthor {
+        font-weight: 700;
+        margin-left: 29px;
+    }
+
+    .redditCommentAuthorImg {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        position: relative;
+        margin-left: -23px;
+        top: 22px;
+    }
+
+    .redditCommentBody {
+        margin-left: 14px;
+        padding-bottom: 10px;
+        padding-left: 10px;
+    }
+
+    .redditCommentNOLine {
+        padding-left: 6px;
+    }
+
+    .redditComment .redditCommentAuthor::before {
+        content: "";
+        display: inline-block;
+        position: relative;
+        top: 13px;
+        width: 10px;
+        height: 10px;
+        border-bottom-color: #C3C3C5;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-bottom-left-radius: 100%;
+        border-left-width: 1px;
+        border-left-color: #c3c3c5;
+        border-left-style: solid;
+        margin-left: -32px;
+        margin-right: 23px;
+    }
+
+    .redditComment .redditCommentAuthor {
+        margin-left: 26px;
+    }
+
+    .redditCommentBody a {
+        word-break: break-all;
+    }
+
+    .redditCommentBody img {
+        max-width: 100%;
+        height: auto;
     }
 </style>
 

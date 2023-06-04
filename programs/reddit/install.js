@@ -1,6 +1,6 @@
 async function run() {
     //install the needed dependencies
-    await System.program.libInstall("redditApi");
+    //await System.program.libInstall("redditApi");
 
     //file extensions
     await System.options.addValue("programs", "reddit", { "path": "c/programs/reddit/main.js", "name": "Reddit", "run": "c/programs/reddit/run.js" }, true);
