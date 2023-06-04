@@ -381,13 +381,15 @@ class ImgWindow {
         this.load(imgs);
     }
     async load(imgs) {
+        /**
+         * @type {HtmlWindow}
+         */
         this.window = await SystemHtml.WindowHandler.createWindow("Reddit Image",
             //onready:
             async () => {
                 //set html
-                await this.window.setContent(`<div element="img"></div>`);
+                await this.window.setContent(`<div element="img" style="min-height:100%"></div>`);
                 await this.window.size.setSize(300, 500);
-                await this.window.size.userCanResize(true)
 
                 this.img = await this.window.getHtmlElement("img");
 
@@ -409,6 +411,13 @@ class ImgWindow {
                     this.img.append(iLoader);
                     this.img.append(i);
                 }
+
+                setTimeout(this.window.size.setfullMax.bind(this.window.size), 100);
+                console.log("add event");
+                await this.window.addHtmlEventListener("onclick", "img", ()=>{
+                    console.log("click");
+                    this.window.makeClose();
+                }, this);
             });
         this.window.close = () => {
             return true
