@@ -229,8 +229,6 @@ class Html {
             }
         }
 
-        debugger;
-
         //check if window is focused
         if (this.WindowHandler.focusedWindow != parseInt(id)) {
             //this.WindowHandler.focus(id);
