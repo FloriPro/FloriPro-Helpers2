@@ -31,7 +31,6 @@ class dbWrapper {
     }
 
     async addFolder(path) {
-        console.log("adding folder", path);
         var p = this.createPromise();
         var transaction = this.db.transaction(['fileStructure'], 'readwrite');
         var objectStore = transaction.objectStore('fileStructure');
@@ -57,7 +56,6 @@ class dbWrapper {
         return await p.promise;
     }
     async addFolderToFolder(path, folder) {
-        console.log("adding folder to folder", path, folder);
         var p = this.createPromise();
         var transaction = this.db.transaction(['fileStructure'], 'readwrite');
         var objectStore = transaction.objectStore('fileStructure');
@@ -96,7 +94,6 @@ class dbWrapper {
         }
         request.onsuccess = function (event) {
             var data = event.target.result;
-            console.log(data, folder);
             if (!data.data.containingFiles.includes(path))
                 data.data.containingFiles.push(path);
             var request2 = objectStore.put(data);
@@ -420,7 +417,6 @@ class FileSystemClass {
         var folder = path.split("/");
         folder.pop();
         folder = folder.join("/");
-        console.log("creating folder to file: ", folder);
 
         var topFolder = folder.split("/");
         topFolder.pop();
@@ -642,7 +638,6 @@ class FileSystemClass {
         await this.createFolder(toPath, to.split("/").pop());
         await this.moveInFolderR(path, to);
 
-        console.log("moveInFolder", path, to);
         await this.removeFolder(path);
         var bpath = path.split("/");
         bpath.pop();

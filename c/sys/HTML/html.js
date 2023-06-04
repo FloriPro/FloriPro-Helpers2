@@ -218,7 +218,18 @@ class Html {
      * @param {Event} event 
      */
     htmlEventParser(event) {
-        var id = event.target.getAttribute("windowid")
+        //var id = event.target.getAttribute("windowid")
+        var id = null;
+        for (var element of event.composedPath()) {
+            if (element != undefined && element != document && element != window) {
+                if (element.getAttribute("windowid") != null) {
+                    id = element.getAttribute("windowid");
+                    break;
+                }
+            }
+        }
+
+        debugger;
 
         //check if window is focused
         if (this.WindowHandler.focusedWindow != parseInt(id)) {

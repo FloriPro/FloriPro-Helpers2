@@ -151,7 +151,6 @@ class dbWrapper {
         }
         request.onsuccess = function (event) {
             var data = event.target.result;
-            console.log(data, folder);
             data.data.containingFiles.push(path);
             var request2 = objectStore.put(data);
             request2.onerror = function (event) {
@@ -298,7 +297,6 @@ async function runSystem(db) {
     var boot = await tryRun((db) => db.get("c/boot.dat"), "Error Initializing OS: Can't get boot file from database!", db);
     for (var x of boot.data.data.split("\n")) {
         x = x.replace("\r", "");
-        console.log(x);
         var fileData = await tryRun((db) => db.get(x), "Error Initializing OS: Can't get file from database!", db);
         if (fileData) {
             eval(fileData.data.data);
