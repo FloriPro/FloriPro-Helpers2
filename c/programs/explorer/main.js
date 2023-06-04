@@ -3,8 +3,11 @@ class program extends System.program.default {
         super()
         //don't use!
     }
-    async init() {
+    async init(arg) {
         this.path = "c";
+        if (arg != undefined) {
+            this.path = arg;
+        }
 
 
         /**

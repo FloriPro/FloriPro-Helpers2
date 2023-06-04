@@ -27,9 +27,7 @@ class program extends System.program.default {
                 if (file != undefined) {
                     this.file = file;
 
-                    (await this.window.getHtmlElement("fileName")).innerText = file;
-                    this.window.getHtml().querySelector("#editing").value = (await SystemFileSystem.getFileString(file)).replace("\r\n", "\n");
-                    this.window.getHtml().querySelector("#editing").oninput()
+                    await this.loadFile(file);
                 }
 
             });
@@ -38,6 +36,15 @@ class program extends System.program.default {
             return true
         }
     }
+
+    async loadFile(file) {
+        (await this.window.getHtmlElement("fileName")).innerText = file;
+        this.window.getHtml().querySelector("#editing").value = (await SystemFileSystem.getFileString(file)).replace("\r\n", "\n");
+        this.window.getHtml().querySelector("#editing").oninput()
+
+        this.setCodeStyle(file.split(".").pop())
+    }
+
     async loadPrism() {
         if (window.prismAllreadyInitialized == undefined) {
             var styleSheet = document.createElement("style")
@@ -86,19 +93,18 @@ class program extends System.program.default {
         if (file == undefined) { return; }
         this.file = file;
 
-        (await this.window.getHtmlElement("fileName")).innerText = this.file;
-        this.window.getHtml().querySelector("#editing").value = (await SystemFileSystem.getFileString(this.file)).replace("\r\n", "\n");
-        this.window.getHtml().querySelector("#editing").oninput()
+        this.loadFile(file);
     }
     async codeStyle() {
         var cStyle = await SystemHtml.WindowHandler.presets.createStringSelect("Code Style", "python, javascript, css, etc.");
         if (cStyle == undefined) { return; }
 
+        this.setCodeStyle(cStyle);
+    }
+
+    async setCodeStyle(cStyle) {
         (await this.window.getHtmlElement("highlightingContent")).className = "highlighting-content language-" + cStyle;
         (await this.window.getHtmlElement("editing")).oninput();
-
-        //this.wind.getHtml().querySelector(".highlighting-content").className = "highlighting-content language-" + cStyle;
-        //Prism.highlightElement(this.wind.getHtml().querySelector('.highlighting-content'));
     }
 }
 new program();

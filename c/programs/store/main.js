@@ -75,6 +75,22 @@ class program extends System.program.default {
                     (await this.window.getHtmlElement("searchInput")).blur();
                 }, this);
 
+                //add context menus
+                (await this.window.getHtmlElement("HomeTabContent")).contextscript = () => {
+                    return {
+                        "Reload": () => {
+                            this.getHomeApps();
+                        }
+                    }
+                }
+                (await this.window.getHtmlElement("ListTabContent")).contextscript = () => {
+                    return {
+                        "Reload": () => {
+                            this.loadList();
+                        }
+                    }
+                }
+
                 await this.openTab("Home");
                 this.getHomeApps();
             });
@@ -232,6 +248,7 @@ class program extends System.program.default {
         (await this.window.getHtmlElement("statusText")).innerText = "Loading Apps...";
         (await this.window.getHtmlElement("errorX")).style.display = "none";
         (await this.window.getHtmlElement("loadingSpinner")).style.display = "";
+        (await this.window.getHtmlElement("store")).style.display = "none";
         (await this.window.getHtmlElement("status")).style.display = "flex";
         try {
             var dat = await System.network.fetch("https://flulu-app-gen.floriprolohner.repl.co/api/home")
@@ -245,6 +262,10 @@ class program extends System.program.default {
         (await this.window.getHtmlElement("statusText")).innerText = "OK";
         (await this.window.getHtmlElement("store")).style.display = "";
         (await this.window.getHtmlElement("status")).style.display = "none";
+
+        //clear old apps
+        (await this.window.getHtmlElement("newProjects")).innerHTML = "";
+        (await this.window.getHtmlElement("featuredProjects")).innerHTML = "";
 
         //load featured
         for (let i = 0; i < dat["Featured"].length; i++) {
@@ -360,9 +381,16 @@ class program extends System.program.default {
             if (dat["imgBanner"] != null && dat["imgBanner"] != "") {
                 (await window.getHtmlElement("backgroundImg")).setAttribute("src", dat["imgBanner"]);
             } else {
+                /*
                 SystemFileSystem.getFileString("c/user/backgrounds/background2.jpg").then(async (res) => {
                     (await window.getHtmlElement("backgroundImg")).setAttribute("src", SystemFileSystem.toImg(res));
-                })
+                })*/
+                //one vibrant color
+                if (dat["bannerColor"] != null && dat["bannerColor"] != "") {
+                    (await window.getHtmlElement("backgroundImg")).style.backgroundColor = dat["bannerColor"];
+                } else {
+                    (await window.getHtmlElement("backgroundImg")).style.backgroundColor = "rgb(130 255 0)";
+                }
             }
 
 

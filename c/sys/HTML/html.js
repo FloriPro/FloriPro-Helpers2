@@ -1177,6 +1177,23 @@ class Desktop {
                 thi.didMove = true;
             }
         }, this);
+
+        document.querySelector("#Desktop").contextscript = (event) => {
+            return {
+                "Create new": async () => {
+                    SystemHtml.WindowHandler.presets.createInformation("Error", "Not implemented yet!")
+                },
+                "Refresh": async () => {
+                    await SystemHtml.desktop.buildDesktop();
+                },
+                "Edit": async () => {
+                    SystemHtml.WindowHandler.presets.createInformation("Error", "Not implemented yet!")
+                },
+                "Settings": async () => {
+                    SystemHtml.WindowHandler.presets.createInformation("Error", "Not implemented yet!")
+                }
+            }
+        }
     }
 
     async save() {
@@ -1211,6 +1228,34 @@ class Desktop {
         div.appendChild(img);
         div.appendChild(text);
 
+        div.contextscript = (event) => {
+            return {
+                "Delete": async () => {
+                    if (await SystemHtml.WindowHandler.presets.createConfirm("Delete", "Are you sure you want to delete '" + name + "'?")) {
+                        var d = (await System.options.get("desktop")).all;
+                        d.splice(id, 1);
+                        await System.options.addValue("desktop", "all", d, true);
+
+                        await this.buildDesktop()
+                    }
+                },
+                "File Location": async () => {
+                    var d = (await System.options.get("desktop")).all;
+                    var path = d[id]["run"];
+                    if (await SystemFileSystem.fileExists(path)) {
+                        var folder = path.split("/");
+                        folder.pop();
+                        folder = folder.join("/");
+                        System.program.runProgram("c/programs/explorer/main.js",folder);
+                    } else {
+                        SystemHtml.WindowHandler.presets.createInformation("File Location", "The file is located at '" + path + "' but it does not exist!")
+                    }
+                },
+                "Edit Link": async () => {
+                    SystemHtml.WindowHandler.presets.createInformation("Error", "Not implemented yet!")
+                }
+            }
+        }
         return div;
     }
 
