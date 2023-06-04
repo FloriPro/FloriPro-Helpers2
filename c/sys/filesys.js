@@ -454,6 +454,8 @@ class FileSystemClass {
         folder.pop();
         folder = folder.join("/");
 
+        var fileDataBeforeChange = (beforeDat.data.data + " ").slice(0, -1);
+
         beforeDat = beforeDat.data;
         beforeDat.data = dat;
         beforeDat.info.lastModified = Date.now();
@@ -461,7 +463,9 @@ class FileSystemClass {
         await this.dbWrapper.addFileToFolder(folder, path);
         await this.dbWrapper.putFile(path, beforeDat);
         if (dispatchEvent) {
-            SystemFileSystem.changes.send(path, "set");
+            if (fileDataBeforeChange != dat) {
+                setTimeout(this.changes.send, 1, path, "change");
+            }
         }
         var test = await this.getFileString(path);
         if (test != dat) {
@@ -655,7 +659,7 @@ class FileSystemClass {
     async moveInFolderR(path, to) {
         var folders = await this.getFolders(path);
         for (var x of folders) {
-            await this.moveFolder(path + "/" + x, to + "/" + x);
+            await this.moveInFolderR(path + "/" + x, to + "/" + x);
         }
         var files = await this.getFiles(path);
         for (var x of files) {
