@@ -430,6 +430,12 @@ class FileSystemClass {
         await this.createFolder(topFolder, folder.split("/").pop());
     }
 
+    /**
+     * protip: non string data will be converted to string now (JSON.stringify)
+     * @param {*} path 
+     * @param {*} dat 
+     * @param {*} dispatchEvent 
+     */
     async setFileString(path, dat, dispatchEvent = true) {
         await this.dbOpen();
 
