@@ -393,7 +393,7 @@ class FileSystemClass {
         var save = {};
         for (var x of persistandFileJson) {
             if (await this.fileExists(x)) {
-                var dat = await this.getFileString(x);
+                var dat = await this.getFileString(x, true);
                 save[x] = dat;
             }
         }

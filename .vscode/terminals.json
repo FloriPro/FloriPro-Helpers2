@@ -38,7 +38,7 @@
             "open": false,
             "focus": false,
             "commands": [
-                ".\\node_modules\\.bin\\tsc.cmd"
+                ".\\node_modules\\.bin\\tsc.cmd -w"
             ],
             "recycle": true
         },
