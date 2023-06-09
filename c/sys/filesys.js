@@ -457,6 +457,9 @@ class FileSystemClass {
         var fileDataBeforeChange = (beforeDat.data.data + " ").slice(0, -1);
 
         beforeDat = beforeDat.data;
+        if (typeof dat != "string") {
+            dat = JSON.stringify(dat);
+        }
         beforeDat.data = dat;
         beforeDat.info.lastModified = Date.now();
 
