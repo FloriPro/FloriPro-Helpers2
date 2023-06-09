@@ -1,0 +1,387 @@
+.window[windowid="{{windowId}}"] html,
+.window[windowid="{{windowId}}"] body {
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+}
+
+.window[windowid="{{windowId}}"] .downloadedPage {
+    background-color: #f2f2f2;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ccc;
+    transition: box-shadow 0.3s ease-in-out;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
+
+.window[windowid="{{windowId}}"] .downloadedPage:hover {
+    box-shadow: 0 0 10px #aaa;
+}
+
+.window[windowid="{{windowId}}"] .downloadedPage .title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.window[windowid="{{windowId}}"] button {
+    cursor: pointer;
+    color: #000;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+.window[windowid="{{windowId}}"] button:hover {
+    background-color: #f0f0f0;
+    border: 1px solid #aaa;
+    box-shadow: 0 0 5px #d8d8d8;
+}
+
+.window[windowid="{{windowId}}"] #loading {
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.window[windowid="{{windowId}}"] .lds-ellipsis {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.window[windowid="{{windowId}}"] .lds-ellipsis div {
+    position: absolute;
+    top: 33px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #000;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+
+.window[windowid="{{windowId}}"] .lds-ellipsis div:nth-child(1) {
+    left: 8px;
+    animation: lds-ellipsis1 0.6s infinite;
+}
+
+.window[windowid="{{windowId}}"] .lds-ellipsis div:nth-child(2) {
+    left: 8px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+
+.window[windowid="{{windowId}}"] .lds-ellipsis div:nth-child(3) {
+    left: 32px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+
+.window[windowid="{{windowId}}"] .lds-ellipsis div:nth-child(4) {
+    left: 56px;
+    animation: lds-ellipsis3 0.6s infinite;
+}
+
+@keyframes lds-ellipsis1 {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes lds-ellipsis3 {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(0);
+    }
+}
+
+@keyframes lds-ellipsis2 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(24px, 0);
+    }
+}
+
+.window[windowid="{{windowId}}"] #editPanel {
+    position: fixed;
+    z-index: 999;
+    width: 70%;
+    height: 70%;
+    min-width: 500px;
+    min-height: 500px;
+    max-width: 100%;
+    max-height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid #ccc;
+}
+
+.window[windowid="{{windowId}}"] #editPanelRemoveTextsList {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.window[windowid="{{windowId}}"] #editPanelRemoveTextsList p {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 5px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.window[windowid="{{windowId}}"] #editPanelRemoveTextsList p:hover {
+    text-decoration: underline;
+}
+
+.window[windowid="{{windowId}}"] #pageOptions .selected {
+    background-color: #f0f0f0;
+    border: 1px solid #aaa;
+    box-shadow: 0 0 5px #d8d8d8;
+}
+
+.window[windowid="{{windowId}}"] .displayTypeSelectRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.window[windowid="{{windowId}}"] #page {
+    transition: all 0.3s ease-in-out;
+    min-height: 100vh;
+}
+
+.window[windowid="{{windowId}}"] #pageOptions {
+    position: fixed;
+    z-index: 998;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+    font-family: sans-serif;
+    font-size: 15px;
+    box-shadow: 0 0 30px #3d3d3d80;
+}
+
+.window[windowid="{{windowId}}"] #pageContentTitle {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    overflow-wrap: anywhere;
+}
+
+.window[windowid="{{windowId}}"] #pageUrl {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    word-break: break-all;
+    cursor: pointer;
+    text-decoration: underline;
+    margin: 0;
+    padding: 10px;
+}
+
+.window[windowid="{{windowId}}"] .page .link {
+    color: #000;
+    text-decoration: dotted underline;
+}
+
+.window[windowid="{{windowId}}"] #select {
+    position: fixed;
+    z-index: 1002;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #00000025;
+    justify-content: center;
+    align-items: center;
+}
+
+.window[windowid="{{windowId}}"] #selectWraper {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    width: 70%;
+    height: 70%;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.window[windowid="{{windowId}}"] #selectTitle {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    overflow-wrap: anywhere;
+}
+
+.window[windowid="{{windowId}}"] #selectOptions button {
+    margin: 5px;
+    padding: 20px;
+}
+
+.window[windowid="{{windowId}}"] #selectOptions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.window[windowid="{{windowId}}"] .type1container #pageContent {
+    border: 5px;
+    padding: 20px;
+    border-radius: 10px;
+    overflow: auto;
+    box-shadow: 0 0 10px #ccc;
+    margin: 10px;
+}
+
+.window[windowid="{{windowId}}"] .type1container.type1color #pageContent {
+    box-shadow: 0 0 10px #ccc;
+}
+
+.window[windowid="{{windowId}}"] .type1container.type2color #pageContent {
+    box-shadow: 0 0 10px #5f5f5f;
+}
+
+.window[windowid="{{windowId}}"] .type1container.type23color #pageContent {
+    box-shadow: 0 0 10px #2e2e2e;
+}
+
+.window[windowid="{{windowId}}"] .type2container #pageContent {
+    overflow: auto;
+}
+
+.window[windowid="{{windowId}}"] .type1color {
+    color: #1e1d25;
+    background-color: #fff;
+}
+
+.window[windowid="{{windowId}}"] .type1color button.selected {
+    background-color: #d6d6d6 !important;
+}
+
+.window[windowid="{{windowId}}"] .type1color .styleColorUpdate,
+.window[windowid="{{windowId}}"] .type1color button,
+.window[windowid="{{windowId}}"] .type1color button:hover,
+.window[windowid="{{windowId}}"] .type1color .link {
+    background-color: #fff;
+    color: #1e1d25;
+}
+
+.window[windowid="{{windowId}}"] .type2color {
+    color: #fff;
+    background-color: #000000;
+}
+
+.window[windowid="{{windowId}}"] .type2color button.selected {
+    background-color: #d6d6d6 !important;
+}
+
+.window[windowid="{{windowId}}"] .type2color .styleColorUpdate,
+.window[windowid="{{windowId}}"] .type2color button,
+.window[windowid="{{windowId}}"] .type2color button:hover,
+.window[windowid="{{windowId}}"] .type2color .link {
+    background-color: #000000;
+    color: #fff;
+}
+
+.window[windowid="{{windowId}}"] .type23color {
+    color: #9e9e9e;
+    background-color: #000000;
+}
+
+.window[windowid="{{windowId}}"] .type23color button.selected {
+    background-color: #d6d6d6 !important;
+}
+
+.window[windowid="{{windowId}}"] .type23color .styleColorUpdate,
+.window[windowid="{{windowId}}"] .type23color button,
+.window[windowid="{{windowId}}"] .type23color button:hover,
+.window[windowid="{{windowId}}"] .type23color .link {
+    background-color: #000000;
+    color: #9e9e9e;
+}
+
+.window[windowid="{{windowId}}"] .type3color {
+    color: #fff;
+    background-color: #5a5151;
+}
+
+.window[windowid="{{windowId}}"] .type3color button.selected {
+    background-color: #d6d6d6 !important;
+}
+
+.window[windowid="{{windowId}}"] .type3color .styleColorUpdate,
+.window[windowid="{{windowId}}"] .type3color button,
+.window[windowid="{{windowId}}"] .type3color button:hover,
+.window[windowid="{{windowId}}"] .type3color .link {
+    background-color: #5a5151;
+    color: #fff;
+}
+
+.window[windowid="{{windowId}}"] .type1font * {
+    font-family: serif;
+}
+
+.window[windowid="{{windowId}}"] .type2font * {
+    font-family: sans-serif;
+}
+
+.window[windowid="{{windowId}}"] .type3font * {
+    font-family: monospace;
+}
+
+.window[windowid="{{windowId}}"] .type0size * {
+    font-size: 10px;
+}
+
+.window[windowid="{{windowId}}"] .type1size * {
+    font-size: 15px;
+}
+
+.window[windowid="{{windowId}}"] .type2size * {
+    font-size: 20px;
+}
+
+.window[windowid="{{windowId}}"] .type3size * {
+    font-size: 25px;
+}

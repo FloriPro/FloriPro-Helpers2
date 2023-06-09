@@ -1,0 +1,60 @@
+{{style}}
+
+<p element="startupMessage">Loading Dependencies</p>
+
+<div id="loading" element="loading" style="display: none;">
+    <div class="lds-ellipsis">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <p id="loadingStandardInfo" element="loadingStandardInfo">Loading...</p>
+    <div id="loadingMessages" element="loadingMessages">
+    </div>
+</div>
+<div id="home" element="home">
+    <h1>Reader Downloader</h1>
+    <button id="btnDownload" element="btnDownload">Add Url</button>
+    <div id="reader" element="reader"></div>
+    <div id="downloadedPages" element="downloadedPages">
+    </div>
+    <hr>
+    <button element="cleardatabase">Clear
+        Database</button>
+    <!--<button onclick="location.reload();">Reload</button>-->
+</div>
+<div id="page" element="page" class="">
+    <div id="pageOptions" element="pageOptions" class="styleColorUpdate">
+        <div id="autoGenDisplayTypes" element="autoGenDisplayTypes"></div>
+        <button element="pageEdit">Edit</button>
+        <br>
+        <button element="goBackHome">Back</button>
+    </div>
+    <p id="pageUrl" element="pageUrl" onclick="window.open(this.innerText)"></p>
+    <div id="pageContent" element="pageContent">
+        <p id="pageContentTitle" element="pageContentTitle"></p>
+        <div id="pageContentBody" element="pageContentBody">
+        </div>
+    </div>
+    <div id="editPanel" element="editPanel" style="display: none;" class="styleColorUpdate">
+        <div id="editPanelRemoveTexts" element="editPanelRemoveTexts">
+            <div id="editPanelRemoveTextsList" element="editPanelRemoveTextsList">
+            </div>
+            <input id="editPanelRemoveTextsInput" element="editPanelRemoveTextsInput" type="text" placeholder="Text to remove">
+            <button element="addRemoveText">Add</button>
+        </div>
+        <button element="exitEditPanel">Exit</button>
+    </div>
+</div>
+
+<div id="select" element="select" style="display: none;">
+    <div id="selectWraper" element="selectWraper">
+        <p id="selectTitle" element="selectTitle">Title</p>
+        <div id="selectOptions" element="selectOptions">
+
+        </div>
+        <br>
+        <button id="selectClose" element="selectClose">Close</button>
+    </div>
+</div>

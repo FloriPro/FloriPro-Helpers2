@@ -1,4 +1,25 @@
 <style>
+    .oneSetting {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .settinDeleteButton {
+        margin-left: 10px;
+        background-color: rgb(230, 180, 180);
+    }
+
+    .settinEditButton {
+        margin-left: 10px;
+        background-color: rgb(180, 230, 180);
+    }
+
+    .settingButton {
+        background-color: rgb(180, 180, 230);
+    }
+
     .redditCommentIndentLine {
         margin-left: 14px;
         padding-left: 6px;
@@ -22,11 +43,11 @@
     .redditCommentBody {
         margin-left: 14px;
         padding-bottom: 10px;
-        padding-left: 14px;
+        padding-left: 12px;
     }
 
     .redditCommentNOLine {
-        padding-left: 6px;
+        padding-left: 12px;
     }
 
     .redditComment .redditCommentAuthor::before {
@@ -62,46 +83,17 @@
 </style>
 
 <div element="settings">
-    <input type="text" placeholder="subreddits (a,b,c)" element="subredditSelect" value="memes">
-    <br>
-    <lable for="sort_time">sort_time</lable>
-    <select element="variable" name="sort_time">
-        <option value="all">all</option>
-        <option value="year">year</option>
-        <option value="month">month</option>
-        <option value="week">week</option>
-        <option value="day">day</option>
-        <option value="hour">hour</option>
-    </select>
-    <br>
+    <div element="editSetting" style="display: none;">
+        <div element="dynamicEditSetting">
+            <!--Dynamic load and get buttons from ./settings.html-->
+        </div>
 
-    <lable for="sort_by">sort_by</lable>
-    <select element="variable" name="sort_by">
-        <option value="hot">hot</option>
-        <option value="new">new</option>
-        <option value="top">top</option>
-        <option value="rising">rising</option>
-    </select>
-    <br>
+        <button element="selectSubreddits">Ok</button>
+    </div>
+    <div element="listSettings">
 
-    <input name="needs_bool_argument" class="variable"
-        placeholder="very optional | needs_bool_argument=true (split with ',')">
-    <br>
-
-    <lable for="only_images">only_images</lable>
-    <input element="variable" name="only_images" type="checkbox">
-    <br>
-
-    <lable for="save_data">save_data</lable>
-    <input element="variable" name="save_data" type="checkbox">
-    <br>
-
-
-    <input element="variable" name="limit" placeholder="number: limit" value="10">
-    <br>
-
-    <button element="selectSubreddits">Ok</button>
-
+    </div>
+    <button element="addSetting">add</button>
     <hr>
     <button element="setWindowmax">max</button>
     <button element="setWindownormal">normal</button>
@@ -118,24 +110,24 @@
     <div element="img" style="max-width: 500px;"></div>
 
     <button element="next" style="
-    position: absolute;
-    bottom: 10px;
-    height: 50px;
-    font-size: 50px;
-    background-color: antiquewhite;
-    display: flex;
-    align-items: center;
-    right: 10px;
+        position: absolute;
+        bottom: 10px;
+        height: 50px;
+        font-size: 50px;
+        background-color: antiquewhite;
+        display: flex;
+        align-items: center;
+        right: 10px;
     ">next</button>
     <button element="back" style="
-    position: absolute;
-    bottom: 10px;
-    height: 50px;
-    font-size: 50px;
-    background-color: antiquewhite;
-    display: flex;
-    align-items: center;
-    left: 10px;
+        position: absolute;
+        bottom: 10px;
+        height: 50px;
+        font-size: 50px;
+        background-color: antiquewhite;
+        display: flex;
+        align-items: center;
+        left: 10px;
     ">back</button>
     <br>
     <button element="comments">comments</button>

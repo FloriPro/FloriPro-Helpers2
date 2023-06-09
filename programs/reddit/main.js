@@ -51,7 +51,9 @@ class program extends System.program.default {
 
                 this.post.style.display = "none";
 
-                await this.window.addHtmlEventListener("click", "selectSubreddits", this.loadSettings, this);
+                this.currentEditSetting = undefined;
+                await this.window.addHtmlEventListener("click", "addSetting", this.addSetting, this);
+                await this.window.addHtmlEventListener("click", "selectSubreddits", this.saveEditSetting, this);
                 await this.window.addHtmlEventListener("click", "next", this.next, this);
                 await this.window.addHtmlEventListener("click", "back", this.back, this);
                 await this.window.addHtmlEventListener("click", "img", this.imgFullscreen, this);
@@ -86,7 +88,9 @@ class program extends System.program.default {
             this.window.size.setMax();
             return
         }
-        this.window.size.notMax()
+        if (this.previousMax != undefined) {
+            this.window.size.notMax()
+        }
     }
     sizeMax() {
         if (!this.window.size.fullMax) {
@@ -95,8 +99,50 @@ class program extends System.program.default {
         this.window.size.setfullMax();
     }
 
-    async loadSettings() {
-        this.redditApi.setSubreddits((await this.window.getHtmlElement("subredditSelect")).value.split(","));
+    async addSetting() {
+        (await this.window.getHtmlElement("editSetting")).style.display = "";
+        (await this.window.getHtmlElement("listSettings")).style.display = "none";
+        (await this.window.getHtmlElement("addSetting")).style.display = "none";
+
+        var settigns = await SystemFileSystem.getFileJson("c/user/reddit/settings.json");
+        this.currentEditSetting = settigns.length;
+        settigns.push({ "name": "new setting", "subreddits": "", "limit": "10", "sort_time": "all", "sort_by": "hot", "only_images": false, "save_data": false, "no_nsfw": false, "needs_bool_argument": "" });
+        await SystemFileSystem.setFileString("c/user/reddit/settings.json", JSON.stringify(settigns));
+
+        await this.loadSettingIntoEdit(this.currentEditSetting);
+    }
+
+    async loadSettingIntoEdit(id) {
+        var settings = await SystemFileSystem.getFileJson("c/user/reddit/settings.json");
+        var setting = settings[id];
+
+        for (var x of await this.window.getHtmlElements("variable")) {
+            var optionValue = "";
+            var optionName = x.name;
+
+            if (x.type == 'checkbox') {
+                x.checked = setting[optionName];
+            } else {
+                x.value = setting[optionName];
+            }
+
+            if (this.redditApi.boolVars.includes(optionName)) {
+                if (setting[optionName] == true)
+                    x.checked = true;
+                else
+                    x.checked = false;
+            } else {
+                x.value = setting[optionName];
+            }
+        }
+
+        (await this.window.getHtmlElement("subredditSelect")).value = setting.subreddits;
+    }
+
+    async saveEditSetting() {
+        //{"limit": "10","sort_time": "all","sort_by": "hot","only_images": false,"save_data": false,"no_nsfw": false,"needs_bool_argument": "","subreddits": "memes", "name": "memes"}
+        var out = {}
+        //this.redditApi.setSubreddits((await this.window.getHtmlElement("subredditSelect")).value.split(","));
 
         for (var x of await this.window.getHtmlElements("variable")) {
             var optionValue = "";
@@ -108,26 +154,100 @@ class program extends System.program.default {
                 optionValue = x.value;
             }
 
+            if (optionValue == undefined || optionValue == null) {
+                optionValue = "";
+            }
+
             if (this.redditApi.boolVars.includes(optionName)) {
                 if (optionValue == "true")
-                    this.redditApi.vars[optionName] = true;
+                    out[optionName] = true;
                 else
-                    this.redditApi.vars[optionName] = false;
+                    out[optionName] = false;
             } else {
-                this.redditApi.vars[optionName] = optionValue;
+                out[optionName] = optionValue;
             }
         }
 
-        var v = this.redditApi.vars;
-        v["subreddits"] = (await this.window.getHtmlElement("subredditSelect")).value;
-        var v = JSON.stringify(v)
-        await SystemFileSystem.setFileString("c/user/reddit/settings.json", v)
+        var settings = await SystemFileSystem.getFileJson("c/user/reddit/settings.json");
+
+        out["subreddits"] = (await this.window.getHtmlElement("subredditSelect")).value;
+        settings[this.currentEditSetting] = out;
+
+
+        await SystemFileSystem.setFileString("c/user/reddit/settings.json", JSON.stringify(settings));
+
+        (await this.window.getHtmlElement("editSetting")).style.display = "none";
+        (await this.window.getHtmlElement("listSettings")).style.display = "";
+        (await this.window.getHtmlElement("addSetting")).style.display = "";
+
+        await this.displaySettings();
+    }
+
+    async loadSetting(id) {
+        console.log("loadSetting", id);
+        var settings = await SystemFileSystem.getFileJson("c/user/reddit/settings.json");
+        this.redditApi.vars = settings[id];
+        this.redditApi.setSubreddits(settings[id].subreddits.split(","));
 
         this.post.style.display = "";
         this.settings.style.display = "none";
         this.next();
     }
     async displaySettings() {
+        //load edit settings
+        var esf = await SystemFileSystem.getFileString(this.PATH.folder() + "/settings.html");
+        (await this.window.getHtmlElement("dynamicEditSetting")).innerHTML = esf;
+        await this.window.parseNewHtml();
+
+        (await this.window.getHtmlElement("listSettings")).innerHTML = "";
+
+        //load different setting presets
+        var settings = await SystemFileSystem.getFileJson("c/user/reddit/settings.json");
+        var i = 0;
+        for (var x of settings) {
+            var div = document.createElement("div");
+            div.className = "oneSetting";
+
+            var button = document.createElement("button");
+            button.className = "settingButton";
+            button.innerText = x.name;
+            button.onclick = ((i) => {
+                this.loadSetting(i);
+            }).bind(this, i);
+            div.appendChild(button);
+
+
+            var editButton = document.createElement("button");
+            editButton.innerText = "edit";
+            editButton.className = "settinEditButton";
+            editButton.onclick = (async (i) => {
+                (await this.window.getHtmlElement("editSetting")).style.display = "";
+                (await this.window.getHtmlElement("listSettings")).style.display = "none";
+                (await this.window.getHtmlElement("addSetting")).style.display = "none";
+
+                this.currentEditSetting = i;
+
+                await this.loadSettingIntoEdit(this.currentEditSetting);
+            }).bind(this, i);
+            div.appendChild(editButton);
+
+            var deleteButton = document.createElement("button");
+            deleteButton.innerText = "delete";
+            deleteButton.className = "settinDeleteButton";
+            deleteButton.onclick = (async (i) => {
+                var settings = await SystemFileSystem.getFileJson("c/user/reddit/settings.json");
+                settings.splice(i, 1);
+                await SystemFileSystem.setFileString("c/user/reddit/settings.json", JSON.stringify(settings));
+                this.displaySettings();
+            }).bind(this, i);
+            div.appendChild(deleteButton);
+
+            (await this.window.getHtmlElement("listSettings")).appendChild(div);
+            i++;
+        }
+    }
+
+    async editSettings() {
         (await this.window.getHtmlElement("subredditSelect")).value = this.redditApi.vars["subreddits"];
         for (var x of await this.window.getHtmlElements("variable")) {
             var optionValue = "";
@@ -138,17 +258,9 @@ class program extends System.program.default {
             } else {
                 x.value = this.redditApi.vars[optionName]
             }
-            /*
-            if (this.redditApi.boolVars.includes(optionName)) {
-                if (optionValue == "true")
-                    this.redditApi.vars[optionName] = true;
-                else
-                    this.redditApi.vars[optionName] = false;
-            } else {
-                this.redditApi.vars[optionName] = optionValue;
-            }*/
         }
     }
+
     async next() {
         if (this.pastId < this.past.length - 1) {
             this.pastId++;
@@ -236,7 +348,6 @@ class program extends System.program.default {
             i.setAttribute("element", "oneImg")
             i.classList.add("im1");
 
-            console.log(x)
             if (x["highquality"] && x["highquality"] != x["compressed"]) {
                 var i1 = document.createElement("img");
                 i1.src = x["highquality"];
@@ -316,7 +427,6 @@ class program extends System.program.default {
         console.log(this.currentPost)
     }
     imgFullscreen() {
-        console.log("fullscreen")
         new ImgWindow(this.currentPost.ImageFull());
     }
 
@@ -413,9 +523,7 @@ class ImgWindow {
                 }
 
                 setTimeout(this.window.size.setfullMax.bind(this.window.size), 100);
-                console.log("add event");
                 await this.window.addHtmlEventListener("onclick", "img", () => {
-                    console.log("click");
                     this.window.makeClose();
                 }, this);
             });
@@ -444,9 +552,17 @@ class commentWindow {
 
                 var c = await this.window.getHtmlElement("comment");
                 c.innerHTML = "";
-                console.log(comments);
+                var i = 0;
                 for (var x of comments) {
-                    c.append(this.loadComment(x));
+                    var comment = this.loadComment(x);
+                    if (comment == undefined) {
+                        continue;
+                    }
+                    if (i == 0) {
+                        comment.querySelector(".redditCommentAuthor").style.marginTop = "-20px";
+                    }
+                    c.append(comment);
+                    i++;
                 }
             });
         this.window.close = () => {
@@ -469,6 +585,13 @@ class commentWindow {
 
         var author = document.createElement("div");
         author.className = "redditCommentAuthor";
+        author.contextscript = ((author_data) => {
+            return {
+                "Open Profile": ((author_data) => {
+                    window.open("https://www.reddit.com/user/" + author_data.name);
+                }).bind(this, author_data),
+            }
+        }).bind(this, dat.author_data)
 
         var authorImg = document.createElement("img");
         authorImg.src = "https://www.redditstatic.com/avatars/avatar_default_02_0079D3.png";
@@ -485,6 +608,13 @@ class commentWindow {
         var body = document.createElement("p");
         body.innerHTML = dat["body_html"]
         body.className = "redditCommentBody";
+        body.contextscript = ((body) => {
+            return {
+                "message": ((body) => {
+                    SystemHtml.WindowHandler.presets.createInformation("Message", body);
+                }).bind(this, body),
+            }
+        }).bind(this, dat["body"])
 
         textDiv.append(author);
         textDiv.append(body);

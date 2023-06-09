@@ -290,8 +290,6 @@ class profile {
         icoImg = icoImg.split("?")[0];
         return icoImg;
     }
-
-    //more to come
 }
 
 reddit;

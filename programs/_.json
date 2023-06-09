@@ -116,5 +116,10 @@
     "hidden": true,
     "version": "0.0",
     "path": "programs/droog.json"
+  },
+  "downloadReaderV2": {
+    "displayname": "Download Reader",
+    "version": "0.0",
+    "path": "programs/downloadReaderV2.json"
   }
 }
