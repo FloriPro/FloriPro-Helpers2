@@ -48,8 +48,6 @@ class Html {
             }
 
             if (this.elementArrayContainsClass(event.composedPath(), "taskbar-programList")) {
-                //console.log("taskbar stuff");
-                //console.log(event);
                 //return true;
                 return false;
             }
@@ -107,7 +105,6 @@ class Html {
 
         //background image
         System.settings.addSettingsUpdater("backgroundImage", () => {
-            console.log("update")
             backgroundImgLoader();
         });
         async function backgroundImgLoader() {
@@ -207,7 +204,6 @@ class Html {
     htmlEventHandler(event) {
         if (event.type == "click" && System.eventHandler.longClick == true && System.eventHandler.onmobile) {
             if (Date.now() - System.eventHandler.mouseDownTime > 500) {
-                console.log("cancel click HTML")
                 return;
             }
         }
@@ -533,7 +529,6 @@ class WindowHandler {
                 if (!SystemHtml.WindowHandler.getWindowById(id)) { return }
                 //resize
                 var distanceFromBorder = SystemHtml.WindowHandler.getWindowById(id).getDistanceFromBorder(event.clientX, event.clientY);
-                console.log("distanceFromBorder: ", distanceFromBorder);
                 if (SystemHtml.WindowHandler.getWindowById(id).canUserResize && distanceFromBorder < 8 && SystemHtml.WindowHandler.moving == false) { // event.target.classList.contains("window")
                     SystemHtml.WindowHandler.putWindowOnTop(id);
                     SystemHtml.WindowHandler.resize = true;

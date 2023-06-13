@@ -1,10 +1,17 @@
+from datetime import datetime
+
 path = "c/sys/init.js"
 
 readFile = open(path, "r")
 
 
 def nextVersion(s):
-    return ".".join(s.split(".")[:-1])+"."+str(int(s.split(".")[-1])+1)
+    # return ".".join(s.split(".")[:-1])+"."+str(int(s.split(".")[-1])+1)
+    todayVersion = datetime.today().strftime("%Y.%m.%d")
+    versionOfToday = -1
+    if s.startswith(todayVersion):
+        versionOfToday = s.split(".")[-1]
+    return todayVersion + "." + str(int(versionOfToday) + 1)
 
 
 replOut = ""

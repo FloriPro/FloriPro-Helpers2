@@ -376,7 +376,7 @@ class HtmlWindow {
          * @returns {boolean | Promise<boolean>}
          */
         this.close = () => {
-            console.log("close action not defined!");
+            console.warn("close action not defined!");
             return true;
         }
         this.onResize = () => {
@@ -640,8 +640,6 @@ class HtmlWindow {
     getDistanceFromBorder(px, py) {
         var [w, h] = this.size.getSize();
         var [x, y] = this.getPosition();
-
-        console.log("px: ", px, "py: ", py, "x: ", x, "y: ", y, "w: ", w, "h: ", h);
 
         var dx = Math.min(Math.abs(px - x), Math.abs(px - (x + w)));
         var dy = Math.min(Math.abs(py - y), Math.abs(py - (y + h)));
