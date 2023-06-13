@@ -135,6 +135,21 @@ class dbWrapper {
 
     async removeFile(path) {
         var p = this.createPromise();
+        var transaction = this.db.transaction(['files'], 'readwrite');
+        var objectStore = transaction.objectStore('files');
+
+        var request = objectStore.delete(path);
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.error);
+            p.reject(event.target.error);
+        }
+        request.onsuccess = function (event) {
+            p.resolve(event.target.result);
+        }
+        return await p.promise;
+    }
+    /* wrong function
+        var p = this.createPromise();
         var transaction = this.db.transaction(['fileStructure'], 'readwrite');
         var objectStore = transaction.objectStore('fileStructure');
 
@@ -154,8 +169,7 @@ class dbWrapper {
                 p.resolve(event.target.result);
             }
         }
-        return await p.promise;
-    }
+        return await p.promise;*/
 
 
     async removeFolderFromFolder(folder, path) {
@@ -458,6 +472,7 @@ class FileSystemClass {
      */
     async setFileString(path, dat, dispatchEvent = true, onlineData = false) {
         await this.dbOpen();
+        var flm = Date.now();
 
         //check if folder containing the file exists
         var folder = path.split("/");
@@ -510,10 +525,19 @@ class FileSystemClass {
                 setTimeout(this.changes.send, 1, path, "change");
             }
         }
-        var test = await this.getFileString(path);
-        if (test != dat) {
+        /**
+         * @type {FileSysFileNew}
+         */
+        var test = await this.getFile(path);
+        var tt = await test.text();
+        if (tt != dat) {
+            if (test.getInformation().lastModified > flm) {
+                console.log("File was changed by another process while setting it.");
+                return;
+            }
+            console.log("modify: ", test.getInformation(), " == ", flm);
             console.error("file not set correctly", path);
-            console.log(dat, " || wanted, but got || ", test);
+            console.log(dat, " || wanted, but got || ", tt);
         }
     }
 
@@ -591,7 +615,7 @@ class FileSystemClass {
     /**
      * 
      * @param {*} path 
-     * @returns {FileSysFileNew}
+     * @returns  {Promise<FileSysFileNew>}
      */
     async getFile(path) {
         await this.dbOpen();
@@ -617,6 +641,7 @@ class FileSystemClass {
         await this.dbOpen();
         var folder = await this.dbWrapper.getFolder(path);
         if (folder == null) {
+            console.warn("Folder does not exist: " + path);
             return [];
         }
         var d = [];
@@ -657,20 +682,22 @@ class FileSystemClass {
     }
     async removeFolder(path) {
         await this.dbOpen();
-        await this.dbWrapper.removeFolder(path);
         var folder = path.split("/");
         folder.pop();
         folder = folder.join("/");
 
         //remove all files in folder
         await this.removeFilesInFolder(path);
-
         await this.dbWrapper.removeFolderFromFolder(folder, path);
+
+        await this.dbWrapper.removeFolder(path);
     }
 
     async removeFilesInFolder(path) {
         var files = await this.getFiles(path);
+        console.log("files in folder: ", path, files);
         for (var x of files) {
+            console.log("remove file: ", path + "/" + x);
             await this.removeFile(path + "/" + x);
         }
         var folders = await this.getFolders(path);
@@ -1197,7 +1224,7 @@ class FileSysFileNew {
         this.beforeDat = beforeDat;
     }
     async text() {
-        return await this.getFileString(this.path);
+        return await SystemFileSystem.getFileString(this.path);
     }
     async remove() {
         console.warn("File: remove not implemented");
@@ -1207,7 +1234,7 @@ class FileSysFileNew {
         console.warn("File: rename not implemented");
         return false
     }
-    async getInformation() {
+    getInformation() {
         return this.info;
     }
     /**

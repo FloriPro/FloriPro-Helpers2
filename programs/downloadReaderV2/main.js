@@ -432,8 +432,9 @@ class gui {
     }
 
     deletePage(url) {
-        this.controller.database.deletePage(url);
-        this.updatePages();
+        this.controller.database.deletePage(url).then(() => {
+            this.updatePages();
+        });
         event.stopPropagation();
     }
 
