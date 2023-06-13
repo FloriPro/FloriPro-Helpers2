@@ -34,5 +34,13 @@
     "automaticFullscreen": [
         false,
         "bool"
+    ],
+    "replaceOnlineDataFilesWithDownloaded": [
+        true,
+        "bool"
+    ],
+    "resizeDirectionIndicator": [
+        true,
+        "bool"
     ]
 }

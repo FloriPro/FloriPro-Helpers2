@@ -31,7 +31,7 @@ async function run() {
     // http://localhost/?install=reddit&autostart=c/programs/reddit/run.js
 }
 async function debugBridge() {
-    var address = "localhost"
+    var address = "192.168.178.66"
     var ws = new WebSocket("ws://" + address + ":8000");
     System.console.addListener((d, ws) => {
         ws.send(JSON.stringify({
@@ -40,12 +40,12 @@ async function debugBridge() {
         }))
     }, ws)
     ws.onopen = () => {
-        setInterval(() => {
-            ws.send(JSON.stringify({
-                type: "log",
-                data: JSON.stringify("heap_" + performance.memory.usedJSHeapSize)
-            }))
-        }, 500)
+        //setInterval(() => {
+        //    ws.send(JSON.stringify({
+        //        type: "log",
+        //        data: JSON.stringify("heap_" + performance.memory.usedJSHeapSize)
+        //    }))
+        //}, 500)
     }
 }
 //debugBridge();

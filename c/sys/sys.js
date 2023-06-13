@@ -751,6 +751,10 @@ class eventHandler {
                 System.eventHandler.lifeMakerVars["mox"] = toutches[0].pageX;
                 System.eventHandler.lifeMakerVars["moy"] = toutches[0].pageY;
             }
+            if (event.clientX == undefined || event.clientY == undefined) {
+                event.clientX = toutches[0].pageX;
+                event.clientY = toutches[0].pageY;
+            }
         }
         if (type == "touchend") {
             System.eventHandler.lifeMakerVars["mox"] = null;

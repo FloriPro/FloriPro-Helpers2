@@ -80,6 +80,7 @@ class program extends System.program.default {
                     "action": async () => {
                         await this.directChange("long click for rightclick");
                         this.settingsData["Accessibility"]["Phone Rightclick"].update();
+                        this.settingsInDom["Accessibility"]["Reload"].style.display = "";
                     }
                 },
                 "Startup Disclaimer": {
@@ -90,7 +91,7 @@ class program extends System.program.default {
                     "description": "Startup Disclaimer",
                     "action": async () => {
                         await this.directChange("startupDisclaimer");
-                        this.settingsData["Accessibility"]["Instant reset"].update();
+                        this.settingsData["Accessibility"]["Startup Disclaimer"].update();
                     }
                 },
                 "Clamp Windows to Screen Size": {
@@ -101,7 +102,7 @@ class program extends System.program.default {
                     "description": "Clamp Windows to Screen Size",
                     "action": async () => {
                         await this.directChange("clampWindowToScreen");
-                        this.settingsData["Accessibility"]["Instant reset"].update();
+                        this.settingsData["Accessibility"]["Clamp Windows to Screen Size"].update();
                     }
                 },
                 "Automatic Fullscreen": {
@@ -112,8 +113,45 @@ class program extends System.program.default {
                     "description": "Automatic Fullscreen",
                     "action": async () => {
                         await this.directChange("automaticFullscreen");
-                        this.settingsData["Accessibility"]["Instant reset"].update();
+                        this.settingsData["Accessibility"]["Automatic Fullscreen"].update();
                     }
+                },
+                "Download Online Files": {
+                    "type": "checkbox",
+                    "status": async () => {
+                        return (await System.options.get("settings"))["replaceOnlineDataFilesWithDownloaded"][0];
+                    },
+                    "description": "Download Online Files",
+                    "action": async () => {
+                        await this.directChange("replaceOnlineDataFilesWithDownloaded");
+                        this.settingsData["Accessibility"]["Download Online Files"].update();
+                        this.settingsInDom["Accessibility"]["Reload"].style.display = "";
+                    }
+                },
+                "Resize Direction Indicator": {
+                    "type": "checkbox",
+                    "status": async () => {
+                        return (await System.options.get("settings"))["resizeDirectionIndicator"][0];
+                    },
+                    "description": "Resize Direction Indicator",
+                    "action": async () => {
+                        await this.directChange("resizeDirectionIndicator");
+                        this.settingsData["Accessibility"]["Resize Direction Indicator"].update();
+                        this.settingsInDom["Accessibility"]["Reload"].style.display = "";
+                    }
+                },
+                "infoText": {
+                    "type": "text",
+                    "default": "Some Settings require a Reload to take effect",
+                    "description": "Info Text"
+                },
+                "Reload": {
+                    "type": "button",
+                    "description": "Restart",
+                    "action": async () => {
+                        location.reload();
+                    },
+                    "display": "none"
                 }
             },
             "Analytics": {
@@ -147,14 +185,7 @@ class program extends System.program.default {
                     "action": async () => {
                         var code = await SystemHtml.WindowHandler.presets.createStringSelect("VIP Auth", "Enter vip authorization code");
                         await System.options.vip.setCode(code);
-                    }
-                },
-                "Status": {
-                    "type": "text",
-                    "default": "Not VIP",
-                    "description": "VIP status",
-                    "action": async () => {
-                        this.settingsInDom["VIP"]["Status"].innerText = await System.options.vip.enabled ? "VIP Enabled" : "VIP Disabled";
+                        await this.settingsData["VIP"]["Status"].update();
                     }
                 },
                 "Enabled VIP Features": {
@@ -189,6 +220,22 @@ class program extends System.program.default {
                             options[available[i]] = dat(available[i], this.settingsData, this.settingsInDom);
                         }
                         return options;
+                    },
+                    "display": "none"
+                },
+                "Status": {
+                    "type": "text",
+                    "default": "Not VIP",
+                    "description": "VIP status",
+                    "action": async () => {
+                        this.settingsInDom["VIP"]["Status"].innerText = await System.options.vip.enabled ? "VIP Enabled" : "VIP Disabled";
+                        if (await System.options.vip.enabled) {
+                            this.settingsInDom["VIP"]["Status"].style.color = "green";
+                            this.settingsInDom["VIP"]["Enabled VIP Features"].style.display = "";
+                        } else {
+                            this.settingsInDom["VIP"]["Status"].style.color = "red";
+                            this.settingsInDom["VIP"]["Enabled VIP Features"].style.display = "none";
+                        }
                     }
                 },
                 "Reload": {
@@ -398,7 +445,7 @@ class program extends System.program.default {
 
         await System.options.addValue("settings", setting, [o, s[setting][1]], true);
         System.settings.settingUpdated(setting);
-        await this.loadSettings();
+        //await this.loadSettings();
     }
 }
 new program();

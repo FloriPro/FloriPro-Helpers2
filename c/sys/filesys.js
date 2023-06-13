@@ -413,6 +413,26 @@ class FileSystemClass {
         return "data:image/" + fileType + ";base64," + btoa(str);
     }
 
+    async loadOptions() {
+        var options = await this.getFileJson("c/sys/options/settings.json");
+        var so = {};
+        for (var x of Object.keys(options)) {
+            so[x] = options[x][0];
+        }
+        this.options = so;
+    }
+
+    async getOption(option) {
+        try {
+            await this.loadOptions();
+
+            return this.options[option];
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    }
+
     async createFolderToFile(path) {
         var folder = path.split("/");
         folder.pop();
@@ -436,7 +456,7 @@ class FileSystemClass {
      * @param {*} dat 
      * @param {*} dispatchEvent 
      */
-    async setFileString(path, dat, dispatchEvent = true) {
+    async setFileString(path, dat, dispatchEvent = true, onlineData = false) {
         await this.dbOpen();
 
         //check if folder containing the file exists
@@ -466,6 +486,20 @@ class FileSystemClass {
         if (typeof dat != "string") {
             dat = JSON.stringify(dat);
         }
+
+        if (onlineData != false) {
+            beforeDat.onlineData = true;
+            beforeDat.onlineDataUrl = onlineData;
+        } else if (dat.startsWith(".od__")) {
+            beforeDat.onlineData = true;
+            beforeDat.onlineDataUrl = dat.slice(5);
+            dat = "";
+        }
+        else {
+            beforeDat.onlineData = false;
+            beforeDat.onlineDataUrl = null;
+        }
+
         beforeDat.data = dat;
         beforeDat.info.lastModified = Date.now();
 
@@ -522,12 +556,18 @@ class FileSystemClass {
         if (raw) {
             return d.data.data;
         }
+        var dat = d.data.data;
         if (d.data.data.startsWith(".od__")) {
+            var rpodfwd = await this.getOption("replaceOnlineDataFilesWithDownloaded");
+
             var d = d.data.data.slice(5);
-            var dat = await System.network.informationalFetch_Text(d);
-            return dat;
+            dat = await System.network.informationalFetch_Text(d);
+
+            if (rpodfwd) {
+                await this.setFileString(path, dat, undefined, d);
+            }
         }
-        return d.data.data;
+        return dat;
     }
 
     async bufferToString(buf) {
@@ -548,6 +588,11 @@ class FileSystemClass {
         return JSON.parse(d);
     }
 
+    /**
+     * 
+     * @param {*} path 
+     * @returns {FileSysFileNew}
+     */
     async getFile(path) {
         await this.dbOpen();
         var beforeDat = (await this.dbWrapper.getFile(path)) || {
@@ -560,7 +605,7 @@ class FileSystemClass {
             }
         };
         beforeDat = beforeDat.data;
-        var f = new FileSysFileNew(path, beforeDat.info);
+        var f = new FileSysFileNew(path, beforeDat);
         return f;
     }
 
@@ -1146,9 +1191,10 @@ class FileSysFile {
     }
 }
 class FileSysFileNew {
-    constructor(path, info) {
+    constructor(path, beforeDat) {
         this.path = path;
-        this.info = info;
+        this.info = beforeDat.info;
+        this.beforeDat = beforeDat;
     }
     async text() {
         return await this.getFileString(this.path);
@@ -1170,7 +1216,10 @@ class FileSysFileNew {
      */
     async isOnlineData() {
         var r = await SystemFileSystem.getFileString(this.path, true);
-        if (r == undefined) {
+        if (this.beforeDat.onlineData == true) {
+            return true;
+        }
+        else if (r == undefined) {
             return false;
         }
         if (r.startsWith(".od__")) {
@@ -1181,8 +1230,10 @@ class FileSysFileNew {
         }
     }
     async getOnlineDataLink() {
-        var r = await SystemFileSystem.getFileString(this.path, true)
-        if (r.startsWith(".od__")) {
+        var r = await SystemFileSystem.getFileString(this.path, true);
+        if (this.beforeDat.onlineData == true) {
+            return this.beforeDat.onlineDataUrl;
+        } if (r.startsWith(".od__")) {
             return r.replace(".od__", "");
         }
         return undefined;

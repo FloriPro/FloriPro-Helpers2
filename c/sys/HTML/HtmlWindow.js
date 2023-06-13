@@ -70,6 +70,9 @@ class HtmlWindow {
                     }
                 }
 
+                if (x < 40) x = 40;
+                if (y < 40) y = 40;
+
                 this.parent.#sizeX = x;
                 this.parent.#sizeY = y;
                 this.parent.getHtml().style.width = this.parent.#sizeX + "px";
@@ -80,6 +83,10 @@ class HtmlWindow {
 
                 this.parent.getHtml().querySelector(".content").style.height = "inherit";
             }
+            /**
+             * 
+             * @returns {[number, number]} the x/y size of the window
+             */
             getSize() {
                 return [this.parent.#sizeX, this.parent.#sizeY]
             }
@@ -95,9 +102,11 @@ class HtmlWindow {
                 if (yn) {
                     this.parent.getHtml().querySelector(".maximize").style.display = "";
                     this.parent.getHtml().style.padding = "12px"
+                    this.parent.getHtml().style.margin = "-12px"
                 } else {
                     this.parent.getHtml().querySelector(".maximize").style.display = "none";
                     this.parent.getHtml().style.padding = "0px"
+                    this.parent.getHtml().style.margin = "0px"
                 }
             }
             async maxToggle() {
@@ -397,6 +406,18 @@ class HtmlWindow {
         element.style.left = x + 'px';
         element.style.top = y + 'px';
     }
+
+    /**
+     * adds to the window position
+     * @param {number} x
+     * @param {number} y
+     * @returns {void}
+     */
+    addPosition(x, y) {
+        var pos = this.getPosition()
+        this.setPosition(pos[0] + x, pos[1] + y)
+    }
+
     /**
      * returns position
      * @returns {[number,number]} [x,y]
@@ -611,6 +632,21 @@ class HtmlWindow {
      */
     async setLayer(id) {
         (await this.getHtml()).style.zIndex = id;
+    }
+
+    /**
+     * is used to get the distance from px, py to the border of the window
+     */
+    getDistanceFromBorder(px, py) {
+        var [w, h] = this.size.getSize();
+        var [x, y] = this.getPosition();
+
+        console.log("px: ", px, "py: ", py, "x: ", x, "y: ", y, "w: ", w, "h: ", h);
+
+        var dx = Math.min(Math.abs(px - x), Math.abs(px - (x + w)));
+        var dy = Math.min(Math.abs(py - y), Math.abs(py - (y + h)));
+
+        return Math.min(dx, dy);
     }
 }
 HtmlWindow;

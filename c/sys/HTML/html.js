@@ -425,6 +425,10 @@ class WindowHandler {
 
         this.windowsCreated = 1;
 
+        this.resize = false;
+        this.resizeWindowId = -1;
+        this.resizePosition = "";
+
         this.moving = false;
         this.movingFullscreen = false;
 
@@ -438,6 +442,8 @@ class WindowHandler {
          * @type {presets}
          */
         this.presets = new (await System.run("c/sys/HTML/presets.js"))();
+
+        this.resizeAnimator = new resizeAnimator();
 
         System.eventHandler.addEventHandler("mousemove", async (event, a) => {
             if (SystemHtml.WindowHandler.moving == true) {
@@ -460,7 +466,57 @@ class WindowHandler {
                 }
             }
             else if (SystemHtml.WindowHandler.resize == true) {
-                var element = a[0].getWindowById(this.resizeWindowId).addWindowSize(event.movementX, event.movementY);
+                /**
+                 * @type {HtmlWindow}
+                 */
+                var window = a[0].getWindowById(this.resizeWindowId);
+                var rp = SystemHtml.WindowHandler.resizePosition;
+                switch (rp) {
+                    case "top":
+                        //window.setSize(window.width, window.height - event.movementY);
+                        window.addWindowSize(0, -event.movementY);
+                        window.addPosition(0, event.movementY);
+                        //window.setPosition(window.x, window.y + event.movementY);
+                        break;
+                    case "bottom":
+                        //window.setSize(window.width, window.height + event.movementY);
+                        window.addWindowSize(0, event.movementY);
+                        break;
+                    case "left":
+                        //window.setSize(window.width - event.movementX, window.height);
+                        //window.setPosition(window.x + event.movementX, window.y);
+                        window.addWindowSize(-event.movementX, 0);
+                        window.addPosition(event.movementX, 0);
+                        break;
+                    case "right":
+                        //window.setSize(window.width + event.movementX, window.height);
+                        window.addWindowSize(event.movementX, 0);
+                        break;
+                    case "topleft":
+                        //window.setSize(window.width - event.movementX, window.height - event.movementY);
+                        //window.setPosition(window.x + event.movementX, window.y + event.movementY);
+                        window.addWindowSize(-event.movementX, -event.movementY);
+                        window.addPosition(event.movementX, event.movementY);
+                        break;
+                    case "topright":
+                        //window.setSize(window.width + event.movementX, window.height - event.movementY);
+                        //window.setPosition(window.x, window.y + event.movementY);
+                        window.addWindowSize(event.movementX, -event.movementY);
+                        window.addPosition(0, event.movementY);
+                        break;
+                    case "bottomleft":
+                        //window.setSize(window.width - event.movementX, window.height + event.movementY);
+                        //window.setPosition(window.x + event.movementX, window.y);
+                        window.addWindowSize(-event.movementX, event.movementY);
+                        window.addPosition(event.movementX, 0);
+                        break;
+                    case "bottomright":
+                        //window.setSize(window.width + event.movementX, window.height + event.movementY);
+                        window.addWindowSize(event.movementX, event.movementY);
+                        break;
+                }
+
+                //window.addWindowSize(event.movementX, event.movementY);
             }
         }, [this])
 
@@ -476,10 +532,41 @@ class WindowHandler {
 
                 if (!SystemHtml.WindowHandler.getWindowById(id)) { return }
                 //resize
-                if (SystemHtml.WindowHandler.getWindowById(id).canUserResize && event.target.classList.contains("window") && SystemHtml.WindowHandler.moving == false) {
+                var distanceFromBorder = SystemHtml.WindowHandler.getWindowById(id).getDistanceFromBorder(event.clientX, event.clientY);
+                console.log("distanceFromBorder: ", distanceFromBorder);
+                if (SystemHtml.WindowHandler.getWindowById(id).canUserResize && distanceFromBorder < 8 && SystemHtml.WindowHandler.moving == false) { // event.target.classList.contains("window")
                     SystemHtml.WindowHandler.putWindowOnTop(id);
                     SystemHtml.WindowHandler.resize = true;
                     SystemHtml.WindowHandler.resizeWindowId = id;
+
+                    //top, bottom, left, right, topleft, topright, bottomleft, bottomright
+                    //SystemHtml.WindowHandler.resizePosition;
+                    var [wx, wy] = SystemHtml.WindowHandler.getWindowById(id).getPosition();
+                    var [ww, wh] = SystemHtml.WindowHandler.getWindowById(id).size.getSize();
+                    var [mx, my] = [event.clientX, event.clientY];
+                    var [rx, ry] = [mx - wx, my - wy];
+
+                    SystemHtml.WindowHandler.resizePosition = "";
+                    var p = []
+                    if (ry < 10) {
+                        SystemHtml.WindowHandler.resizePosition += "top";
+                        p.push("top");
+                    } else if (ry > wh - 10) {
+                        SystemHtml.WindowHandler.resizePosition += "bottom";
+                        p.push("bottom");
+                    }
+                    if (rx < 10) {
+                        SystemHtml.WindowHandler.resizePosition += "left";
+                        p.push("left");
+                    } else if (rx > ww - 10) {
+                        SystemHtml.WindowHandler.resizePosition += "right";
+                        p.push("right");
+                    }
+                    if (SystemHtml.WindowHandler.resizePosition == "") {
+                        SystemHtml.WindowHandler.resizePosition = "center";
+                    }
+
+                    SystemHtml.WindowHandler.resizeAnimator.add(id, event.clientX, event.clientY, SystemHtml.WindowHandler.resizePosition, p);
 
                     //iframs not clickable
                     this.iframeNoClick()
@@ -504,22 +591,16 @@ class WindowHandler {
                 /**
                  * @type {HtmlWindow}
                  */
+
                 var currentwindow = a[0].getWindowById(this.movingWindowId);
                 var element = currentwindow.getHtml();
-
                 var y = parseInt(element.style.top) + event.movementY;
                 var x = parseInt(element.style.left) + event.movementX;
-
-                if (x < +175 - currentwindow.size.getSize()[0]) { x = +175 - currentwindow.size.getSize()[0]; }
-                if (y < -10) { y = -10; }
-
-                if (x > window.innerWidth - 150) { x = window.innerWidth - 150 };
-                if (y > window.innerHeight - 50 - 35) { y = window.innerHeight - 50 - 35 };
-
 
                 if (event.shiftKey == true) {
                     this.setWindowShiftKey(currentwindow, event, x, y)
                 } else {
+                    var [x, y] = SystemHtml.WindowHandler.checkupWindowPosition(currentwindow, x, y);
                     currentwindow.setPosition(x, y);
                 }
                 document.querySelector("#moveWindowOverlay").style.display = "none";
@@ -538,6 +619,11 @@ class WindowHandler {
             } if (SystemHtml.WindowHandler.resize == true) {
                 SystemHtml.WindowHandler.resize = false;
 
+                var currentwindow = a[0].getWindowById(this.resizeWindowId);
+                var element = currentwindow.getHtml();
+                var [x, y] = currentwindow.getPosition();
+                var [x, y] = SystemHtml.WindowHandler.checkupWindowPosition(currentwindow, x, y);
+                currentwindow.setPosition(x, y);
 
                 var ifr = document.querySelectorAll("iframe");
                 for (var iframe of ifr) {
@@ -639,6 +725,16 @@ class WindowHandler {
         });
     }
 
+    checkupWindowPosition(currentwindow, x, y) {
+        if (x < +175 - currentwindow.size.getSize()[0]) { x = +175 - currentwindow.size.getSize()[0]; }
+        if (y < -10) { y = -10; }
+
+        if (x > window.innerWidth - 150) { x = window.innerWidth - 150 };
+        if (y > window.innerHeight - 40 - 35) { y = window.innerHeight - 40 - 35 };
+
+        return [x, y];
+    }
+
     /**
      * 
      * @param {HtmlWindow} wind 
@@ -652,8 +748,8 @@ class WindowHandler {
             el.style.top = (y + 12) + "px";
         }
         function setSize(w, h) {
-            el.style.width = w + "px";
-            el.style.height = h + "px";
+            el.style.width = (w - 24) + "px";
+            el.style.height = (h - 24) + "px";
         }
 
         var el = document.querySelector("#moveWindowOverlay");
@@ -684,28 +780,31 @@ class WindowHandler {
             });
         }
 
+        var taskbarbottomsize = 35;
+        var taskbarbottomsizehalf = taskbarbottomsize / 2;
+
         if (event.pageY < window.innerHeight * 0.6 && event.pageY > window.innerHeight * 0.4 && event.pageX < window.innerWidth * 0.6 && event.pageX > window.innerWidth * 0.4) {
             setPosition(-12, -12);
-            setSize(window.innerWidth, window.innerHeight - 35);
+            setSize(window.innerWidth + 24, window.innerHeight - taskbarbottomsize + 24);
             return;
         }
 
-
+        //left
         if (event.pageX < window.innerWidth * 0.5) {
             //top
             if (event.pageY < window.innerHeight * 0.4) {
                 setPosition(0, 0);
-                setSize(window.innerWidth * 0.5 - 12, window.innerHeight * 0.5 - 12);
+                setSize(window.innerWidth * 0.5, (window.innerHeight * 0.5) - taskbarbottomsizehalf);
             }
             //middle
             else if (event.pageY < window.innerHeight * 0.6) {
                 setPosition(0, 0);
-                setSize(window.innerWidth * 0.5 - 12, window.innerHeight - 59);
+                setSize(window.innerWidth * 0.5, window.innerHeight - taskbarbottomsize);
             }
             //bottom
             else {
-                setPosition(0, window.innerHeight * 0.5);
-                setSize(window.innerWidth * 0.5 - 12, (window.innerHeight * 0.5) - 59);
+                setPosition(0, window.innerHeight * 0.5 - taskbarbottomsizehalf);
+                setSize(window.innerWidth * 0.5, (window.innerHeight * 0.5) - taskbarbottomsizehalf);
             }
         }
 
@@ -714,21 +813,28 @@ class WindowHandler {
             //top
             if (event.pageY < window.innerHeight * 0.4) {
                 setPosition(window.innerWidth * 0.5, 0);
-                setSize(window.innerWidth * 0.5 - 24, window.innerHeight * 0.5 - 12);
+                setSize(window.innerWidth * 0.5, (window.innerHeight * 0.5) - taskbarbottomsizehalf);
             }
             //middle
             else if (event.pageY < window.innerHeight * 0.6) {
                 setPosition(window.innerWidth * 0.5, 0);
-                setSize(window.innerWidth * 0.5 - 24, window.innerHeight - 59);
+                setSize(window.innerWidth * 0.5, window.innerHeight - taskbarbottomsize);
             }
             //bottom
             else {
-                setPosition(window.innerWidth * 0.5, window.innerHeight * 0.5);
-                setSize(window.innerWidth * 0.5 - 24, (window.innerHeight * 0.5) - 59);
+                setPosition(window.innerWidth * 0.5, window.innerHeight * 0.5 - taskbarbottomsizehalf);
+                setSize(window.innerWidth * 0.5, (window.innerHeight * 0.5) - taskbarbottomsizehalf);
             }
         }
     }
 
+    /**
+     * 
+     * @param {HtmlWindow} wind 
+     * @param {*} event 
+     * @param {*} x 
+     * @param {*} y 
+     */
     setWindowShiftKey(wind, event, x, y) {
         //middle
         if (event.pageY < window.innerHeight * 0.6 && event.pageY > window.innerHeight * 0.4 && event.pageX < window.innerWidth * 0.6 && event.pageX > window.innerWidth * 0.4) {
@@ -737,22 +843,25 @@ class WindowHandler {
             wind.size.notMax();
         }
 
+        var taskbarbottomsize = 35;
+        var taskbarbottomsizehalf = taskbarbottomsize / 2;
+
         //left
         if (event.pageX < window.innerWidth * 0.5) {
             //top
             if (event.pageY < window.innerHeight * 0.4) {
                 wind.setPosition(0, 0);
-                wind.size.setSize(window.innerWidth * 0.5 - 12, window.innerHeight * 0.5 - 12);
+                wind.size.setSize(window.innerWidth * 0.5, (window.innerHeight * 0.5) - taskbarbottomsizehalf);
             }
             //middle
             else if (event.pageY < window.innerHeight * 0.6) {
                 wind.setPosition(0, 0);
-                wind.size.setSize(window.innerWidth * 0.5 - 12, window.innerHeight - 59);
+                wind.size.setSize(window.innerWidth * 0.5, window.innerHeight - taskbarbottomsize);
             }
             //bottom
             else {
-                wind.setPosition(0, window.innerHeight * 0.5);
-                wind.size.setSize(window.innerWidth * 0.5 - 12, (window.innerHeight * 0.5) - 59);
+                wind.setPosition(0, window.innerHeight * 0.5 - taskbarbottomsizehalf);
+                wind.size.setSize(window.innerWidth * 0.5, (window.innerHeight * 0.5) - taskbarbottomsizehalf);
             }
         }
 
@@ -761,17 +870,17 @@ class WindowHandler {
             //top
             if (event.pageY < window.innerHeight * 0.4) {
                 wind.setPosition(window.innerWidth * 0.5, 0);
-                wind.size.setSize(window.innerWidth * 0.5 - 24, window.innerHeight * 0.5 - 12);
+                wind.size.setSize(window.innerWidth * 0.5, (window.innerHeight * 0.5) - taskbarbottomsizehalf);
             }
             //middle
             else if (event.pageY < window.innerHeight * 0.6) {
                 wind.setPosition(window.innerWidth * 0.5, 0);
-                wind.size.setSize(window.innerWidth * 0.5 - 24, window.innerHeight - 59);
+                wind.size.setSize(window.innerWidth * 0.5, window.innerHeight - taskbarbottomsize);
             }
             //bottom
             else {
-                wind.setPosition(window.innerWidth * 0.5, window.innerHeight * 0.5);
-                wind.size.setSize(window.innerWidth * 0.5 - 24, (window.innerHeight * 0.5) - 59);
+                wind.setPosition(window.innerWidth * 0.5, window.innerHeight * 0.5 - taskbarbottomsizehalf);
+                wind.size.setSize(window.innerWidth * 0.5, (window.innerHeight * 0.5) - taskbarbottomsizehalf);
             }
         }
     }
@@ -1246,7 +1355,7 @@ class Desktop {
                         var folder = path.split("/");
                         folder.pop();
                         folder = folder.join("/");
-                        System.program.runProgram("c/programs/explorer/main.js",folder);
+                        System.program.runProgram("c/programs/explorer/main.js", folder);
                     } else {
                         SystemHtml.WindowHandler.presets.createInformation("File Location", "The file is located at '" + path + "' but it does not exist!")
                     }
@@ -1279,6 +1388,45 @@ class Desktop {
         await System.options.addValue("desktop", "all", d, true);
 
         await this.buildDesktop()
+    }
+}
+
+class resizeAnimator {
+    constructor() {
+        this.currentHtml = undefined;
+        this.enabled = true;
+        this.loadSettings();
+    }
+
+    async loadSettings() {
+        this.enabled = (await System.options.get("settings"))["resizeDirectionIndicator"][0];
+    }
+
+    add(id, clientX, clientY, resizePosition, resizePositionList) {
+        if (!this.enabled) {
+            return;
+        }
+        if (this.currentHtml != undefined) {
+            this.currentHtml.remove();
+        }
+
+        var div = document.createElement("div");
+        div.id = "resizeAnimator";
+        div.style.position = "fixed";
+        div.style.left = clientX + "px";
+        div.style.top = clientY + "px";
+        div.classList.add(resizePosition);
+        div.classList.add(...resizePositionList.map(x => "own_" + x));
+
+        setTimeout(() => {
+            div.classList.add("animate");
+            setTimeout(() => {
+                div.remove();
+            }, 500);
+        }, 10);
+
+        this.currentHtml = div;
+        document.body.appendChild(div);
     }
 }
 

@@ -43,7 +43,6 @@ input {
     opacity: 1;
     background: transparent;
     padding: 12px;
-    cursor: nw-resize;
 }
 
 .windowInline {
@@ -488,4 +487,48 @@ iframe {
     -webkit-user-select: none;
     -ms-user-select: none;
 
+}
+
+#resizeAnimator {
+    width: 50px;
+    height: 50px;
+    background-color: #4d4d4dce;
+    margin-right: -25px;
+    margin-left: -25px;
+    margin-top: -25px;
+    margin-bottom: -25px;
+    transition: 0.2s;
+
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    translate: 0px 0px;
+
+    touch-action: none;
+}
+
+#resizeAnimator.animate {
+    width: 10px;
+    height: 10px;
+    margin: -5px;
+    transition: 0.5s;
+    background-color: rgba(77, 77, 77, 0);
+}
+
+/*move 50px in direction*/
+#resizeAnimator.own_right.animate {
+    margin-left: 500px;
+}
+
+#resizeAnimator.own_left.animate {
+    margin-left: -500px;
+}
+
+#resizeAnimator.own_top.animate {
+    margin-top: -500px;
+}
+
+#resizeAnimator.own_bottom.animate {
+    margin-top: 500px;
 }
