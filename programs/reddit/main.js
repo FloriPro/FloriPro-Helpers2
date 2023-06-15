@@ -282,6 +282,9 @@ class program extends System.program.default {
         var i = 0;
         while (this.sawAllready(md5(n.data.permalink)) || n.data.permalink == "_") {
             n = await this.redditApi.next();
+            if (n.type == "error") {
+                SystemHtml.WindowHandler.presets.createInformation("Error", "Could not load Subbreddit \"" + n.erroredSubbreddit + "\": " + n.dat.message);
+            }
             i++;
             if (i >= maxIt) {
                 var r = await SystemHtml.WindowHandler.presets.createConfirm("Load more?", "We could not find any new Posts in the last " + maxIt + ". Do you want so search more?")

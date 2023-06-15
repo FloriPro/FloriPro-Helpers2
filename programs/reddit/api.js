@@ -58,6 +58,11 @@ class reddit {
         var dat = await fetch(url);
         dat = JSON.parse(await dat.text())
 
+        if (dat["error"]) {
+            console.error(dat["message"])
+            return [dat];
+        }
+
         var newAfter = dat["data"]["after"];
 
         var allStuff = dat["data"]["children"]
@@ -79,6 +84,14 @@ class reddit {
 
     async next() {
         var r = await this.get(this.currentSubredditId);
+        if (r.length == 1) {
+            var erroredSubbreddit = this.subreddits[this.currentSubredditId]
+            this.currentSubredditId++;
+            if (this.currentSubredditId >= this.subreddits.length) { this.currentSubredditId = 0; }
+
+            return new errorPost(r[0], erroredSubbreddit);
+        }
+
         var dat = r[0];
         var newAfter = r[1];
         if (newAfter != undefined) {
@@ -112,6 +125,7 @@ class reddit {
 }
 class post {
     constructor(data) {
+        this.type = "post";
         this.data = data["data"];
         this.saveData = false
     }
@@ -261,6 +275,15 @@ class post {
      */
     nsfw() {
         return this.data["over_18"];
+    }
+}
+
+
+class errorPost {
+    constructor(dat, erroredSubbreddit) {
+        this.type = "error";
+        this.dat = dat;
+        this.erroredSubbreddit = erroredSubbreddit;
     }
 }
 
