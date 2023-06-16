@@ -505,14 +505,17 @@ class FileSystemClass {
         if (onlineData != false) {
             beforeDat.onlineData = true;
             beforeDat.onlineDataUrl = onlineData;
+            beforeDat.dataDownloaded = true;
         } else if (dat.startsWith(".od__")) {
             beforeDat.onlineData = true;
             beforeDat.onlineDataUrl = dat.slice(5);
             dat = "";
+            beforeDat.dataDownloaded = false;
         }
         else {
             beforeDat.onlineData = false;
             beforeDat.onlineDataUrl = null;
+            beforeDat.dataDownloaded = false;
         }
 
         beforeDat.data = dat;
@@ -573,6 +576,20 @@ class FileSystemClass {
         var d = await this.dbWrapper.getFile(path);
         if (d == null) {
             return null;
+        }
+        if (d.data.onlineData == true) {
+            var rpodfwd = await this.getOption("replaceOnlineDataFilesWithDownloaded");
+            if (d.data.dataDownloaded == true) {
+                return d.data.data;
+            }
+
+            var d = d.data.onlineDataUrl;
+            var dat = await System.network.informationalFetch_Text(d);
+
+            if (rpodfwd) {
+                await this.setFileString(path, dat, undefined, d);
+            }
+            return dat;
         }
         if (d.data.data == null) {
             return null;
