@@ -482,8 +482,10 @@ class systemProgramHandler {
     async installPackage(data, display, displayWindow, showInstallInfo, name, isLib, version) {
         if (name == undefined) { name = "unknown"; }
 
-        await displayWindow.setNum(25);
-        await displayWindow.setText("Installing " + name);
+        if (display == true) {
+            await displayWindow.setNum(25);
+            await displayWindow.setText("Installing " + name);
+        }
 
         if (showInstallInfo == undefined) {
             showInstallInfo = display;
