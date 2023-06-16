@@ -1,5 +1,45 @@
-<p>Current link: <span element="url">...</span></p><br>
-<p>Current Resolution: <span element="resolution">...</span> <button element="changeResolution">Change</button></p><br>
-<p>copyright: <span element="copyright"></span></p><br>
+<style>
+    /*change scrollbar on class content*/
+    .window[windowid="{{windowId}}"] ::-webkit-scrollbar {
+        width: 10px;
+    }
 
-<p>Offset: <span element="offset">-</span></p><button element="previousImage">before</button><button element="nextImage">next</button>
+    .window[windowid="{{windowId}}"] ::-webkit-scrollbar-track {
+        background: #262732;
+    }
+
+    .window[windowid="{{windowId}}"] ::-webkit-scrollbar-thumb {
+        background: #636363;
+        border-radius: 5px;
+    }
+
+
+
+    .window[windowid="{{windowId}}"] .title-bar {
+        background-color: #636363;
+    }
+
+    .window[windowid="{{windowId}}"] .content {
+        background-color: #262732;
+        color: white;
+    }
+
+    .window[windowid="{{windowId}}"] .padder {
+        padding: 10px;
+    }
+</style>
+<div class="padder">
+    <button element="previousImage">before</button><button element="nextImage">next</button>
+    <p>Offset: <span element="offset">-</span></p>
+    <br>
+    <p>Copyright: <span element="copyright"></span></p>
+    <br>
+    <p>Current Resolution: <span element="resolution">...</span> <button element="changeResolution">Change</button></p>
+    <br>
+    <p
+        contextdat='{"display":(ev)=>{SystemHtml.WindowHandler.presets.createInformation("Background Url",ev.target.querySelector("span").innerText);}}'>
+        Current link:
+        <span element="url">...</span>
+    </p>
+
+</div>
