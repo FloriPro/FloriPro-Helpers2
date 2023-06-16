@@ -54,6 +54,8 @@ class HtmlWindow {
                 this.fullMax = false;
 
                 this.maxBefore = { "normal": { "pos": [20, 20], "size": [100, 100], "userResize": true, "showTitle": true }, "fullmax": {}, "max": {} };
+
+                this.minSize = [40, 40];
             }
             /**
              * sets the x/y size of the window, if defined
@@ -70,8 +72,8 @@ class HtmlWindow {
                     }
                 }
 
-                if (x < 40) x = 40;
-                if (y < 40) y = 40;
+                if (x < this.minSize[0]) x = this.minSize[0];
+                if (y < this.minSize[1]) y = this.minSize[1];
 
                 this.parent.#sizeX = x;
                 this.parent.#sizeY = y;
@@ -82,6 +84,9 @@ class HtmlWindow {
                 setTimeout(this.parent.onResize, this.transitionTime + 1);
 
                 this.parent.getHtml().querySelector(".content").style.height = "inherit";
+            }
+            setMinSize(x, y) {
+                this.minSize = [x, y];
             }
             /**
              * 

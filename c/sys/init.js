@@ -25,7 +25,7 @@ window.onerror = function (error, url, line) {
     console.error(error);
 };
 
-VERSION = '2023.06.16.0';
+VERSION = '2023.06.16.1';
 SystemFileSystem = undefined;
 System = undefined
 SystemHtml = undefined;

@@ -529,7 +529,7 @@ class WindowHandler {
                 if (!SystemHtml.WindowHandler.getWindowById(id)) { return }
                 //resize
                 var distanceFromBorder = SystemHtml.WindowHandler.getWindowById(id).getDistanceFromBorder(event.clientX, event.clientY);
-                if (SystemHtml.WindowHandler.getWindowById(id).canUserResize && distanceFromBorder < 8 && SystemHtml.WindowHandler.moving == false) { // event.target.classList.contains("window")
+                if (SystemHtml.WindowHandler.getWindowById(id).canUserResize && SystemHtml.WindowHandler.moving == false && ((event.target.classList.contains("window") && distanceFromBorder < 8) || distanceFromBorder < 3)) { // event.target.classList.contains("window")
                     SystemHtml.WindowHandler.putWindowOnTop(id);
                     SystemHtml.WindowHandler.resize = true;
                     SystemHtml.WindowHandler.resizeWindowId = id;
