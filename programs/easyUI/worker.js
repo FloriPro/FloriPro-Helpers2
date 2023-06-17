@@ -187,7 +187,7 @@ class easUIWorkerProgram extends System.program.default {
                 var titlebar = html.querySelector(".title-bar")
                 titlebar.style.cursor = "default";
                 if (this.darkmode) {
-                    titlebar.style.backgroundColor = "#242323";
+                    titlebar.style.background = "#242323";
                     titlebar.style.color = "white";
                     titlebar.style.boxShadow = "0px 0px 10px 2px rgb(0 0 0 / 58%)";
                     titlebar.style.position = "relative";
