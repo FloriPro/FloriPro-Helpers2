@@ -1285,16 +1285,35 @@ class Desktop {
         document.querySelector("#Desktop").contextscript = (event) => {
             return {
                 "Create new": async () => {
-                    SystemHtml.WindowHandler.presets.createInformation("Error", "Not implemented yet!")
+                    var file = await SystemHtml.WindowHandler.presets.createFileSelect("File to run");
+                    if (file == undefined) {
+                        return;
+                    }
+                    var icon = await SystemHtml.WindowHandler.presets.createFileSelect("File to display as image (cancel for default image)");
+                    var name = await SystemHtml.WindowHandler.presets.createStringSelect("Name", "Name of the link");
+                    if (name == "" || name == undefined) {
+                        name = "unnamed";
+                    }
+
+                    var d = (await System.options.get("desktop")).all;
+                    d.push({
+                        name: name,
+                        icon: icon,
+                        run: file,
+                        position: [100, 100]
+                    })
+                    await System.options.addValue("desktop", "all", d, true);
+
+                    await SystemHtml.desktop.buildDesktop()
                 },
                 "Refresh": async () => {
                     await SystemHtml.desktop.buildDesktop();
                 },
                 "Edit": async () => {
-                    SystemHtml.WindowHandler.presets.createInformation("Error", "Not implemented yet!")
+                    System.program.runProgram("c/programs/legacySettings/desktop.js");
                 },
                 "Settings": async () => {
-                    SystemHtml.WindowHandler.presets.createInformation("Error", "Not implemented yet!")
+                    System.program.runProgram("c/programs/settings/main.js");
                 }
             }
         }
@@ -1355,8 +1374,10 @@ class Desktop {
                         SystemHtml.WindowHandler.presets.createInformation("File Location", "The file is located at '" + path + "' but it does not exist!")
                     }
                 },
-                "Edit Link": async () => {
-                    SystemHtml.WindowHandler.presets.createInformation("Error", "Not implemented yet!")
+                "Edit Link": async (event) => {
+                    var id = event.target.getAttribute("iconid")
+                    System.program.runProgram("c/programs/legacySettings/desktop.js", id);
+                    //SystemHtml.WindowHandler.presets.createInformation("Error", "Not implemented yet!")
                 }
             }
         }

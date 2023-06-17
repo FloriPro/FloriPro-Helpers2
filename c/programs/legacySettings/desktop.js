@@ -3,7 +3,15 @@ class program extends System.program.default {
         super()
         //don't use!
     }
-    async init() {
+    async init(editElem) {
+        console.log("editElem:" + editElem)
+        if (editElem != undefined) {
+            var e = new editDesktopElement(editElem, this.PATH);
+            e.update = () => {
+                SystemHtml.desktop.buildDesktop()
+            }
+            return;
+        }
         this.editors = [];
         /**
          * @type {HtmlWindow}
