@@ -10,31 +10,6 @@
     top: 0;
 }
 
-/* ===== Scrollbar CSS ===== */
-/* Firefox */
-* {
-    scrollbar-width: auto;
-    scrollbar-color: #4a4b51 transparent;
-}
-
-/* Chrome, Edge, and Safari */
-*::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-
-}
-
-*::-webkit-scrollbar-thumb {
-    background-color: #4a4b51;
-    border-radius: 8px;
-    border: 3px solid transparent;
-    background-clip: content-box;
-}
-
-*::-webkit-scrollbar-track {
-    background: transparent;
-}
-
 .disable-select {
     user-select: none;
     /* supported by Chrome and Opera */
@@ -54,10 +29,9 @@
 *[tooltip]:hover::after {
     content: attr(tooltip);
     position: fixed;
-    left: 50px;
+    left: 35px;
     color: white;
-    /*background-color: rgba(0, 0, 0, 0.699);*/
-    background: linear-gradient(90deg, #000000 0%, #00000000 100%);
+    background-color: rgba(0, 0, 0, 0.699);
     border-radius: 2px;
 }
 
@@ -78,27 +52,21 @@ input {
     position: relative;
 }
 
-/*border radius variable*/
-:root {
-    --border-radius: 5px;
-}
-
 .content {
     overflow: auto;
     background-color: white;
 
     position: absolute;
     width: 100%;
-    border-bottom-left-radius: var(--border-radius);
-    border-bottom-right-radius: var(--border-radius);
+    /*border-bottom-left-radius: 5px;*/
+    /*border-bottom-right-radius: 5px;*/
 }
 
 .title-bar {
-    border-top-left-radius: var(--border-radius);
-    border-top-right-radius: var(--border-radius);
+    /*border-top-left-radius: 5px;*/
+    /*border-top-right-radius: 5px;*/
 
-    /*background: white;*/
-    background: linear-gradient(90deg, #ffffff 0%, #f2f2f2 100%);
+    background: white;
     cursor: move;
     align-items: center;
     display: flex;
@@ -142,7 +110,6 @@ input {
     min-height: 14px;
     border: 0px;
     margin: 0px;
-    border-radius: 3px;
 }
 
 .title-bar-controls button:active {
@@ -154,25 +121,41 @@ input {
 }
 
 .title-bar-controls button[aria-label="Minimize"] {
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='30' height='30' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Ctitle%3ELayer 1%3C/title%3E%3Cellipse stroke-width='0' stroke-dasharray='2,2' ry='8.18006' rx='8' id='svg_4' cy='15' cx='15.09363' stroke='%23000' fill='%23ffff00'/%3E%3Cline transform='rotate(-45 15 19.2135)' stroke='%23000' x1='12.48281' stroke-linecap='undefined' stroke-linejoin='undefined' id='svg_2' y2='21.73066' x2='17.51718' y1='16.6963' fill='none'/%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='6' height='2' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23000' d='M0 0h6v2H0z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: bottom 0px left 0px;
+    background-position: bottom 3px left 4px;
     width: 30px;
     height: 30px;
 }
 
 .title-bar-controls button[aria-label="Maximize"] {
-    background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Ctitle%3ELayer 1%3C/title%3E%3Cellipse stroke-width='0' stroke-dasharray='2,2' ry='8.18006' rx='8' id='svg_4' cy='15' cx='15' stroke='%23000' fill='%2300ff00'/%3E%3Crect stroke='%23000' stroke-width='0.5' id='svg_6' height='6.5828' width='8.92481' y='11.7086' x='10.5376' fill='none'/%3E%3Crect id='svg_7' height='0' width='0.14055' y='8.56992' x='54.70484' stroke-width='0' stroke='%23000' fill='none'/%3E%3Cline id='svg_8' y2='12.1468' x2='19.25495' y1='12.1468' x1='10.74505' stroke-width='0.5' stroke='%23000' fill='none'/%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='9' height='9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9 0H0v9h9V0zM8 2H1v6h7V2z' fill='%23000'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: top 0px left 0px;
+    background-position: top 2px left 3px;
+    width: 30px;
+    height: 30px;
+}
+
+.title-bar-controls button[aria-label="Restore"] {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='8' height='9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23000' d='M2 0h6v2H2zM7 2h1v4H7zM2 2h1v1H2zM6 5h1v1H6zM0 3h6v2H0zM5 5h1v4H5zM0 5h1v4H0zM1 8h4v1H1z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: top 2px left 3px;
+    width: 30px;
+    height: 30px;
+}
+
+.title-bar-controls button[aria-label="Help"] {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='6' height='9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23000' d='M0 1h2v2H0zM1 0h4v1H1zM4 1h2v2H4zM3 3h2v1H3zM2 4h2v2H2zM2 7h2v2H2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: top 2px left 5px;
     width: 30px;
     height: 30px;
 }
 
 .title-bar-controls button[aria-label="Close"] {
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='30' height='30' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cellipse stroke-width='0' stroke-dasharray='2,2' ry='8.18006' rx='8' id='svg_4' cy='15' cx='15' stroke='%23000' fill='%23ff0000' /%3E%3Cline x1='10' stroke='%23000' stroke-linecap='undefined' stroke-linejoin='undefined' id='svg_2' y2='20' x2='20' y1='10' fill='none' /%3E%3Cline transform='rotate(90 15 15)' stroke-linecap='undefined' stroke-linejoin='undefined' id='svg_3' y2='20' x2='20' y1='10' x1='10' stroke='%23000' fill='none' /%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='8' height='7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0V0z' fill='%23000'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: top 0px left 0px;
+    background-position: top 3px left 4px;
     width: 30px;
     height: 30px;
 }
@@ -188,25 +171,28 @@ input {
 }
 
 
+.window-layer .window .title-bar .title-bar-controls button[aria-label=Minimize] {
+    background-position: bottom 4px left 4px;
+}
+
 #taskbar {
     background: rgb(29 29 29 / 67%);
     backdrop-filter: blur(11px);
     -webkit-backdrop-filter: blur(11px);
     -moz-backdrop-filter: blur(11px);
+    /* border-top: 1px solid #fff; */
     bottom: 0;
     color: #000;
     display: flex;
     flex: 1;
     left: 0;
+    /* outline: 1px solid #dfdfdf; */
     padding: 0px;
-    margin: 19px;
     position: fixed;
     right: 0;
     z-index: 5000;
-    height: 55px;
+    height: 35px;
     transition: 0.2s;
-    border-radius: 10px;
-    box-shadow: 0px 0px 15px 0px #ffffff54;
 }
 
 #taskbar-programList {
@@ -218,7 +204,6 @@ input {
 #taskbar-programList p {
     color: white;
     transition: 0.1s;
-    width: 100%;
 
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -229,10 +214,9 @@ input {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
 
-    max-width: 11vw;
+    max-width: 27vw;
     width: fit-content;
 
     color: white;
@@ -244,9 +228,8 @@ input {
 }
 
 #taskbar-programList .programListElement img {
-    width: 35px;
-    height: 35px;
-    max-width: 100%;
+    width: 29px;
+    height: 29px;
 }
 
 #taskbar-programList .programListElement:hover:not(.selected) {
@@ -302,26 +285,23 @@ p {
 }
 
 #StartMenu {
-    background: #1d1d1dbd;
+    background: rgb(29, 29, 29);
+    background-color: rgb(29, 29, 29);
     /* box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff; */
     display: inline-block;
     display: flex;
     height: 400px;
     opacity: 0;
-    left: 19px;
+    left: 0;
     list-style: none;
     margin: 0;
-    padding: 15px;
+    padding: 2px;
     position: absolute;
-    bottom: 82px;
+    bottom: 35px;
     overflow: hidden;
     vertical-align: top;
-    transition: 400ms;
-    border-radius: 10px;
 
-    backdrop-filter: blur(11px);
-    -webkit-backdrop-filter: blur(11px);
-    -moz-backdrop-filter: blur(11px);
+    transition: 400ms;
 }
 
 #StartMenuPrograms {
@@ -330,30 +310,6 @@ p {
     max-width: 50vw;
     overflow: auto;
     width: 400px;
-}
-
-#StartMenuPrograms p {
-    font-size: 20px;
-    line-height: 40px;
-
-    background: linear-gradient(90deg, #5a5c5e59 0%, #5a5c5e59 100%);
-    border-radius: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-
-    transition: 0.1s;
-}
-
-#StartMenuPrograms p:hover {
-    /*background: #585858b6;*/
-    /**/
-    background: linear-gradient(90deg, rgba(38, 51, 231, 0.500) 0%, rgba(38, 144, 231, 0.500) 100%);
-}
-
-#StartMenuPrograms hr {
-    margin: 10px;
-    border: 0px;
-    border-top: 0px solid #3a3a3a;
 }
 
 .StartMenuSelector {
@@ -424,16 +380,14 @@ textarea {
 
 #startMenuButton {
     transition: 0.2s;
-    width: 55px;
-    height: 55px;
+    width: 35px;
+    height: 35px;
     text-align: center;
     font-size: 50px;
     padding: 0px;
     margin: 0px;
     background: transparent;
     margin-right: 5px;
-
-    border-radius: 10px;
 
     align-content: center;
     justify-content: center;
@@ -490,39 +444,22 @@ textarea {
 .contextmenu {
     z-index: 99999999;
     position: absolute;
-    background-color: rgb(74 75 81);
+    background-color: white;
     box-shadow: rgb(0 0 0) 0px 0px 20px -5px;
-    border: 1px solid #222f41;
-    border-radius: 5px
+    border: 1px solid #8a8a8a;
 }
 
 .contextmenubutton {
-    color: white;
     background-color: transparent;
     width: 100%;
-    border-radius: 10px;
-    font-size: 17px;
-    line-height: 30px;
-    padding-left: 10px;
-    padding-right: 10px;
 }
 
 .contextmenubutton:hover {
-    /*background-color: rgba(36, 175, 255, 0.774);*/
-    background: linear-gradient(90deg, rgba(36, 175, 255, 0.774) 0%, rgba(0, 255, 255, 0.774) 100%);
+    background-color: #00000029;
 }
 
 .StartMenuFastButton {
     justify-content: center;
-    padding: 10px;
-    background-color: #51718a4d;
-    color: whitesmoke;
-    border-radius: 3px;
-    box-shadow: 0px 0px 6px 0px #00000038;
-}
-
-.StartMenuFastButton:hover {
-    background-color: #51718a;
 }
 
 iframe {

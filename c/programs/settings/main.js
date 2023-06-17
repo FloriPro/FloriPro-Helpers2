@@ -1,7 +1,7 @@
 class program extends System.program.default {
     async init() {
         this.settings = {
-            "Desktop": {
+            "Appearance": {
                 "Edit desktop": {
                     "type": "button",
                     "description": "Edit desktop",
@@ -17,7 +17,7 @@ class program extends System.program.default {
                     "description": "Align desktop icons to grid",
                     "action": async () => {
                         await this.directChange("alignDeskopIconsToGrid");
-                        this.settingsData["Desktop"]["Desktop Icon Align"].update();
+                        this.settingsData["Appearance"]["Desktop Icon Align"].update();
                     }
                 },
                 "Background Image": {
@@ -26,6 +26,26 @@ class program extends System.program.default {
                     "action": async () => {
                         this.directChange("backgroundImage");
                     }
+                },
+                "Newer Style": {
+                    "type": "checkbox",
+                    "status": async () => {
+                        return (await System.options.get("settings"))["newStyle"][0];
+                    },
+                    "description": "Newer Style",
+                    "action": async () => {
+                        await this.directChange("newStyle");
+                        this.settingsData["Appearance"]["Newer Style"].update();
+                        this.settingsInDom["Appearance"]["Reload"].style.display = "";
+                    }
+                },
+                "Reload": {
+                    "type": "button",
+                    "description": "Restart",
+                    "action": async () => {
+                        location.reload();
+                    },
+                    "display": "none"
                 }
             },
             "Updates": {

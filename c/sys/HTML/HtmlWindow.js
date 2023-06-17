@@ -206,7 +206,11 @@ class HtmlWindow {
                     await this.setSize(window.innerWidth, window.innerHeight);
                 } else {
                     this.parent.animationHandler.addAnimation(this.transitionTime);
-                    await this.setSize(window.innerWidth, window.innerHeight - 35);
+                    var minus = 35;
+                    if (SystemHtml.newStyle){
+                        minus = 93;
+                    }
+                    await this.setSize(window.innerWidth, window.innerHeight - minus);
                     await delay(this.transitionTime);
                     this.parent.animationHandler.finishedAnimation();
                 }

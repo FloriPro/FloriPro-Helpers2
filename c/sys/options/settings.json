@@ -42,5 +42,9 @@
     "resizeDirectionIndicator": [
         true,
         "bool"
+    ],
+    "newStyle": [
+        true,
+        "bool"
     ]
 }

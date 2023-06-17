@@ -7,7 +7,15 @@ class Html {
     async loadSystem() {
         console.log("initializing HTML");
         var body = await SystemFileSystem.getFileString("c/sys/HTML/body.html")
-        var style = await SystemFileSystem.getFileString("c/sys/HTML/style.css")
+
+        //check if new or old style
+        if ((await System.options.get("settings"))["newStyle"] != undefined && (await System.options.get("settings"))["newStyle"][0] != false) {
+            this.newStyle = true;
+            var style = await SystemFileSystem.getFileString("c/sys/HTML/style.css")
+        } else {
+            this.newStyle = false;
+            var style = await SystemFileSystem.getFileString("c/sys/HTML/styleOld.css")
+        }
 
         //load body
         document.body.innerHTML = body;
@@ -302,6 +310,7 @@ class ContextMenu {
         });
         System.eventHandler.addEventHandler("contextmenu", (event) => {
             var eventButtons = {};
+            var hrnum = 0;
             var path = event.composedPath().reverse();
             for (var pathElement of path) {
                 if (pathElement != document && pathElement != window) {
@@ -330,13 +339,22 @@ class ContextMenu {
                     for (var x of Object.keys(dat)) {
                         eventButtons[x] = dat[x];
                     }
+                    if (Object.keys(dat).length > 0) {
+                        eventButtons["hr" + hrnum] = ["hr", null];
+                        hrnum++;
+                    }
                 }
             }
+            if (Object.keys(eventButtons).length > 0) {
+                delete eventButtons["hr" + (hrnum - 1)];
+            }
+
             this.showContext(eventButtons, [event.clientX, event.clientY]);
         }, []);
     }
 
     showContext(eventButtons, position) {
+        console.log(eventButtons)
         //close all contextmenus
         for (var x of document.querySelectorAll(".contextmenu")) {
             x.remove();
@@ -378,6 +396,11 @@ class ContextMenu {
         div.style.left = position[0] + "px";
 
         for (var x of Object.keys(eventButtons)) {
+            if (eventButtons[x][0] == "hr") {
+                var hr = document.createElement("hr");
+                div.appendChild(hr);
+                continue;
+            }
             div.appendChild(this.createContextButton(x, eventButtons[x]));
         }
 
@@ -776,6 +799,9 @@ class WindowHandler {
         }
 
         var taskbarbottomsize = 35;
+        if (SystemHtml.newStyle){
+            taskbarbottomsize = 93;
+        }
         var taskbarbottomsizehalf = taskbarbottomsize / 2;
 
         if (event.pageY < window.innerHeight * 0.6 && event.pageY > window.innerHeight * 0.4 && event.pageX < window.innerWidth * 0.6 && event.pageX > window.innerWidth * 0.4) {
@@ -839,6 +865,9 @@ class WindowHandler {
         }
 
         var taskbarbottomsize = 35;
+        if (SystemHtml.newStyle){
+            taskbarbottomsize = 93;
+        }
         var taskbarbottomsizehalf = taskbarbottomsize / 2;
 
         //left
