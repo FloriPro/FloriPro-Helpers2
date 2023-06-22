@@ -1037,14 +1037,18 @@ class WindowHandler {
         this.updateTaskBar();
     }
     async hideTaskbar() {
-        document.querySelector("#taskbar").style.height = "0";
+        //document.querySelector("#taskbar").style.height = "0";
+        document.querySelector("#taskbar").style.bottom = "-70px";
+        document.querySelector("#taskbar").style.opacity = "0";
         await delay(200)
         document.querySelector("#taskbar").style.display = "none";
     }
     async showTaskbar() {
         document.querySelector("#taskbar").style.display = "";
         await delay(10);
-        document.querySelector("#taskbar").style.height = "";
+        //document.querySelector("#taskbar").style.height = "";
+        document.querySelector("#taskbar").style.bottom = "";
+        document.querySelector("#taskbar").style.opacity = "";
         await delay(200)
         document.querySelector("#taskbar").style.display = "";
     }

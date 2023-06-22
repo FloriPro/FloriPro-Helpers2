@@ -498,7 +498,7 @@ class HtmlWindow {
                         if (this.removed != true) {
                             this.size.setMax();
                         }
-                    }).bind(this), 3);
+                    }).bind(this), 20);
                 }
             }
         });
