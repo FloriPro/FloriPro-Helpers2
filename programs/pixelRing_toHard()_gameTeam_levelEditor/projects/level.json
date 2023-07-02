@@ -1,0 +1,55 @@
+{
+  "pages": [
+    {
+      "elements": [
+        {
+          "type": "text",
+          "data": "This is a textblock",
+          "pos": {
+            "x": 70,
+            "y": 47
+          },
+          "size": {
+            "width": 335,
+            "height": 46
+          },
+          "styling": {
+            "fontSize": "30",
+            "fontFamily": "Arial",
+            "color": "#007bffff",
+            "backgroundColor": "#fa0000ff",
+            "border": "1",
+            "borderColor": "#000000ff"
+          },
+          "layer": 1
+        },
+        {
+          "type": "text",
+          "data": "NICE",
+          "pos": {
+            "x": 50,
+            "y": 310
+          },
+          "size": {
+            "width": 123,
+            "height": 45
+          },
+          "styling": {
+            "fontSize": 40,
+            "fontFamily": "Arial",
+            "color": "#000000ff",
+            "backgroundColor": "#00000000",
+            "border": "1",
+            "borderColor": "#000000ff"
+          },
+          "layer": 2
+        }
+      ],
+      "background": {
+        "type": "color",
+        "color": "#ffffffff"
+      }
+    }
+  ],
+  "pixelRatio": "700:394"
+}

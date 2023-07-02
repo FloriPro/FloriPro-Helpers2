@@ -121,5 +121,10 @@
     "displayname": "Download Reader",
     "version": "0.0",
     "path": "programs/downloadReaderV2.json"
+  },
+  "pixelRing_toHard()_gameTeam_levelEditor": {
+    "displayname": "Pixel Ring | To Hard()  Game Team | Level Editor",
+    "version": "0.0",
+    "path": "programs/pixelRing_toHard()_gameTeam_levelEditor.json"
   }
 }

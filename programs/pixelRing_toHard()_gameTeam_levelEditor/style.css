@@ -1,0 +1,293 @@
+/*exitMe styles. Use this for all exitMe styles
+    [windowid="{{windowId}}"][windowelement=""]{
+    }
+*/
+
+.window[windowid="{{windowId}}"] .title-bar {
+    background-color: #c53d15;
+}
+
+.window[windowid="{{windowId}}"] .content {
+    background-color: #eae8e6;
+    overflow: hidden;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .minimize {
+    background-color: #c53d15;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .maximize {
+    background-color: #c53d15;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .close {
+    background-color: #c53d15;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .minimize:hover {
+    background-color: #d44b23;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .maximize:hover {
+    background-color: #d44b23;
+}
+
+.window[windowid="{{windowId}}"] .title-bar .close:hover {
+    background-color: #962300;
+}
+
+
+[windowid="{{windowId}}"][windowelement="ribbonControllBar"] {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+[windowid="{{windowId}}"][windowelement="topBar"] {
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    width: 100%;
+
+    background-color: #c53d15;
+
+
+    border-bottom: 1px solid #bfbfbf;
+}
+
+[windowid="{{windowId}}"][windowelement="projectEdit"] {
+    height: 100%;
+}
+
+[windowid="{{windowId}}"][windowelement="toolSelect"] {
+    display: flex;
+    flex-direction: row;
+    height: 100px;
+    width: 100%;
+    background-color: #e6e6e6;
+    border-bottom: 1px solid #bfbfbf;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+}
+
+[windowid="{{windowId}}"][windowelement="toolSelectElement"] {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    align-items: flex-start;
+    height: 100%;
+}
+
+[windowid="{{windowId}}"][windowelement="ribbonTop"] {
+    height: 100%;
+    background-color: #e6e6e6;
+    border: 1px solid #bfbfbf;
+}
+
+[windowid="{{windowId}}"][windowelement="ribbonTop"]:hover {
+    background-color: #ebebeb;
+}
+
+[windowid="{{windowId}}"][windowelement="ribbonBottom"] {
+    background-color: #e6e6e6;
+}
+
+[windowid="{{windowId}}"][windowelement="ribbonBottom"]:hover {
+    background-color: #ebebeb;
+}
+
+[windowid="{{windowId}}"][windowelement="ribbonTop"][selected] {
+    border-bottom: none;
+}
+
+[windowid="{{windowId}}"][windowelement="projectContent"] {
+    background-color: #ffffff;
+}
+
+
+[windowid="{{windowId}}"][windowelement="editorRightSide"] {
+    height: 100%;
+    width: calc(100% - 4px);
+    display: flex;
+    position: relative;
+}
+
+[windowid="{{windowId}}"][windowelement="bottomControll"] {
+    background-color: #eeeeee;
+    height: 30px;
+    width: calc(100% + 00px);
+    bottom: 0px;
+    display: flex;
+    position: absolute;
+    border-top: 1px solid #bfbfbf;
+    flex-direction: row-reverse;
+    flex-wrap: nowrap;
+}
+
+
+[windowid="{{windowId}}"][windowelement="projectContentInnerWraper"] {
+    position: relative;
+    width: fit-content;
+}
+
+
+[windowid="{{windowId}}"][windowelement="projectContentWraper"] {
+    position: relative;
+    overflow: auto;
+    /* height: fit-content; */
+    max-height: calc(100% - 30px);
+    width: 100%;
+    /* margin: auto; */
+    /* width: fit-content;*/
+}
+
+[windowid="{{windowId}}"][windowelement="pageSelect"] {
+    display: flex;
+    flex-direction: row;
+    width: 102px;
+    background-color: #eae8e6;
+    border: 1px solid #bfbfbf;
+}
+
+[windowid="{{windowId}}"][windowelement="pageRender"] {
+    width: 100px;
+    height: 100px;
+    background-color: black;
+}
+
+[windowid="{{windowId}}"][windowelement="smallPage"] {
+    width: 100px;
+    height: fit-content;
+    border: 1px solid #bfbfbf;
+}
+
+[windowid="{{windowId}}"][windowelement="editor"] {
+    display: flex;
+    flex-direction: row;
+    height: calc(100% - 133px);
+    width: 100%;
+}
+
+[windowid="{{windowId}}"][windowelement="contentChanger"] {
+    pointer-events: none;
+    background-color: #00000000;
+    z-index: 9999;
+}
+
+[windowid="{{windowId}}"][windowelement="contentChanger_bomml"] {
+    pointer-events: all;
+    border: 3px rgb(160, 160, 160) solid;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    position: absolute;
+    z-index: 9999;
+}
+
+[windowid="{{windowId}}"][windowelement="contentChangerBorder"] {
+    width: 100%;
+    height: 100%;
+    cursor: move;
+    background-color: transparent;
+    pointer-events: none;
+    border: 2px solid #696969;
+    top: -2px;
+    position: absolute;
+    left: -2px;
+}
+
+[windowid="{{windowId}}"][windowelement="contentChangerBorder"]>div {
+    position: absolute;
+    background-color: #00000004;
+    width: 30px;
+    height: 30px;
+    pointer-events: auto;
+}
+
+
+[windowid="{{windowId}}"][windowelement="contentChangerBorder"]>div:nth-child(1) {
+    top: -20px;
+    left: 0px;
+    width: 100%;
+}
+
+[windowid="{{windowId}}"][windowelement="contentChangerBorder"]>div:nth-child(2) {
+    bottom: -20px;
+    left: 0px;
+    width: 100%;
+}
+
+[windowid="{{windowId}}"][windowelement="contentChangerBorder"]>div:nth-child(3) {
+    left: -20px;
+    top: 0px;
+    height: 100%;
+}
+
+[windowid="{{windowId}}"][windowelement="contentChangerBorder"]>div:nth-child(4) {
+    top: 0px;
+    right: -20px;
+    height: 100%;
+}
+
+[windowid="{{windowId}}"][windowelement="seperator"] {
+    width: 0px;
+    border-left: 1px solid #bfbfbf;
+    height: 100%;
+    background-color: aqua;
+    margin: 0;
+    margin-right: 8px;
+    margin-left: 8px;
+}
+
+[windowid="{{windowId}}"][windowelement="descriptor"] {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    color: gray;
+    font-size: 18px;
+}
+
+[windowid="{{windowId}}"][windowelement="outlineOverlay"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00000000;
+    z-index: 9999;
+    pointer-events: none;
+    border: 14px solid rgba(255, 0, 0, 0.123);
+    margin-left: -14px;
+    margin-top: -14px;
+}
+
+[windowid="{{windowId}}"][windowelement="alignLineHorizontal"] {
+    height: 10000px;
+    width: 0px;
+    left: 300px;
+    top: -5000px;
+    border-left: 3px dotted #ff9100c7;
+    position: absolute;
+    pointer-events: none;
+    z-index: 999999;
+}
+
+[windowid="{{windowId}}"][windowelement="alignLineVertical"] {
+    height: 0px;
+    width: 10000px;
+    left: -5000px;
+    top: 300px;
+    border-top: 3px dotted #ff9100c7;
+    position: absolute;
+    pointer-events: none;
+    z-index: 999999;
+}
+
+[windowid="{{windowId}}"][windowelement="allAlignLines"] div {
+    left: 0;
+    top: 0;
+    position: absolute;
+    pointer-events: none;
+    z-index: 999999;
+}
