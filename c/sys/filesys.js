@@ -339,6 +339,7 @@ class FileSystemClass {
             }
         }(this);
         var opdb = this.openDB();
+        this.opdb = opdb;
     }
 
     async openDB() {
@@ -398,7 +399,7 @@ class FileSystemClass {
         if (this.db != null) {
             return;
         }
-        await opdb;
+        await this.opdb;
     }
 
     async reset() {
@@ -573,6 +574,8 @@ class FileSystemClass {
     }
 
     async getFileString(path, raw = false) {
+        await this.dbOpen();
+
         var d = await this.dbWrapper.getFile(path);
         if (d == null) {
             return null;
