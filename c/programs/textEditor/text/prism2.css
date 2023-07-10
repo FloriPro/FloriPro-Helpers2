@@ -19,6 +19,13 @@
   font-family: monospace;
   line-height: 17px;
 }
+#highlighting code::after {
+  /* Make sure the last line is always visible */
+  content: "*invisible* *magic*";
+  /*make higher*/
+  line-height: 10em;
+}
+
 
 #editing,
 #highlighting {
