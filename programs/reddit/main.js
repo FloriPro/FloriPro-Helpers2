@@ -368,6 +368,8 @@ class program extends System.program.default {
                         i.remove();
                     }
                 }).bind(this, i1, i2, i)
+            }else{
+                console.log("old api. Please update!");
             }
 
             var i2 = document.createElement("img");
