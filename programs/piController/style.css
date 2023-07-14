@@ -1,0 +1,11 @@
+[windowid="{{windowId}}"] .runningProgramm {
+    border: 1px solid black;
+    padding: 5px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+[windowid="{{windowId}}"] .runningProgramm:hover {
+    background-color: #ddd;
+}

@@ -126,5 +126,10 @@
     "displayname": "Pixel Ring | To Hard()  Game Team | Level Editor",
     "version": "0.0",
     "path": "programs/pixelRing_toHard()_gameTeam_levelEditor.json"
+  },
+  "piController":{
+    "displayname": "Pi Controller",
+    "version": "0.0",
+    "path": "programs/piController.json"
   }
 }

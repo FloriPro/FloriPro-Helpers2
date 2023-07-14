@@ -1,0 +1,65 @@
+<style>
+    [windowid="{{windowId}}"] #consoleOut {
+        white-space: nowrap;
+    }
+
+    [windowid="{{windowId}}"] #top {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 auto;
+    }
+
+    [windowid="{{windowId}}"] #consoleWrapper {
+        flex: 1 1 auto;
+        overflow: auto;
+        font-family: 'Noto Sans Mono', monospace;
+        font-size: 90%;
+    }
+
+    [windowid="{{windowId}}"] #settings {
+        display: flex;
+        flex-direction: row;
+    }
+
+    [windowid="{{windowId}}"] h1 {
+        margin: 0;
+    }
+
+    [windowid="{{windowId}}"] .consoleTime {
+        color: gray;
+        font-size: 0.8em;
+        line-height: 50%;
+    }
+</style>
+
+<div id="top">
+    <h1>Console in "{{path[0]}}": "{{path[1]}}"</h1>
+    <p id="noConsoleError" style="color: red; display: none;">Console closed</p>
+
+    <div id="settings">
+        <label name="timings">Timings</label>
+        <input type="checkbox" name="timings" id="timings" checked>
+        <label name="newLineTimings">newLine Timings</label>
+        <input type="checkbox" name="newLineTimings" id="newLineTimings">
+        <!--stop to /stop post-->
+        <form action="/stop" method="post">
+            <input type="hidden" name="program" value="{{consoleId}}">
+            <input type="submit" value="Stop">
+        </form>
+        <button onclick="fetch('/api/console/{{ consoleId }}/clear')">Clear</button>
+        {% if fileOutputs != [] %}
+        <a href="/console/{{ consoleId }}/outputs">Check Outputs</a>
+        {% endif %}
+    </div>
+    <hr style="width: calc(100% - 20px);">
+</div>
+<div id="consoleWrapper">
+    <p id="consoleOut">
+        Loading HQ Data...
+        <br>
+        <br>
+        {% for line in output %}
+        {{line}}<br>
+        {% endfor %}
+    </p>
+</div>
