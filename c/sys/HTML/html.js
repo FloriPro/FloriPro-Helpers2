@@ -163,6 +163,13 @@ class Html {
 
         //Desktop
         this.desktop = new Desktop();
+
+        //Small Notifications in the bottom right corner
+        if (this.newStyle) {
+            this.notifications = new SmallNotifications();
+        } else {
+            this.notifications = new notificationsBackwardsCompatability();
+        }
     }
     async updateStartmenu() {
         SystemHtml.loadStartMenu(document.querySelector("#StartMenuPrograms"))
@@ -799,7 +806,7 @@ class WindowHandler {
         }
 
         var taskbarbottomsize = 35;
-        if (SystemHtml.newStyle){
+        if (SystemHtml.newStyle) {
             taskbarbottomsize = 93;
         }
         var taskbarbottomsizehalf = taskbarbottomsize / 2;
@@ -865,7 +872,7 @@ class WindowHandler {
         }
 
         var taskbarbottomsize = 35;
-        if (SystemHtml.newStyle){
+        if (SystemHtml.newStyle) {
             taskbarbottomsize = 93;
         }
         var taskbarbottomsizehalf = taskbarbottomsize / 2;
@@ -1476,6 +1483,259 @@ class resizeAnimator {
 
         this.currentHtml = div;
         document.body.appendChild(div);
+    }
+}
+
+class notificationsBackwardsCompatability {
+    constructor() { }
+    addNotification(options) {
+        var fullOptions = { "title": "Notification", "text": "This is a notification", "icon": null, "onclick": () => { }, "onclose": () => { }, "timeout": 5000, };
+        for (var x in options) {
+            fullOptions[x] = options[x];
+        }
+        options = fullOptions;
+
+        SystemHtml.WindowHandler.presets.createInformation(options.title, options.text);
+    }
+}
+
+class SmallNotifications {
+    constructor() {
+        this.allCurrent = document.querySelector("#smallNotifications");
+        this.popUp = document.querySelector("#smallNotificationsPopupList");
+        document.querySelector("#smallNotificationsButton").onclick = () => { this.toggleAllCurrent(); };
+        document.querySelector("#smallNotificationsTitleBarButtonsCloseButton").onclick = () => { this.toggleAllCurrent(); };
+
+        this.allCurrentContainer = document.querySelector("#smallNotificationsNotificationsContainer");
+
+        this.notifications = {};
+        this.notificationId = 0;
+
+        System.eventHandler.addEventHandler("click", (event, a) => {
+            // hdie all current if clicked outside
+            if (!event.target.closest("#smallNotifications") && !event.target.closest("#smallNotificationsButton") && !event.target.closest(".smallNotificationsNotification") && !event.target.closest(".notificationPopup")) {
+                this.hideAllCurrent();
+            }
+        });
+    }
+
+    hideAllCurrent() {
+        this.allCurrent.classList.remove("open");
+    }
+
+    toggleAllCurrent() {
+        this.allCurrent.classList.toggle("open");
+        if (this.allCurrent.classList.contains("open")) {
+            this.loadAllCurrent();
+            this.hideAllPopUp();
+        }
+    }
+
+    hideAllPopUp() {
+        for (var x in this.notifications) {
+            if (this.notifications[x].popupdiv != undefined) {
+                this.hideNotification(this.notifications[x].id);
+            }
+        }
+    }
+
+    loadAllCurrent() {
+        this.allCurrentContainer.innerHTML = "";
+        for (var x in this.notifications) {
+            this.allCurrentContainer.appendChild(this.genNotificationAllCurrentDiv(this.notifications[x]));
+        }
+    }
+
+    fillupOptions(options) {
+        var fullOptions = {
+            "title": "Notification",
+            "text": "This is a notification",
+            "icon": null,
+            "onclick": () => { },
+            "onclose": () => { },
+            "timeout": 5000,
+            "buttons": {}
+        };
+        //button:  {"uwu": () => { console.log("uwu"); }        
+
+
+        for (var x in options) {
+            fullOptions[x] = options[x];
+        }
+
+        return fullOptions;
+    }
+
+    async confirm(title, text, icon) {
+        return await new Promise((resolve, reject) => {
+            var id = this.addNotification({
+                title: title,
+                text: text,
+                icon: icon,
+                buttons: {
+                    "Yes": () => {
+                        resolve(true);
+                    },
+                    "No": () => {
+                        resolve(false);
+                    }
+                }
+            })
+        })
+    }
+
+    addNotification(options) {
+        options = this.fillupOptions(options);
+
+        var id = this.notificationId;
+        this.notificationId++;
+
+        var div = this.genNotificationPopupDiv(options, id);
+        this.popUp.appendChild(div);
+
+        var notification = {
+            options: options,
+            id: id,
+            popupdiv: div,
+        }
+        this.notifications[id] = notification;
+
+        if (options.timeout != 0) {
+            setTimeout(() => {
+                if (this.notifications[id] != undefined) {
+                    this.hideNotification(id);
+                }
+            }, options.timeout);
+        }
+        this.loadAllCurrent();
+        if (this.allCurrent.classList.contains("open")) {
+            this.hideNotification(id);
+        }
+        return id;
+    }
+
+    removeNotification(id) {
+        if (this.notifications[id] != undefined) {
+            if (this.notifications[id].popupdiv != null) {
+                this.notifications[id].popupdiv.remove();
+            }
+            delete this.notifications[id];
+        } else {
+            console.error("Notification with id '" + id + "' does not exist!");
+        }
+        this.loadAllCurrent();
+    }
+
+    hideNotification(id) {
+        if (this.notifications[id] == undefined) {
+            console.error("Notification with id '" + id + "' does not exist!");
+            return;
+        }
+
+        var notification = this.notifications[id];
+
+        if (notification.popupdiv == null) {
+            return;
+        }
+
+        notification.popupdiv.remove();
+        notification.popupdiv = null;
+    }
+
+    editNotification(id, newOptions) {
+        if (this.notifications[id] == undefined) {
+            console.error("Notification with id '" + id + "' does not exist!");
+            return;
+        }
+
+        var notification = this.notifications[id];
+        var options = notification.options;
+        for (var x in newOptions) {
+            options[x] = newOptions[x];
+        }
+
+
+        this.notifications[id].options = options;
+
+        if (notification.popupdiv != null) {
+            var newDiv = this.genNotificationPopupDiv(options, id);
+            notification.popupdiv.replaceWith(newDiv);
+            notification.popupdiv = newDiv;
+        }
+        this.loadAllCurrent();
+    }
+
+    genNotificationPopupDiv(options, id) {
+        var notificationPopup = document.createElement("div");
+        notificationPopup.className = "notificationPopup";
+
+        var notificationPopupTitleBar = document.createElement("div");
+        notificationPopupTitleBar.className = "notificationPopupTitleBar";
+
+        var notificationPopupTitleBarIcon = document.createElement("img");
+        notificationPopupTitleBarIcon.className = "notificationPopupTitleBarIcon";
+        notificationPopupTitleBarIcon.src = "";
+
+        var notificationPopupTitle = document.createElement("p");
+        notificationPopupTitle.className = "notificationPopupTitle";
+        notificationPopupTitle.innerText = options.title;
+
+        var notificationPopupTitleBarButtonsHC = document.createElement("div");
+        notificationPopupTitleBarButtonsHC.className = "notificationPopupTitleBarButtonsHC";
+
+        var notificationPopupTitleBarButtonsHideButton = document.createElement("div");
+        notificationPopupTitleBarButtonsHideButton.className = "notificationPopupTitleBarButtonsHideButton";
+        notificationPopupTitleBarButtonsHideButton.onclick = () => {
+            this.hideNotification(id);
+        }
+
+        var notificationPopupTitleBarButtonsCloseButton = document.createElement("div");
+        notificationPopupTitleBarButtonsCloseButton.className = "notificationPopupTitleBarButtonsCloseButton";
+        notificationPopupTitleBarButtonsCloseButton.onclick = () => {
+            this.removeNotification(id);
+        }
+
+        notificationPopupTitleBarButtonsHC.appendChild(notificationPopupTitleBarButtonsHideButton);
+        notificationPopupTitleBarButtonsHC.appendChild(notificationPopupTitleBarButtonsCloseButton);
+
+        var notificationPopupText = document.createElement("p");
+        notificationPopupText.className = "notificationPopupText";
+        notificationPopupText.innerText = options.text;
+
+        var notificationPopupButtons = document.createElement("div");
+        notificationPopupButtons.className = "notificationPopupButtons";
+
+        for (var x in options.buttons) {
+            var notificationPopupButton = document.createElement("p");
+            notificationPopupButton.className = "notificationPopupButton";
+            notificationPopupButton.innerText = x;
+            notificationPopupButton.onclick = ((x) => {
+                options.buttons[x]();
+                this.removeNotification(id);
+            }).bind(this, x);
+            notificationPopupButtons.appendChild(notificationPopupButton);
+        }
+
+        notificationPopupTitleBar.appendChild(notificationPopupTitleBarIcon);
+        notificationPopupTitleBar.appendChild(notificationPopupTitle);
+        notificationPopupTitleBar.appendChild(notificationPopupTitleBarButtonsHC);
+
+        notificationPopup.appendChild(notificationPopupTitleBar);
+        notificationPopup.appendChild(notificationPopupText);
+        notificationPopup.appendChild(notificationPopupButtons);
+
+        return notificationPopup;
+    }
+
+    genNotificationAllCurrentDiv(notification) {
+        var div = this.genNotificationPopupDiv(notification.options, notification.id);
+        div.className = "smallNotificationsNotification";
+        div.querySelector(".notificationPopupTitleBarButtonsHideButton").remove();
+        div.querySelector(".notificationPopupTitleBarButtonsCloseButton").onclick = () => {
+            this.removeNotification(notification.id);
+            this.loadAllCurrent();
+        }
+        return div;
     }
 }
 

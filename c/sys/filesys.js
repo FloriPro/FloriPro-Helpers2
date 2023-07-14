@@ -389,7 +389,8 @@ class FileSystemClass {
             await this.setFileString(x, save[x]);
         }
         localStorage.removeItem("savedPersistandFiles");
-        var out = await SystemHtml.WindowHandler.presets.createConfirm("Last Session Restore", "Your files have been restored from your last session. To apply changes, the page will be reloaded. Do you want to continue?");
+        //var out = await SystemHtml.WindowHandler.presets.createConfirm("Last Session Restore", "Your files have been restored from your last session. To apply changes, the page will be reloaded. Do you want to continue?");
+        var out = await SystemHtml.notifications.confirm("Last Session Restore", "Your files have been restored from your last session. To apply changes, the page will be reloaded. Do you want to continue?");
         if (out) {
             location.reload();
         }

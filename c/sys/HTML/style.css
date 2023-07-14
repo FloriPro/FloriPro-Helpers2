@@ -603,3 +603,226 @@ iframe {
 #resizeAnimator.own_bottom.animate {
     margin-top: 500px;
 }
+
+
+#smallNotificationsPopupList {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    margin-bottom: 55px;
+    margin-right: 10px;
+    z-index: 9999;
+}
+
+.notificationPopup {
+    background-color: #4d4d4dce;
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0px 0px 10px 0px #00000038;
+    transition: 0.2s;
+    min-width: 200px;
+    max-width: 375px;
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.notificationPopupTitleBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.notificationPopupTitleBarIcon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    transition: 0.2s;
+    border: 0;
+}
+
+/*content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm1,15H11V14h2Zm0-4H11V7h2Z' /%3E%3C/svg%3E");*/
+/*set this, if the src is empty*/
+.notificationPopupTitleBarIcon::before {
+    content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm1,15H11V14h2Zm0-4H11V7h2Z' /%3E%3C/svg%3E");
+}
+
+.notificationPopupTitleBarButtonsHC{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.2s;
+    border: 0;
+}
+
+.notificationPopupTitleBarButtonsCloseButton {
+    width: 20px;
+    height: 20px;
+    margin-right: 0px;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    transition: 0.2s;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z' /%3E%3C/svg%3E");
+    cursor: pointer;
+    border-radius: 30px;
+}
+
+.notificationPopupTitleBarButtonsCloseButton:hover {
+    background-color: #ff00004d;
+}
+
+.notificationPopupTitleBarButtonsHideButton {
+    width: 20px;
+    height: 20px;
+    margin-right: 0px;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    transition: 0.2s;
+    cursor: pointer;
+    border-radius: 30px;
+    /*minimize button url svg*/
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M19,13H5V11H19Z' /%3E%3C/svg%3E");
+}
+
+.notificationPopupTitleBarButtonsHideButton:hover {
+    background-color: rgb(77, 77, 77);
+}
+
+
+.notificationPopupTitle {
+    font-weight: bold;
+}
+
+.notificationPopupText {
+    margin-bottom: 5px;
+    margin-top: 5px;
+
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow-wrap: break-word;
+}
+
+.notificationPopupButtons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.notificationPopupButton {
+    background-color: #51718a4d;
+    color: whitesmoke;
+    border-radius: 3px;
+    box-shadow: 0px 0px 6px 0px #00000038;
+    padding: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    transition: 0.2s;
+}
+
+.notificationPopupButton:hover {
+    background-color: #51718a;
+}
+
+#minimizeAllWindows {
+    border-left: none !important;
+}
+
+#smallNotificationsButton {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='48' viewBox='0 -960 960 960' width='48'%3E%3Cpath style='fill: white' d='M160-200v-60h80v-304q0-84 49.5-150.5T420-798v-22q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v22q81 17 130.5 83.5T720-564v304h80v60H160Zm320-302Zm0 422q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM300-260h360v-304q0-75-52.5-127.5T480-744q-75 0-127.5 52.5T300-564v304Z'/%3E%3C/svg%3E");
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    color: white;
+    width: 40px;
+    height: 100%;
+    display: flex;
+    position: absolute;
+    right: 36px;
+    border-left: 1px solid #ffffff45;
+    border-right: 1px solid #ffffff45;
+    cursor: pointer;
+}
+
+#smallNotificationsButton:hover {
+    background-color: #ffffff45;
+}
+
+#smallNotifications {
+    display: none;
+    position: fixed;
+    right: 0;
+    margin: 5px;
+    bottom: 55px;
+    min-width: 300px;
+    width: 30%;
+    max-width: 500px;
+    height: 200px;
+    background-color: #4d4d4dce;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px 0px #00000038;
+    transition: 0.2s;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#smallNotifications.open {
+    display: block;
+}
+
+#smallNotificationsNotificationsContainer {
+    padding: 5px;
+}
+
+.smallNotificationsNotification {
+    background-color: #4d4d4dce;
+    /* color: white; */
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#smallNotificationsTitleBar {
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#smallNotificationsTitleBarTitle {
+    font-weight: bold;
+}
+
+#smallNotificationsTitleBarButtons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#smallNotificationsTitleBarButtonsCloseButton {
+    width: 20px;
+    height: 20px;
+    margin-right: 0px;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    transition: 0.2s;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M19,13H5V11H19Z' /%3E%3C/svg%3E");
+    cursor: pointer;
+    border-radius: 30px;
+}
